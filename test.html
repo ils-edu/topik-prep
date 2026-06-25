@@ -24,6 +24,8 @@
       background-image: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
       font-family: system-ui, -apple-system, sans-serif;
       color: var(--text-main);
+      margin: 0;
+      padding: 0;
     }
 
     /* Шапка теста */
@@ -31,10 +33,314 @@
       background: rgba(9, 13, 22, 0.8);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .test-header-inner {
+      height: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #fff;
     }
     .logo-kor {
       background: linear-gradient(135deg, #a855f7, #c084fc);
       color: #0f172a;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .test-meta {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .test-level {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+    .test-progress {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .timer {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+    }
+
+    /* Линейка прогресса */
+    .progress-bar {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), #06b6d4);
+      box-shadow: 0 0 10px var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    /* Вкладки секций экзамена */
+    .parts-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+    .part-tab {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .part-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    /* Интерактивный аудио-плеер */
+    .audio-block {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(17, 24, 39, 0.6));
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .audio-play-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      width: 45px; height: 45px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    /* Окна вопросов и ответов */
+    .question-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .question-num {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    .answer-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 16px 20px;
+      border-radius: 12px;
+      width: 100%;
+      text-align: left;
+      font-size: 1.05rem;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .answer-btn:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      background: rgba(168, 85, 247, 0.05);
+    }
+
+    /* Поле ввода для ручных ответов */
+    .answer-input {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 15px;
+      border-radius: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 15px;
+      font-family: inherit;
+    }
+    .answer-input:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    /* Панель подсказок системы */
+    .ai-hint {
+      margin-top: 20px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--primary);
+    }
+
+    /* Кнопки */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: #fff; }
+    .btn-ghost { background: transparent; color: var(--text-muted); }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  </style>
+</head>
+<body class="test-page">
+  <header class="test-header">
+    <div class="test-header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-kor">한국</span>
+        <span class="logo-text">TOPIK.ILS</span>
+      </a>
+      <div class="test-meta">
+        <span class="test-level" id="exam-title">TOPIK Test</span>
+        <span class="test-progress">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></span>
+      </div>
+      <div class="timer" id="timer"><span id="timer-display">40:00</span></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </header>
+
+  <main class="test-main">
+    <div class="container test-container" style="margin-top: 30px;">
+      <div class="parts-tabs" id="parts-tabs-container"></div>
+
+      <section class="test-section" style="margin-bottom: 20px;">
+        <h2 id="section-title" class="section-title" style="font-size: 1.4rem; font-weight:700;">Загрузка...</h2>
+        <p id="section-desc" class="section-desc" style="color: var(--text-muted); font-size:0.9rem;"></p>
+      </section>
+
+      <section class="audio-block" id="audio-block" hidden>
+        <div class="audio-player" style="display: flex; align-items: center; gap: 15px;">
+          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
+          <div class="audio-info">
+            <p class="audio-title" style="font-weight: 600; margin: 0;">듣기 (Аудиозапись задания)</p>
+            <span class="audio-hint" style="font-size: 0.8rem; color: var(--text-muted);">Осталось прослушиваний: <span id="plays-left">2</span></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="question-block">
+        <div class="question-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+          <span class="question-num" id="q-num-badge">1</span>
+          <p class="question-instruction" id="q-instruction" style="color: var(--text-muted); margin: 0; font-size: 0.95rem;"></p>
+        </div>
+        <div class="question-main-text" id="q-text" style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 20px 0;"></div>
+        <div id="answers-container"></div>
+        
+        <div class="ai-hint" id="ai-hint" hidden>
+          <span class="ai-badge" style="background: var(--primary); color: #fff; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Система</span>
+          <p id="ai-hint-text" style="margin: 8px 0 0 0; font-size: 0.95rem;"></p>
+        </div>
+      </section>
+
+      <nav class="test-nav" style="display: flex; justify-content: space-between; margin-top: 25px; padding-bottom: 5px;">
+        <button type="button" class="btn btn-ghost" id="prev-btn">← Назад</button>
+        <button type="button" class="btn btn-secondary" id="check-btn" hidden style="border-color: var(--primary); color: var(--primary);">Проверить ответ</button>
+        <button type="button" class="btn btn-primary" id="next-btn">Далее →</button>
+      </nav>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const examBank = {};
+
+      // Автоматическая генерация пустых шаблонов для остальных вариантов
+      function generateBlankTopik(level, variant) {
+        return {
+          title: `TOPIK ${level === 1 ? 'I' : 'II'} — Вариант 0${variant}`,
+          parts: [
+            {
+              id: 'part1', name: 'Part 1: 듣기 (Listening)', description: 'Послушайте аудиозапись на корейском языке и выберите подходящий ответ.',
+              questions: [{ type: 'choice', instruction: '알맞은 대답을 고르십시오 (Выберите правильный ответ):', text: `Пример вопроса 듣기 TOPIK ${level === 1 ? 'I' : 'II'} (Вариант ${variant})`, options: ['A) 안녕하세요 (Привет)', 'B) 감사합니다 (Спасибо)', 'C) 만나서 반갑습니다 (Рад встрече)'], correctAnswer: 0, tts: '안녕하세요' }]
+            },
+            {
+              id: 'part2', name: 'Part 2: 읽기 (Reading)', description: 'Прочитайте текст и определите его главную тему или вставьте пропущенное слово.',
+              questions: [{ type: 'choice', instruction: '무엇에 대한 이야기입니까? (О чем текст?):', text: '저는 한국어를 공부합니다. 재미있습니다.', options: ['A) 공부 (Учеба)', 'B) 날씨 (Погода)', 'C) 주말 (Выходные)'], correctAnswer: 0 }]
+            },
+            {
+              id: 'part3', name: 'Part 3: 쓰기 (Writing)', description: 'Впишите пропущенные грамматические конструкции или слова.',
+              questions: [{ type: 'write', instruction: '알맞은 문장을 쓰십시오 (Впишите правильное слово):', text: 'Запишите перевод слова «Школа» на корейском языке:', sample: '학교' }]
+            }
+          }
+        };
+      }
+
+      for (let l = 1; l <= 2; l++) {
+        for (let v = 1; v <= 5; v++) {
+          examBank[`topik${l}-v${v}`] = generateBlankTopik(l, v);
+        }
+      }
+
+      // БОЕВОЙ ПРИМЕР TOPIK I — ВАРИАНТ 1
+      examBank['topik1-v1'] = {
+        title: 'TOPIK I — Вариант 01 (Основной)',
+        parts: [
+          {
+            id: 'part1', name: 'Part 1: 듣기 (Аудирование)', description: 'Послушайте вопрос и выберите правильную реплику для ответа.',
+            questions: [
+              { type: 'choice', instruction: 'Выберите наиболее логичный ответ на услышанное слово:', text: 'Что ответить собеседнику?', tts: '만나서 반갑습니다', options: ['A) 네, 반갑습니다 (Да, рад встрече)', 'B) 아니요, 한국 사람입니다 (Нет, я кореец)', 'C) 집에 가요 (Я иду домой)'], correctAnswer: 0 }
+            ]
+          },
+          {
+            id: 'part2', name: 'Part 2: 읽기 (Чтение)', description: 'Внимательно прочитайте корейское предложение и выберите верное пропущенное слово.',
+            questions: [
+              { type: 'choice', instruction: 'Какое слово идеально подходит по смыслу?:', text: '오늘 시장에서 피자를 ____.', options: ['A) 마셔요 (Пью)', 'B) 먹어요 (Ем)', 'C) 봐요 (Смотреть)'], correctAnswer: 1 }
+            ]
+          },
+          {
+            id: 'part3', name: 'Part 3: 쓰기 (Письмо)', description: 'Проверьте свои навыки правописания слов и базовых      color: #0f172a;
       font-weight: 800;
       padding: 2px 8px;
       border-radius: 6px;
