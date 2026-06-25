@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Результаты тестирования · TOPIK.ILS</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Кастомные премиум-стили для страницы результатов */
+    :root {
+      --bg: #05050a;
+      --card-bg: rgba(13, 13, 25, 0.7);
+      --border: rgba(168, 85, 247, 0.15);
+      --text: #f3f4f6;
+      --text-muted: #71717a;
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.25);
+      --green: #10b981;
+      --red: #ef4444;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      padding-bottom: 60px;
+    }
+
+    /* Главный виджет с процентами */
+    .score-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-top: 40px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    .score-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 6px solid rgba(255, 255, 255, 0.03);
+      border-top-color: var(--purple);
+      border-right-color: var(--purple);
+      margin: 0 auto 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 0 25px var(--purple-glow);
+    }
+
+    .score-status {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .score-meta {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+    }
+
+    /* Кнопки навигации */
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    
+    .btn-action {
+      padding: 12px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-retry {
+      background: linear-gradient(135deg, var(--purple), #7c3aed);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+    }
+    .btn-retry:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-home {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .btn-home:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Сетка разбора вопросов */
+    .breakdown-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 45px 0 20px 0;
+      color: #fff;
+      border-left: 4px solid var(--purple);
+      padding-left: 12px;
+    }
+
+    .q-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 16px;
+      border-left: 5px solid var(--text-muted);
+    }
+
+    .q-card.correct {
+      border-left-color: var(--green);
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.02), transparent);
+    }
+
+    .q-card.incorrect {
+      border-left-color: var(--red);
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.02), transparent);
+    }
+
+    .q-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .correct .status-badge { background: rgba(16, 185, 129, 0.1); color: var(--green); }
+    .incorrect .status-badge { background: rgba(239, 68, 68, 0.1); color: var(--red); }
+
+    .q-card-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .answers-log {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-kor">한국어</span>
+        <span class="logo-text">TOPIK.ILS</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="score-card">
+      <div class="score-circle" id="result-pct">0%</div>
+      <div class="score-status" id="result-status">Анализ...</div>
+      <div class="score-meta" id="result-meta">Вы ответили правильно на 0 из 0 вопросов.</div>
+      
+      <div class="btn-group">
+        <a href="index.html" class="btn-action btn-home">В личный кабинет</a>
+        <button onclick="retryExam()" class="btn-action btn-retry">Повторить попытку</button>
+      </div>
+    </div>
+
+    <h3 class="breakdown-title">Детальный разбор ответов</h3>
+    <div id="breakdown-container"></div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Подтягиваем сгенерированный в test.html пакет результатов
+      const sessionData = JSON.parse(sessionStorage.getItem('topik_last_results'));
+      
+      if (!sessionData) {
+        document.getElementById('result-status').textContent = "Результаты не найдены";
+        return;
+      }
+
+      const { examKey, totalQuestions, correctCount, questions, userAnswers } = sessionData;
+      const scorePercent = Math.round((correctCount / totalQuestions) * 100);
+
+      // Отрисовка круглого информера
+      document.getElementById('result-pct').textContent = `${scorePercent}%`;
+      document.getElementById('result-meta').textContent = `Вы успешно выполнили ${correctCount} из ${totalQuestions} заданий симулятора.`;
+      
+      const statusText = document.getElementById('result-status');
+      if (scorePercent >= 80) statusText.textContent = "합격! Отличный результат! 🎉";
+      else if (scorePercent >= 50) statusText.textContent = "Хорошо! Тест сдан! 👍";
+      else statusText.textContent = "Нужно немного подучить! 💪";
+
+      // Генерация карточек разбора
+      const container = document.getElementById('breakdown-container');
+      
+      questions.forEach((q, idx) => {
+        const uAns = userAnswers[idx];
+        let isRight = false;
+
+        if (q.type === 'choice') {
+          isRight = (uAns === q.correctAnswer);
+        } else if (q.type === 'write') {
+          isRight = (uAns && uAns.trim().toLowerCase() === q.sample.trim
