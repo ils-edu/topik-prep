@@ -1,0 +1,244 @@
+/* ==========================================================================
+   DESIGN SYSTEM & GLOBAL VARIABLES (ILS PRESETS 2026)
+   ========================================================================== */
+:root {
+  --bg-main: #05050a;
+  --bg-card: rgba(13, 13, 25, 0.7);
+  --border: rgba(168, 85, 247, 0.15);
+  --border-hover: rgba(168, 85, 247, 0.4);
+  
+  /* Точные цвета бренда */
+  --primary: #a855f7;
+  --primary-hover: #9333ea;
+  --primary-glow: rgba(168, 85, 247, 0.3);
+  --cyan: #06b6d4;
+  
+  /* Текст и статусы */
+  --text-main: #f3f4f6;
+  --text-muted: #71717a;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  
+  /* Скругления и анимация */
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   NAVIGATION BAR (HEADER)
+   ========================================================================== */
+.site-header, .test-header {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(5, 5, 10, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner, .test-header-inner {
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logos & Brands */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.logo-kor {
+  background: linear-gradient(135deg, var(--primary), var(--cyan));
+  color: #05050a;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.nav a:hover, .nav a.active {
+  color: #fff;
+}
+
+/* ==========================================================================
+   COMMON PREMIUM BUTTONS
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #7c3aed);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================================================
+   SIMULATOR LAYOUT ENGINE (test.html)
+   ========================================================================== */
+.test-meta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.test-level {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.test-progress {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Линейка общего прогресса */
+.progress-bar {
+  position: absolute;
+  bottom: 0; left: 0; width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--cyan));
+  box-shadow: 0 0 10px var(--primary);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Электронный Таймер */
+.timer {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES (Адаптация под MacBook и iPhone)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .header-inner, .test-header-inner {
+    padding: 0 5px;
+  }
+  
+  .test-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .timer {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+  
+  .hero {
+    padding: 24px !important;
+    margin-top: 20px !important;
+  }
+  
+  .hero h1 {
+    font-size: 1.8rem !important;
+  }
+}
