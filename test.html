@@ -27,14 +27,201 @@
     .test-grid { display: grid; grid-template-columns: 1fr 300px; gap: 25px; max-width: 900px; margin: 30px auto; padding: 0 20px; }
     @media (max-width: 768px) { .test-grid { grid-template-columns: 1fr; } }
     
-    /* Меню выбора вариантов */
-    .variant-menu { max-width: 600px; margin: 80px auto; padding: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; text-align: center; }
-    .variant-btn { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); color: #c084fc; padding: 18px; border-radius: 12px; width: 100%; font-size: 1.1rem; font-weight: 600; margin: 12px 0; cursor: pointer; transition: all 0.2s; }
+    .variant-menu { max-width: 600px; margin: 40px auto; padding: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; text-align: center; }
+    .variant-btn { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); color: #c084fc; padding: 14px; border-radius: 12px; width: 100%; font-size: 1rem; font-weight: 600; margin: 8px 0; cursor: pointer; transition: all 0.2s; text-align: left; padding-left: 20px; }
     .variant-btn:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
 
     .student-guide { background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; }
     .audio-block { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
     .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; }
+    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; }
+    .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); }
+    .answer-input, .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1.05rem; }
+    .ai-hint { margin-top: 20px; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
+    .btn { padding: 12px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div id="welcome-screen" class="variant-menu">
+    <div style="font-size: 2.5rem; margin-bottom: 10px;">🔮</div>
+    <h2 style="margin-top: 0; font-size: 1.6rem;">Выбор варианта TOPIK II</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">4 продвинутых варианта по 5 уникальных заданий (3-6급), включая блок 쓰기.</p>
+    <button class="variant-btn" onclick="startTest(1)">⚡ Вариант 1: Общество и Экология</button>
+    <button class="variant-btn" onclick="startTest(2)">⚡ Вариант 2: Культура и Наука</button>
+    <button class="variant-btn" onclick="startTest(3)">⚡ Вариант 3: Экономика и Современный бизнес</button>
+    <button class="variant-btn" onclick="startTest(4)">⚡ Вариант 4: Философия и Психология отношений</button>
+    <div style="margin-top: 20px;"><a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">← Вернуться на главную</a></div>
+  </div>
+
+  <div id="test-screen" style="display: none;">
+    <header class="test-header">
+      <div class="test-header-inner">
+        <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK II · <span id="header-variant-title">Вариант</span></div>
+        <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">5</span></div>
+      </div>
+    </header>
+
+    <div class="test-grid">
+      <main>
+        <h2 id="part-title" style="font-size: 1.4rem; margin: 0 0 5px 0;">Загрузка...</h2>
+        <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 25px 0;"></p>
+
+        <div class="audio-block" id="audio-block" hidden>
+          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
+          <div>
+            <p style="margin:0; font-weight:600; font-size: 0.95rem;">듣기 (Прослушивание текста)</p>
+            <span style="font-size:0.8rem; color:#c084fc;">🔄 Академический темп речи</span>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div id="q-text" style="font-size: 1.25rem; font-weight:700; margin-bottom: 20px; white-space: pre-line; line-height: 1.6;"></div>
+          <div id="answers-container"></div>
+          <div class="ai-hint" id="ai-hint" hidden><p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p></div>
+          <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px;">
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Место для анализа грамматики и перевода:</label>
+            <textarea class="notes-textarea" id="student-notes" rows="2" placeholder="Заметки по разбору предложений..."></textarea>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+          <button class="btn btn-secondary" id="prev-btn">← Назад</button>
+          <button class="btn btn-secondary" id="check-btn" style="color: var(--primary); border-color: rgba(168, 85, 247, 0.4);" hidden>Проверить ответ</button>
+          <button class="btn btn-primary" id="next-btn">Далее →</button>
+        </div>
+      </main>
+      <aside>
+        <div class="student-guide">
+          <h3 style="font-weight: 700; color: #c084fc; margin-top: 0; font-size: 1rem;">💡 Критерии оценивания</h3>
+          <p id="guide-content" style="margin: 0; font-size: 0.9rem; line-height: 1.5;"></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const database = {
+      variant1: [
+        { part: "듣기 (Аудирование — Тема дискуссии)", desc: "Послушайте мнение спикера и выберите предмет экологического обсуждения.", text: "Определите центральную проблему высказывания.", tts: "환경 오염을 줄이기 위해서는 무분별한 플라스틱 사용을 금지해야 합니다.", options: ["A) 경제 발전의 필요성 (Необходимость развития экономики)", "B) 일자리 창출 문제 (Проблемы создания рабочих мест)", "C) 플라스틱으로 인한 환경 문제 (Экологические проблемы из-за пластика)"], correct: 2, type: "choice", guide: "Спикер делает акцент на выражениях '환경 오염' (загрязнение среды) и '플라스틱 사용' (использование пластика)." },
+        { part: "읽기 (Чтение — Идиомы 사자성어)", desc: "Подберите устойчивое выражение, подходящее под описание ситуации.", text: "Какая идиома передает смысл фразы:\n'어려운 고난을 모두 이겨내고 드디어 목적을 달성했다.'", options: ["A) 동문서답 (Отвечать невпопад)", "B) 고진감래 (После горечи приходит сладость)", "C) 작심삼일 (Решение на три дня)"], correct: 1, type: "choice", guide: "Концепция преодоления тяжелых препятствий ради финального триумфа выражается идиомой 고진감래 (B)." },
+        { part: "읽기 (Чтение — Продвинутая грамматика)", desc: "Выберите грамматическую конструкцию сильного допущения или условия.", text: "Выберите верный вариант грамматики:\n'의사의 지시를 따르지 (_______) 병이 악화될 수 있다.'", options: ["A) 다가는 (Если продолжать делать так, то...)", "B) 다니까 (Поскольку говорят, что...)", "C) 다 보니 (В процессе обнаружения факта)"], correct: 0, type: "choice", guide: "Грамматика '-다가는' предупреждает о негативных последствиях в будущем, если текущее опасное действие продолжится." },
+        { part: "쓰기 (Письмо — Задание 52)", desc: "Самостоятельно впишите строгую академическую грамматику цели, соблюдая стиль письменного эссе 서술체.", text: "Заполните пропуск в тексте:\n'좋은 직장에 취업(___________) 한국어를 열심히 배운다.'", sample: "기 위해서", type: "write", guide: "Для выражения четкого намерения и цели («для того чтобы устроиться») в официальных эссе TOPIK используется конструкция '-기 위해서'." },
+        { part: "쓰기 (Письмо — Задание 51)", desc: "Вставьте контрастную конструкцию, сопоставляющую статистические данные.", text: "Заполните пропуск союзом официальной речи:\n'도시 인구는 증가한다. (___________), 농촌 인구는 감소한다.'", sample: "반면에", type: "write", guide: "Текст резко разграничивает два противоположных процесса. Официальный союз противопоставления — '반면에' (в то время как / напротив)." }
+      ],
+      variant2: [
+        { part: "듣기 (Аудирование — Намерения)", desc: "Послушайте лектора и выберите его окончательную цель.", text: "Какое намерение выражает говорящий в своем высказывании?", tts: "한국의 역사적 인물에 대한 책을 쓰고 싶습니다.", options: ["A) 책을 집필하는 것 (Написание/издание книги)", "B) 역사 공부를 그만두는 것 (Прекращение изучения истории)", "C) 도서관을 짓는 것 (Строительство новой библиотеки)"], correct: 0, type: "choice", guide: "Намерение выражено глаголом '책을 쓰고 싶습니다' (хочу написать книгу). Это синоним академического термина '집필' (издание/написание)." },
+        { part: "읽기 (Чтение — Логическая уверенность)", desc: "Выберите грамматическую связку, указывающую на неоспоримость факта.", text: "Какая грамматика выражает стопроцентную уверенность?\n'그 사람은 매일 연습했으니 성공할 (_______).'", options: ["A) 리가 없다 (Не может быть, чтобы)", "B) 뻔했다 (Едва не случилось)", "C) 것이 틀림없다 (Несомненно, точно так)"], correct: 2, type: "choice", guide: "Поскольку контекст указывает на упорный ежедневный труд ('매일 연습했으니'), результат является гарантированным — '것이 틀림없다'." },
+        { part: "읽기 (Чтение — Газетные заголовки)", desc: "Поймите скрытый метафорический смысл заголовка статьи.", text: "Что означает данный заголовок газеты?\n'소비 심리 얼어붙어, 마트 매출 급감'", options: ["A) Зима оказалась слишком холодной для покупок.", "B) Из-за падения покупательского доверия продажи упали.", "C) Люди стали покупать больше замороженных продуктов."], correct: 1, type: "choice", guide: "Метафора '얼어붙다' (замерзать) в экономике означает застой или падение доверия потребителей." },
+        { part: "쓰기 (Письмо — Задание 52: Причина)", desc: "Впишите академическую конструкцию обоснования причинно-следственной связи.", text: "Допишите пропущенное окончание причины:\n'기술이 발전함(___________) 인간의 삶은 더욱 편리해졌다.'", sample: "에 따라", type: "write", guide: "Конструкция '-에 따라' используется в письменных тестах для демонстрации изменения ситуации в соответствии с развитием какого-либо фактора." },
+        { part: "쓰기 (Письмо — Задание 51: Предположение)", desc: "Впишите официальную форму вежливого предположения будущих результатов.", text: "Вставьте правильную грамматическую форму:\n'이번 행사에 많은 분들이 참여할 것으로 (___________).'", sample: "예상된다", type: "write", guide: "В официальных объявлениях для выражения предположений («ожидается, что...») используется пассивный залог письменного стиля — '예상된다'." }
+      ],
+      variant3: [
+        { part: "듣기 (Аудирование — Экономика)", desc: "Определите главную финансовую мысль аналитика.", text: "Определите основную тему выступления:", tts: "물가가 상승함에 따라 소비자들이 지출을 대폭 줄이고 있습니다.", options: ["A) 고용 시장 활성화 (Активизация рынка труда)", "B) 물가 상승과 소비 감소 (Рост цен и снижение потребления)", "C) 금리 인하 정책 (Политика снижения процентных ставок)"], correct: 1, type: "choice", guide: "Слова '물가가 상승함' (рост цен) и '지출을 줄이고' (снижение расходов/потребления) напрямую соответствуют варианту B." },
+        { part: "읽기 (Чтение — Отрицание вероятности)", desc: "Выберите конструкцию, исключающую возможность действия.", text: "Какая грамматика выражает категорическое 'не может быть, чтобы...'?\n'그렇게 성실한 사람이 약속을 어길 (_______).'", options: ["A) 리가 없다 (Не может быть, чтобы)", "B) 기 마련이다 (Естественно, что)", "C) 곤 한다 (Время от времени делает)"], correct: 0, type: "choice", guide: "Конструкция '-(으)ㄹ 리가 없다' указывает на полную невозможность совершения действия добросовестным человеком ('성실한 사람')." },
+        { part: "읽기 (Чтение — Слухи/Цитирование)", desc: "Выберите грамматическую форму передачи услышанной информации.", text: "Вставьте нужную форму косвенной речи:\n'내일부터 전국적으로 비가 (_______) 뉴스를 들었어요.'", options: ["A) 온다더라고요 (Сказали, что пойдет)", "B) 오다시피 (Как вы видите, идет)", "C) 오기만 하면 (Стоит только пойти)"], correct: 0, type: "choice", guide: "Форма '-다더라고요' используется для передачи информации, услышанной из стороннего источника (из новостей)." },
+        { part: "쓰기 (Письмо — Задание 52: Факт)", desc: "Впишите официальный академический оборот констатации очевидного факта.", text: "Заполните пропуск:\n'인간은 누구나 실수를 하기 (___________).'", sample: "마련이다", type: "write", guide: "Конструкция '-기 마련이다' используется в эссе для выражения закономерности или неизбежности факта («каждому человеку свойственно ошибаться»)." },
+        { part: "쓰기 (Письмо — Задание 51: Изменение)", desc: "Вставьте официальный глагол фиксации тенденции к росту.", text: "Допишите предложение:\n'외국인 유학생 수가 매년 지속적으로 증가하고 (___________).'", sample: "있다", type: "write", guide: "Официальный для графиков длительный процесс роста выражается через форму '-고 있다'." }
+      ],
+      variant4: [
+        { part: "듣기 (Аудирование — Психология)", desc: "Послушайте размышление и выберите тезис автора.", text: "Какова основная мысль говорящего?", tts: "대화를 할 때는 상대방의 말을 끝까지 경청하는 자세가 중요합니다.", options: ["A) 대화 시 경청의 중요성 (Важность умения дослушивать и слушать собеседника)", "B) 자신의 의견을 당당하게 말하기 (Уверенное выражение своего мнения)", "C) 말을 빠르게 하는 방법 (Способы ускорения темпа речи)"], correct: 0, type: "choice", guide: "Ключевое слово спикера — '경청하는 자세가 중요합니다' (важна позиция внимательного выслушивания)." },
+        { part: "읽기 (Чтение — Сожаление)", desc: "Выберите грамматику выражения глубокого сожаления о прошлом.", text: "Какая грамматическая форма выражает упущенную возможность?\n'젊었을 때 더 열심히 공부(_______) 후회가 된다.'", options: ["A) 했더라면 (Если бы я только сделал это тогда...)", "B) 하느라고 (Из-за того, что делал — оправдание)", "C) 하다시피 (Практически делая так)"], correct: 0, type: "choice", guide: "Конструкция '-었/았더라면' выражает гипотетическое условие в прошлом, вызывающее текущее сожаление ('후회가 된다')." },
+        { part: "읽기 (Чтение — Предел/Граница)", desc: "Выберите конструкцию, указывающую на крайнюю степень ограничения.", text: "Заполните пропуск подходящей структурой:\n'문제를 해결하기 위해서는 서로 양보할 (_______) 다른 방법이 없다.'", options: ["A) 수밖에 (Нет иного выбора, кроме как)", "B) 수 있도록 (Для того чтобы)", "C) 셈이다 (Можно считать, что)"], correct: 0, type: "choice", guide: "Конструкция '-(으)ㄹ 수밖에 없다' подчеркивает полное отсутствие других альтернатив решения проблемы." },
+        { part: "쓰기 (Письмо — Задание 52: Допущение)", desc: "Впишите книжную форму сильного уступка-допущения.", text: "Заполните пропуск:\n'아무리 힘들(___________) 끝까지 포기하지 않을 것이다.'", sample: "지라도", type: "write", guide: "Книжная грамматика '-지라도' переводится как «даже если / пусть даже» и используется в сильных волевых заявлениях в эссе." },
+        { part: "쓰기 (Письмо — Задание 51: Официальный запрос)", desc: "Впишите стандартную вежливую форму просьбы в официальных обращениях.", text: "Допишите финальную фразу заявления:\n'자세한 일정을 이메일로 보내 주시기 (___________).'", sample: "바랍니다", type: "write", guide: "В официальных письмах и объявлениях вежливая просьба/пожелание («просим вас прислать») оформляется через '-기 바랍니다'." }
+      ]
+    };
+
+    let activeQuestions = []; let currentIdx = 0; const userAnswers = {}; const notesCache = {};
+
+    function startTest(variantNum) {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('test-screen').style.display = 'block';
+      document.getElementById('header-variant-title').textContent = "Вариант " + variantNum;
+      if(variantNum === 1) activeQuestions = database.variant1;
+      else if(variantNum === 2) activeQuestions = database.variant2;
+      else if(variantNum === 3) activeQuestions = database.variant3;
+      else activeQuestions = database.variant4;
+      currentIdx = 0; render();
+    }
+
+    function render() {
+      const q = activeQuestions[currentIdx];
+      document.getElementById('current-q').textContent = currentIdx + 1;
+      document.getElementById('total-q').textContent = activeQuestions.length;
+      document.getElementById('part-title').textContent = q.part;
+      document.getElementById('part-desc').textContent = q.desc;
+      document.getElementById('q-text').textContent = q.text;
+      document.getElementById('guide-content').textContent = q.guide;
+      
+      const notesTextarea = document.getElementById('student-notes');
+      notesTextarea.value = notesCache[currentIdx] || '';
+      notesTextarea.oninput = () => { notesCache[currentIdx] = notesTextarea.value; };
+      
+      const container = document.getElementById('answers-container');
+      const hint = document.getElementById('ai-hint');
+      const checkBtn = document.getElementById('check-btn');
+      
+      container.innerHTML = ''; hint.hidden = true; checkBtn.hidden = true;
+      document.getElementById('audio-block').hidden = !q.tts;
+
+      if (q.type === 'choice') {
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = opt;
+          if (userAnswers[currentIdx] === idx) {
+            hint.hidden = false;
+            if (idx === q.correct) {
+              btn.style.borderColor = 'var(--accent-green)';
+              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green);font-weight:700;'>정답입니다! 👍 Отлично!</span>";
+            } else {
+              btn.style.borderColor = 'var(--accent-red)';
+              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red);font-weight:700;'>틀렸습니다. Изучите критерии оценивания справа.</span>";
+            }
+          }
+          btn.onclick = () => { userAnswers[currentIdx] = idx; render(); };
+          container.appendChild(btn);
+        });
+      } else {
+        checkBtn.hidden = false;
+        const txt = document.createElement('textarea'); txt.className = 'answer-input'; txt.rows = 2;
+        txt.placeholder = "Введите ваш академический ответ на корейском..."; txt.value = userAnswers[currentIdx] || '';
+        txt.oninput = () => { userAnswers[currentIdx] = txt.value; };
+        container.appendChild(txt);
+      }
+      document.getElementById('prev-btn').disabled = currentIdx === 0;
+      document.getElementById('next-btn').textContent = currentIdx === activeQuestions.length - 1 ? "В меню вариантов" : "Далее →";
+    }
+
+    document.getElementById('play-btn').onclick = () => {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(activeQuestions[currentIdx].tts); u.lang = 'ko-KR'; u.rate = 0.8;
+      window.speechSynthesis.speak(u);
+    };
+
+    document.getElementById('check-btn').onclick = () => {
+      const q = activeQuestions[currentIdx]; const ans = (userAnswers[currentIdx] || '').trim();
+      const hint = document.getElementById('ai-hint'); hint.hidden = false;
+      if (ans.toLowerCase() === q.sample.toLowerCase()) {
+        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-green);font-weight:700;'>정답입니다! Правильный ключ: ${q.sample}</span>`;
+      } else {
+        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-red);font-weight:700;'>Ошибка. Эталонный ответ: ${q.sample}</span>`;
+      }
+    };
+
+    document.getElementById('next-btn').onclick = () => {
+      if (currentIdx < activeQuestions.length - 1) { currentIdx++; render(); } 
+      else { 
+        alert("Тестирование завершено!"); 
+        location.reload();
+      }
+    };
+    document.getElementById('prev-btn').onclick = () => { if (currentIdx > 0) { currentIdx--; render(); } };
+  </script>
+</body>
+</html>
+.audio-play-btn { background: var(--primary); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; }
     .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; }
     .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); }
