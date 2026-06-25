@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Симулятор TOPIK · ILS</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Симулятор TOPIK II · ILS</title>
   <style>
-    /* Премиальные стили для симулятора тестов */
     :root {
       --primary: #a855f7;
-      --primary-glow: rgba(168, 85, 247, 0.3);
       --bg-main: #090d16;
       --bg-card: rgba(17, 24, 39, 0.7);
       --border: rgba(255, 255, 255, 0.08);
@@ -18,888 +15,93 @@
       --accent-green: #34d399;
       --accent-red: #f87171;
     }
-
     body {
       background-color: var(--bg-main);
       background-image: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
       font-family: system-ui, -apple-system, sans-serif;
       color: var(--text-main);
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
     }
-
-    /* Шапка теста */
     .test-header {
       background: rgba(9, 13, 22, 0.8);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      position: relative;
+      padding: 15px 20px;
     }
     .test-header-inner {
-      height: 75px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1050px;
-      margin: 0 auto;
-      padding: 0 20px;
+      max-width: 800px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      font-weight: 800;
-      font-size: 1.25rem;
-      color: #fff;
-    }
-    .logo-kor {
-      background: linear-gradient(135deg, #a855f7, #c084fc);
-      color: #0f172a;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    .test-meta {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    .test-level {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #fff;
-    }
-    .test-progress {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.03);
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .timer {
-      background: rgba(239, 68, 68, 0.06);
-      border: 1px solid rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-weight: 700;
-    }
-
-    /* Линейка прогресса */
-    .progress-bar {
-      position: absolute;
-      bottom: 0; left: 0; width: 100%;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--primary), #06b6d4);
-      box-shadow: 0 0 10px var(--primary);
-      transition: width 0.3s ease;
-    }
-
-    .container {
-      max-width: 1050px;
-      margin: 0 auto;
-      padding: 0 20px;
-      width: 100%;
-    }
-
-    /* Вкладки секций экзамена */
-    .parts-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
-      overflow-x: auto;
-      padding-bottom: 5px;
-    }
-    .part-tab {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .part-tab.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-      box-shadow: 0 0 15px var(--primary-glow);
-    }
-
-    /* Интерактивный аудио-плеер */
-    .audio-block {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(17, 24, 39, 0.6));
-      border: 1px solid rgba(168, 85, 247, 0.2);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 25px;
-    }
-    .audio-play-btn {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      width: 45px; height: 45px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 10px var(--primary-glow);
-    }
-
-    /* Окна вопросов и ответов */
-    .question-block {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 30px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    .question-num {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 8px;
-    }
-    .answer-btn {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 16px 20px;
-      border-radius: 12px;
-      width: 100%;
-      text-align: left;
-      font-size: 1.05rem;
-      margin: 10px 0;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .answer-btn:hover {
-      border-color: rgba(168, 85, 247, 0.4);
-      background: rgba(168, 85, 247, 0.05);
-    }
-
-    /* Поле ввода для ручных ответов */
-    .answer-input {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--border);
-      color: #fff;
-      font-size: 1.2rem;
-      padding: 15px;
-      border-radius: 12px;
-      width: 100%;
-      box-sizing: border-box;
-      margin-top: 15px;
-      font-family: inherit;
-    }
-    .answer-input:focus {
-      border-color: var(--primary);
-      outline: none;
-    }
-
-    /* Панель подсказок системы */
-    .ai-hint {
-      margin-top: 20px;
-      padding: 15px 20px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border-left: 4px solid var(--primary);
-    }
-
-    /* Кнопки */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 10px;
-      cursor: pointer;
-      border: none;
-      text-decoration: none;
-    }
+    .logo-kor { background: linear-gradient(135deg, #a855f7, #c084fc); color: #0f172a; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
+    .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+    .audio-block { background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(17, 24, 39, 0.6)); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; }
+    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .question-num { background: var(--primary); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-right: 10px; }
+    .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; }
+    .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.05); }
+    .answer-input { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; font-size: 1.2rem; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; margin-top: 15px; }
+    .ai-hint { margin-top: 20px; padding: 15px 20px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
+    .btn { padding: 12px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
     .btn-primary { background: var(--primary); color: #fff; }
-    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: #fff; }
-    .btn-ghost { background: transparent; color: var(--text-muted); }
-    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--primary); }
+    .test-nav { display: flex; justify-content: space-between; margin-top: 25px; }
   </style>
 </head>
-<body class="test-page">
+<body>
+
   <header class="test-header">
     <div class="test-header-inner">
-      <a href="index.html" class="logo">
-        <span class="logo-kor">한국</span>
-        <span class="logo-text">TOPIK.ILS</span>
-      </a>
-      <div class="test-meta">
-        <span class="test-level" id="exam-title">TOPIK Test</span>
-        <span class="test-progress">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></span>
-      </div>
-      <div class="timer" id="timer"><span id="timer-display">40:00</span></div>
+      <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK.ILS</div>
+      <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></div>
     </div>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
   </header>
 
-  <main class="test-main">
-    <div class="container test-container" style="margin-top: 30px;">
-      <div class="parts-tabs" id="parts-tabs-container"></div>
+  <main class="container">
+    <h2 id="part-title" style="font-size: 1.4rem; margin-bottom: 5px;">Загрузка...</h2>
+    <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;"></p>
 
-      <section class="test-section" style="margin-bottom: 20px;">
-        <h2 id="section-title" class="section-title" style="font-size: 1.4rem; font-weight:700;">Загрузка...</h2>
-        <p id="section-desc" class="section-desc" style="color: var(--text-muted); font-size:0.9rem;"></p>
-      </section>
+    <div class="audio-block" id="audio-block" hidden>
+      <button type="button" class="audio-play-btn" id="play-btn">▶</button>
+      <div>
+        <p style="margin:0; font-weight:600;">듣기 (Аудиозапись задания)</p>
+        <span style="font-size:0.8rem; color:var(--text-muted);">Осталось прослушиваний: <span id="plays-left">2</span></span>
+      </div>
+    </div>
 
-      <section class="audio-block" id="audio-block" hidden>
-        <div class="audio-player" style="display: flex; align-items: center; gap: 15px;">
-          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
-          <div class="audio-info">
-            <p class="audio-title" style="font-weight: 600; margin: 0;">듣기 (Аудиозапись задания)</p>
-            <span class="audio-hint" style="font-size: 0.8rem; color: var(--text-muted);">Осталось прослушиваний: <span id="plays-left">2</span></span>
-          </div>
-        </div>
-      </section>
+    <div class="question-block">
+      <div style="margin-bottom: 15px;"><span class="question-num" id="q-badge">1</span><span id="q-instruction" style="color:var(--text-muted);"></span></div>
+      <div id="q-text" style="font-size: 1.3rem; font-weight:700; margin: 20px 0;"></div>
+      <div id="answers-container"></div>
+      
+      <div class="ai-hint" id="ai-hint" hidden>
+        <p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p>
+      </div>
+    </div>
 
-      <section class="question-block">
-        <div class="question-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-          <span class="question-num" id="q-num-badge">1</span>
-          <p class="question-instruction" id="q-instruction" style="color: var(--text-muted); margin: 0; font-size: 0.95rem;"></p>
-        </div>
-        <div class="question-main-text" id="q-text" style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 20px 0;"></div>
-        <div id="answers-container"></div>
-        
-        <div class="ai-hint" id="ai-hint" hidden>
-          <span class="ai-badge" style="background: var(--primary); color: #fff; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Система</span>
-          <p id="ai-hint-text" style="margin: 8px 0 0 0; font-size: 0.95rem;"></p>
-        </div>
-      </section>
-
-      <nav class="test-nav" style="display: flex; justify-content: space-between; margin-top: 25px; padding-bottom: 5px;">
-        <button type="button" class="btn btn-ghost" id="prev-btn">← Назад</button>
-        <button type="button" class="btn btn-secondary" id="check-btn" hidden style="border-color: var(--primary); color: var(--primary);">Проверить ответ</button>
-        <button type="button" class="btn btn-primary" id="next-btn">Далее →</button>
-      </nav>
+    <div class="test-nav">
+      <button class="btn btn-secondary" id="prev-btn" style="color:#fff;">← Назад</button>
+      <button class="btn btn-secondary" id="check-btn" hidden>Проверить ответ</button>
+      <button class="btn btn-primary" id="next-btn">Далее →</button>
     </div>
   </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const examBank = {};
-
-      // Автоматическая генерация пустых шаблонов для остальных вариантов
-      function generateBlankTopik(level, variant) {
-        return {
-          title: `TOPIK ${level === 1 ? 'I' : 'II'} — Вариант 0${variant}`,
-          parts: [
-            {
-              id: 'part1', name: 'Part 1: 듣기 (Listening)', description: 'Послушайте аудиозапись на корейском языке и выберите подходящий ответ.',
-              questions: [{ type: 'choice', instruction: '알맞은 대답을 고르십시오 (Выберите правильный ответ):', text: `Пример вопроса 듣기 TOPIK ${level === 1 ? 'I' : 'II'} (Вариант ${variant})`, options: ['A) 안녕하세요 (Привет)', 'B) 감사합니다 (Спасибо)', 'C) 만나서 반갑습니다 (Рад встрече)'], correctAnswer: 0, tts: '안녕하세요' }]
-            },
-            {
-              id: 'part2', name: 'Part 2: 읽기 (Reading)', description: 'Прочитайте текст и определите его главную тему или вставьте пропущенное слово.',
-              questions: [{ type: 'choice', instruction: '무엇에 대한 이야기입니까? (О чем текст?):', text: '저는 한국어를 공부합니다. 재미있습니다.', options: ['A) 공부 (Учеба)', 'B) 날씨 (Погода)', 'C) 주말 (Выходные)'], correctAnswer: 0 }]
-            },
-            {
-              id: 'part3', name: 'Part 3: 쓰기 (Writing)', description: 'Впишите пропущенные грамматические конструкции или слова.',
-              questions: [{ type: 'write', instruction: '알맞은 문장을 쓰십시오 (Впишите правильное слово):', text: 'Запишите перевод слова «Школа» на корейском языке:', sample: '학교' }]
-            }
-          }
-        };
-      }
-
-      for (let l = 1; l <= 2; l++) {
-        for (let v = 1; v <= 5; v++) {
-          examBank[`topik${l}-v${v}`] = generateBlankTopik(l, v);
-        }
-      }
-
-      // БОЕВОЙ ПРИМЕР TOPIK I — ВАРИАНТ 1
-      examBank['topik1-v1'] = {
-        title: 'TOPIK I — Вариант 01 (Основной)',
-        parts: [
-          {
-            id: 'part1', name: 'Part 1: 듣기 (Аудирование)', description: 'Послушайте вопрос и выберите правильную реплику для ответа.',
-            questions: [
-              { type: 'choice', instruction: 'Выберите наиболее логичный ответ на услышанное слово:', text: 'Что ответить собеседнику?', tts: '만나서 반갑습니다', options: ['A) 네, 반갑습니다 (Да, рад встрече)', 'B) 아니요, 한국 사람입니다 (Нет, я кореец)', 'C) 집에 가요 (Я иду домой)'], correctAnswer: 0 }
-            ]
-          },
-          {
-            id: 'part2', name: 'Part 2: 읽기 (Чтение)', description: 'Внимательно прочитайте корейское предложение и выберите верное пропущенное слово.',
-            questions: [
-              { type: 'choice', instruction: 'Какое слово идеально подходит по смыслу?:', text: '오늘 시장에서 피자를 ____.', options: ['A) 마셔요 (Пью)', 'B) 먹어요 (Ем)', 'C) 봐요 (Смотреть)'], correctAnswer: 1 }
-            ]
-          },
-          {
-            id: 'part3', name: 'Part 3: 쓰기 (Письмо)', description: 'Проверьте свои навыки правописания слов и базовых      color: #0f172a;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    /* Вкладки секций экзамена */
-    .parts-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
-      overflow-x: auto;
-      padding-bottom: 5px;
-    }
-    .part-tab {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-    .part-tab.active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-      box-shadow: 0 0 15px var(--primary-glow);
-    }
-
-    /* Интерактивный аудио-плеер */
-    .audio-block {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(17, 24, 39, 0.6));
-      border: 1px solid rgba(168, 85, 247, 0.2);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 25px;
-    }
-    .audio-play-btn {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      width: 45px; height: 45px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 10px var(--primary-glow);
-      transition: transform 0.1s;
-    }
-    .audio-play-btn:active { transform: scale(0.95); }
-
-    /* Окна вопросов и ответов */
-    .question-block {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 30px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    .question-num {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 8px;
-    }
-    .answer-btn {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 16px 20px;
-      border-radius: 12px;
-      width: 100%;
-      text-align: left;
-      font-size: 1.05rem;
-      margin: 10px 0;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .answer-btn:hover {
-      border-color: rgba(168, 85, 247, 0.4);
-      background: rgba(168, 85, 247, 0.05);
-    }
-
-    /* Поле ввода для ручных ответов */
-    .answer-input {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--border);
-      color: #fff;
-      font-size: 1.2rem;
-      padding: 15px;
-      border-radius: 12px;
-      width: 100%;
-      box-sizing: border-box;
-      margin-top: 15px;
-    }
-    .answer-input:focus {
-      border-color: var(--primary);
-      outline: none;
-    }
-
-    /* Панель подсказок системы */
-    .ai-hint {
-      margin-top: 20px;
-      padding: 15px 20px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border-left: 4px solid var(--primary);
-    }
-  </style>
-</head>
-<body class="test-page">
-  <header class="test-header">
-    <div class="container test-header-inner">
-      <a href="index.html" class="logo logo-sm">
-        <span class="logo-kor">한국</span>
-        <span class="logo-text">TOPIK.ILS</span>
-      </a>
-      <div class="test-meta">
-        <span class="test-level" id="exam-title">TOPIK Test</span>
-        <span class="test-progress">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></span>
-      </div>
-      <div class="timer" id="timer"><span id="timer-display">40:00</span></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-  </header>
-
-  <main class="test-main">
-    <div class="container test-container" style="margin-top: 30px;">
-      <!-- Вкладки секций (듣기 / 읽기 / 쓰기) -->
-      <div class="parts-tabs" id="parts-tabs-container"></div>
-
-      <!-- Заголовок и описание текущей секции -->
-      <section class="test-section" style="margin-bottom: 20px;">
-        <h2 id="section-title" class="section-title" style="font-size: 1.4rem; font-weight:700;">Загрузка...</h2>
-        <p id="section-desc" class="section-desc" style="color: var(--text-muted); font-size:0.9rem;"></p>
-      </section>
-
-      <!-- Интерактивный блок аудио-задания -->
-      <section class="audio-block" id="audio-block" hidden>
-        <div class="audio-player" style="display: flex; align-items: center; gap: 15px;">
-          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
-          <div class="audio-info">
-            <p class="audio-title" style="font-weight: 600; margin: 0;">듣기 (Аудиозапись задания)</p>
-            <span class="audio-hint" style="font-size: 0.8rem; color: var(--text-muted);">Осталось прослушиваний: <span id="plays-left">2</span></span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Основной блок вопроса -->
-      <section class="question-block">
-        <div class="question-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-          <span class="question-num" id="q-num-badge">1</span>
-          <p class="question-instruction" id="q-instruction" style="color: var(--text-muted); margin: 0; font-size: 0.95rem;"></p>
-        </div>
-        <div class="question-main-text" id="q-text" style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 20px 0;"></div>
-        <div id="answers-container"></div>
-        
-        <!-- Панель фидбека (Правильно / Неправильно) -->
-        <div class="ai-hint" id="ai-hint" hidden>
-          <span class="ai-badge" style="background: var(--primary); color: #fff; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Система</span>
-          <p id="ai-hint-text" style="margin: 8px 0 0 0; font-size: 0.95rem;"></p>
-        </div>
-      </section>
-
-      <!-- Кнопки управления тестом -->
-      <nav class="test-nav" style="display: flex; justify-content: space-between; margin-top: 25px;">
-        <button type="button" class="btn btn-ghost" id="prev-btn">← Назад</button>
-        <button type="button" class="btn btn-secondary" id="check-btn" hidden style="border-color: var(--primary); color: var(--primary);">Проверить ответ</button>
-        <button type="button" class="btn btn-primary" id="next-btn" style="background: var(--primary); color: #fff;">Далее →</button>
-      </nav>
-    </div>
-  </main>
-
-  <script>
-    (function () {
-      const examBank = {};
-
-      // Автоматическая генерация пустых шаблонов для ВСЕХ 10 вариантов (TOPIK I и TOPIK II)
-      function generateBlankTopik(level, variant) {
-        return {
-          title: `TOPIK ${level === 1 ? 'I' : 'II'} — Вариант 0${variant}`,
-          parts: [
-            {
-              id: 'part1', name: 'Part 1: 듣기 (Listening)', description: 'Послушайте аудиозапись на корейском языке и выберите подходящий ответ.',
-              questions: [{ type: 'choice', instruction: '알맞은 대답을 고르십시오 (Выберите правильный ответ):', text: `Пример вопроса 듣기 TOPIK ${level === 1 ? 'I' : 'II'} (Вариант ${variant})`, options: ['A) 안녕하세요 (Привет)', 'B) 감사합니다 (Спасибо)', 'C) 만나서 반갑습니다 (Рад встрече)'], correctAnswer: 0, tts: '안녕하세요' }]
-            },
-            {
-              id: 'part2', name: 'Part 2: 읽기 (Reading)', description: 'Прочитайте текст и определите его главную тему или вставьте пропущенное слово.',
-              questions: [{ type: 'choice', instruction: '무엇에 대한 이야기입니까? (О чем текст?):', text: '저는 한국어를 공부합니다. 재미있습니다.', options: ['A) 공부 (Учеба)', 'B) 날씨 (Погода)', 'C) 주말 (Выходные)'], correctAnswer: 0 }]
-            },
-            {
-              id: 'part3', name: 'Part 3: 쓰기 (Writing)', description: 'Впишите пропущенные грамматические конструкции или слова (Задание повышенной сложности).',
-              questions: [{ type: 'write', instruction: '알맞은 문장을 쓰십시오 (Впишите правильное слово):', text: 'Запишите перевод слова «Школа» на корейском языке:', sample: '학교' }]
-            }
-          }
-        };
-      }
-
-      for (let l = 1; l <= 2; l++) {
-        for (let v = 1; v <= 5; v++) {
-          examBank[`topik${l}-v${v}`] = generateBlankTopik(l, v);
-        }
-      }
-
-      // БОЕВОЙ ПРИМЕР С РЕАЛЬНЫМИ ВОПРОСАМИ ДЛЯ TOPIK I — ВАРИАНТ 1
-      examBank['topik1-v1'] = {
-        title: 'TOPIK I — Вариант 01 (Основной)',
-        parts: [
-          {
-            id: 'part1', name: 'Part 1: 듣기 (Аудирование)', description: 'Послушайте вопрос и выберите правильную реплику для ответа.',
-            questions: [
-              { type: 'choice', instruction: 'Выберите наиболее логичный ответ на услышанное слово:', text: 'Что ответить собеседнику?', tts: '만나서 반갑습니다', options: ['A) 네, 반갑습니다 (Да, рад встрече)', 'B) 아니요, 한국 사람입니다 (Нет, я кореец)', 'C) 집에 가요 (Я иду домой)'], correctAnswer: 0 }
-            ]
-          },
-          {
-            id: 'part2', name: 'Part 2: 읽기 (Чтение)', description: 'Внимательно прочитайте корейское предложение и выберите верное пропущенное слово.',
-            questions: [
-              { type: 'choice', instruction: 'Какое слово идеально подходит по смыслу?:', text: '오늘 시장에서 피자를 ____.', options: ['A) 마셔요 (Пью)', 'B) 먹어요 (Ем)', 'C) 봐요 (Смотреть)'], correctAnswer: 1 }
-            ]
-          },
-          {
-            id: 'part3', name: 'Part 3: 쓰기 (Письмо)', description: 'Проверьте свои навыки правописания слов и базовых выражений.',
-            questions: [
-              { type: 'write', instruction: 'Впишите перевод слова «Друг» на корейском:', text: 'Переведите слово «Друг»:', sample: '친구' }
-            ]
-          }
-        ]
-      };
-
-      // ПРЕДВИЖЕННЫЙ ХАРДКОРНЫЙ ВАРИАНТ ДЛЯ TOPIK II (УРОВЕНЬ 5-6) — ВАРИАНТ 5
-      examBank['topik2-v5'] = {
-        title: 'TOPIK II (Уровень 6) — Профессиональный Интенсив',
-        parts: [
-          {
-            id: 'part1', 
-            name: 'Part 1: 듣기 (Аудирование — Высокий уровень)', 
-            description: 'Послушайте текст лекций, официальных докладов или дебатов и выберите единственный верный вариант ответа.',
-            questions: [
-              { 
-                type: 'choice', 
-                instruction: '다음 전개될 내용으로 가장 알맞은 것을 고르십시오 (Выберите продолжение мысли):', 
-                text: 'Спикер рассуждает о влиянии четвертой промышленной революции на рынок труда.', 
-                tts: '4차 산업혁명 시대가 도래함에 따라 인공지능이 인간의 일자리를 대체할 것이라는 우려가 커지고 있습니다. 그러나 역사적으로 기술의 발전은 언제나 새로운 형태의 직업을 창출해 왔습니다. 따라서 우리는...', 
-                options: [
-                  'A) 인공지능 발전을 전면 중단해야 한다 (Нужно остановить развитие ИИ)', 
-                  'B) 새로운 시대에 맞는 교육 체계를 구축해야 한다 (Необходимо создать систему образования новой эпохи)', 
-                  'C) 전통적인 제조업 일자리를 무조건 보호해야 한다 (Нужно защищать традиционные рабочие места любой ценой)'
-                ], 
-                correctAnswer: 1 
-              },
-              { 
-                type: 'choice', 
-                instruction: '들을 내용과 일치하는 것을 고르십시오 (Выберите утверждение, соответствующее тексту):', 
-                text: 'Доклад об изменениях климата и биоразнообразии Корейского полуострова.', 
-                tts: '최근 한반도 주변 해역의 수온 상승으로 인해 온대성 어종 대신 아열대성 어종의 유입이 급증하고 있습니다. 이는 명태와 같은 토종 어종의 고갈을 초래하여 어민들에게 큰 경제적 타격을 주고 있습니다.', 
-                options: [
-                  'A) 한반도 해역의 수온이 점차 낮아지고 있다 (Температура воды у полуострова падает)', 
-                  'B) 아열대성 어종의 유입이 생태계에 영향을 미치고 있다 (Приток субтропических рыб влияет на экосистему)', 
-                  'C) 토종 어종의 개체수가 예년에 비해 급증했다 (Количество местных видов рыб резко выросло)'
-                ], 
-                correctAnswer: 1 
-              },
-              { 
-                type: 'choice', 
-                instruction: '남자의 중심 생각을 고르십시오 (Выделите главную мысль говорящего мужчины):', 
-                text: 'Дискуссия о введении безусловного базового дохода.', 
-                tts: '기본소득제 도입은 취약계층의 생계를 보장하는 혁신적인 대안이 될 수 있습니다. 선별적 복지 제도가 가진 사각지대를 완전히 해소할 수 있기 때문입니다.', 
-                options: [
-                  'A) 기본소득제는 국가 재정에 심각한 부담을 준다 (Базовый доход — бремя для бюджета)', 
-                  'B) 복지 제도는 필요한 사람에게만 선별적으로 제공되어야 한다 (Пособия нужно давать только избирательно)', 
-                  'C) 기본소득제는 복지 사각지대를 해결하는 효과적인 방안이다 (Базовый доход — эффективный способ решения проблем)'
-                ], 
-                correctAnswer: 2 
-              },
-              { 
-                type: 'choice', 
-                instruction: '여자의 태도로 가장 알맞은 것을 고르십시오 (Определите отношение женщины к проблеме):', 
-                text: 'Интервью об ужесточении законов об авторском праве в цифровую эпоху.', 
-                tts: '창작자의 권리를 보호하는 것은 당연하지만, 지나친 저작권 규제는 오히려 문화적 유산의 재창조와 공유를 가로막아 문화 발전을 저해할 우려가 있습니다.', 
-                options: [
-                  'A) 저작권 규제 강화에 대해 우려하고 있다 (Она выражает беспокойство из-за ограничений)', 
-                  'B) 창작자의 권리 보호를 반대하고 있다 (Она выступает против защиты прав создателей)', 
-                  'C) 대중문화의 무분별한 소비를 비판하고 있다 (Она критикует потребление поп-культуры)'
-                ], 
-                correctAnswer: 0 
-              },
-              { 
-                type: 'choice', 
-                instruction: '들을 내용의 핵심 주제를 고르십시오 (Выберите ключевую тему дискуссии):', 
-                text: 'Лекция по экономике: феномен платформ-монополистов.', 
-                tts: '거대 플랫폼 기업들의 시장 독점은 초기에는 소비자에게 편리함을 제공하지만, 장기적으로는 경쟁을 제한하고 시장의 역동성을 죽여 독과점 폐해를 낳습니다.', 
-                options: [
-                  'A) 플랫폼 기업의 글로벌 진출 전략 (Стратегия глобального продвижения платформ)', 
-                  'B) 시장 독점으로 인한 장기적인 부작용과 폐해 (Долговременные негативные последствия монополии)', 
-                  'C) 소비자 편의성 증진을 위한 규제 완화 (Смягчение правил для удобства)'
-                ], 
-                correctAnswer: 1 
-              }
-            ]
-          },
-          {
-            id: 'part2', 
-            name: 'Part 2: 읽기 (Чтение — Уровень 5-6)', 
-            description: 'Прочитайте сложные академические статьи, экономические обзоры или древнекорейские идиомы и выберите верный вариант.',
-            questions: [
-              { 
-                type: 'choice', 
-                instruction: '밑줄 친 부분에 알맞은 사자성어를 고르십시오 (Выберите подходящую идиому):', 
-                text: '김 과장은 아무리 어려운 상황이 닥쳐도 뼈를 깎는 고통을 견ди며 목표를 향해 나아갔다. 그의 이러한 자질을 표현할 때 가장 적절한 한자성어는 무엇인가?', 
-                options: [
-                  'A) 절치부심 (切齒腐心 - Точить зубы от злости и переживаний)', 
-                  'B) 고진감래 (苦尽甘来 - После горечи приходит сладость / Усердие ведет к успеху)', 
-                  'C) 동문서답 (東問西答 - Отвечать невпопад)'
-                ], 
-                correctAnswer: 1 
-              },
-              { 
-                type: 'choice', 
-                instruction: '( ) 에 들어갈 내용으로 가장 알맞은 것을 고르십시오 (Вставьте пропущенное выражение):', 
-                text: '정부는 인플레이션을 억제하기 위해 금리 인상을 단행했다. 그러나 이는 기업들의 투자 위축과 경기 침체를 유발할 수 있어, 일각에서는 정부의 대책이 오히려 ( ) 결과를 초래할 수 있다고 경고한다.', 
-                options: [
-                  'A) 양날의 검이 되는 (Станет палкой о двух концах / Обоюдоострым мечом)', 
-                  'B) 불을 보듯 뻔한 (Очевидным, как созерцание огня)', 
-                  'C) 밑 빠진 독에 물 붓기인 (Бесполезным, как лить воду в кувшин без дна)'
-                ], 
-                correctAnswer: 0 
-              },
-              { 
-                type: 'choice', 
-                instruction: '이 글의 제목으로 가장 알맞은 것을 고르십시오 (Подберите наиболее точный научный заголовок):', 
-                text: '뇌 과학 연구에 따르면 인체의 뇌는 쓰면 쓸수록 신경세포 간의 연결망이 촘촘해지는 구조적 변화를 겪는다. 이를 "뇌의 가소성"이라 부르며, 노년기에도 끊임없는 두뇌 활동이 치매 예방에 결정적임을 증명한다.', 
-                options: [
-                  'A) 연령에 따른 뇌 용적의 변화 분석 (Анализ изменения объема мозга)', 
-                  'B) 뇌의 가소성과 지속적 두뇌 활동의 중요성 (Пластичность мозга и важность постоянной активности)', 
-                  'C) 치매 치료제 개발의 최신 동향 (Последние тенденции в разработке лекарств)'
-                ], 
-                correctAnswer: 1 
-              },
-              { 
-                type: 'choice', 
-                instruction: '글쓴이의 태도로 가장 적절한 것을 고르십시오 (Определите позицию автора текста):', 
-                text: '역사 연구는 과거의 사실을 단순히 암기하는 것을 넘어, 현재 우리가 직면한 수많은 사회적 갈등과 난제를 풀어내는 지혜를 얻는 과정이어야 한다. 과거를 잊은 민족에게 미래는 없다.', 
-                options: [
-                  'A) 객관적인 역사 서술의 한계를 비판하고 있다 (Критикует рамки описания истории)', 
-                  'B) 역사 교육이 지닌 실천적 가치를 강조하고 있다 (Подчеркивает практическую ценность истории)', 
-                  'C) 고대사 연구의 예산 부족을 우려하고 있다 (Беспокоится из-за нехватки бюджета)'
-                ], 
-                correctAnswer: 1 
-              },
-              { 
-                type: 'choice', 
-                instruction: '다음 글이 시사하는 바를 고르십시오 (Какую мораль несет данный текст):', 
-                text: '낙수효과(Trickle-down effect)이론은 대기업의 성장이 중소기업과 소비자에게 흘러내려 경제 전체가 살아난다는 주장이지만, 현시대의 양극화 지표는 이 이론이 더 이상 유효하지 않음을 여실히 보여준다.', 
-                options: [
-                  'A) 대기업 중심의 성장 정책이 여전히 유효하다 (Политика роста вокруг корпораций все еще эффективна)', 
-                  'B) 낙수효과 이론의 허구성과 새로운 분배 모델의 필요성 (Лживость теории 낙수효과 и необходимость новой модели)', 
-                  'C) 중소기업의 무분별한 정부 지원 의존성 (Чмерная зависимость малого бизнеса)'
-                ], 
-                correctAnswer: 1 
-              }
-            ]
-          },
-          {
-            id: 'part3', 
-            name: 'Part 3: 쓰기 (Письмо — Задания 53-54 повышенной сложности)', 
-            description: 'Введите официальные грамматические конструкции, соединительные союзы или термины, строго соблюдая академический стиль 서술형.',
-            questions: [
-              { 
-                type: 'write', 
-                instruction: '문맥에 맞는 조사나 어미를 쓰십시오 (Впишите грамматическое окончание):', 
-                text: '과학 기술이 고도로 발달함에 (переведите "в соответствии с / по мере того как...", корень: 따르다):', 
-                sample: '따라' 
-              },
-              { 
-                type: 'write', 
-                instruction: '알맞은 문장 연결어를 쓰십시오 (Впишите официальное вводное слово "С другой стороны / Напротив"):', 
-                text: '도시 지역은 인구 과밀화로 몸살을 앓고 있다. (___________), 농촌 지역은 인구 감소로 소멸 위기에 처해 있다.', 
-                sample: '반면에' 
-              },
-              { 
-                type: 'write', 
-                instruction: '빈칸에 가장 알맞은 명사형 문장 종결 어미를 쓰십시오 (Впишите выражение "оказалось, что...", корень: 나타나다):', 
-                text: '설문조사 결과에 따르면 청년층의 결혼 기피 원인 1위는 경제적 불안정인 것으로 (корень: 나타나다):', 
-                sample: '나타났다' 
-              },
-              { 
-                type: 'write', 
-                instruction: '문맥에 맞는 고급 사자성어를 입력하십시오 (Впишите идиому 의미: "Расти как грибы после дождя / Бурный рост"):', 
-                text: 'K-뷰티 인기에 힘입어 관련 스타트업들이 (___________) 격으로 급증하고 있다.', 
-                sample: '우후죽순' 
-              },
-              { 
-                type: 'write', 
-                instruction: '서술형 종결어미를 바르게 쓰십시오 (Впишите официальное грамматическое выражение "Нельзя не признать"):', 
-                text: '환경 보호를 위한 규제 제도는 이제 필수적인 조치라고 하지 (___________).', 
-                sample: '수 없다' 
-              }
-            ]
-          }
-        ]
-      };
-
-      // Логика работы симулятора
-      const urlParams = new URLSearchParams(window.location.search);
-      const examKey = urlParams.get('exam') || 'topik1-v1';
-      const currentExam = examBank[examKey] || examBank['topik1-v1'];
-
-      let flatQuestions = [];
-      currentExam.parts.forEach(part => {
-        part.questions.forEach(q => {
-          flatQuestions.push({ ...q, partId: part.id, partName: part.name, partDesc: part.description });
-        });
-      });
-
-      let currentGlobalIdx = 0, playCount = 0;
-      const savedAnswers = {};
-
-      const examTitleEl = document.getElementById('exam-title');
-      const sectionTitleEl = document.getElementById('section-title');
-      const sectionDescEl = document.getElementById('section-desc');
-      const qInstructionEl = document.getElementById('q-instruction');
-      const qTextEl = document.getElementById('q-text');
-      const currentQEl = document.getElementById('current-q');
-      const totalQEl = document.getElementById('total-q');
-      const answersContainer = document.getElementById('answers-container');
-      const audioBlock = document.getElementById('audio-block');
-      const playBtn = document.getElementById('play-btn');
-      const playsLeftEl = document.getElementById('plays-left');
-      const nextBtn = document.getElementById('next-btn');
-      const prevBtn = document.getElementById('prev-btn');
-      const checkBtn = document.getElementById('check-btn');
-      const aiHint = document.getElementById('ai-hint');
-      const aiHintText = document.getElementById('ai-hint-text');
-      const tabsContainer = document.getElementById('parts-tabs-container');
-
-      examTitleEl.textContent = currentExam.title;
-      totalQEl.textContent = flatQuestions.length;
-
-      function renderTabs(activePartId) {
-        tabsContainer.innerHTML = '';
-        currentExam.parts.forEach(part => {
-          const tab = document.createElement('div');
-          tab.className = `part-tab ${part.id === activePartId ? 'active' : ''}`;
-          tab.textContent = part.name.split(':')[0];
-          tabsContainer.appendChild(tab);
-        });
-      }
-
-      function renderQuestion() {
-        const q = flatQuestions[currentGlobalIdx];
-        currentQEl.textContent = currentGlobalIdx + 1;
-        document.getElementById('q-num-badge').textContent = currentGlobalIdx + 1;
-        renderTabs(q.partId);
-
-        sectionTitleEl.textContent = q.partName;
-        sectionDescEl.textContent = q.partDesc;
-        qInstructionEl.textContent = q.instruction;
-        qTextEl.textContent = q.text;
-
-        document.getElementById('progress-fill').style.width = `${((currentGlobalIdx + 1) / flatQuestions.length) * 100}%`;
-
-        if (q.tts) { audioBlock.hidden = false; playCount = 0; playsLeftEl.textContent = '2'; } 
-        else { audioBlock.hidden = true; }
-
-        answersContainer.innerHTML = ''; aiHint.hidden = true; checkBtn.hidden = false;
-
-        if (q.type === 'write') {
-          checkBtn.hidden = false;
-          answersContainer.innerHTML = `<textarea id="answer-input" class="answer-input" rows="2" placeholder="Введите ваш ответ на корейском языке..."></textarea>`;
-          const input = document.getElementById('answer-input');
-          input.value = savedAnswers[currentGlobalIdx] || '';
-          input.addEventListener('input', () => savedAnswers[currentGlobalIdx] = input.value);
-        } 
-        else if (q.type === 'choice') {
-          checkBtn.hidden = true;
-          q.options.forEach((option, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'answer-btn';
-            btn.textContent = option;
-
-            if (savedAnswers[currentGlobalIdx] === idx) {
-              aiHint.hidden = false;
-              if (idx === q.correctAnswer) {
-                aiHintText.innerHTML = '<span style="color:var(--accent-green); font-weight:700;">맞습니다! (Верно) 👍</span>';
-                btn.style.background = 'rgba(52, 211, 153, 0.1)';
-                btn.style.borderColor = 'var(--accent-green)';
-              } else {
-                aiHintText.innerHTML = '<span style="color:var(--accent-red); font-weight:700;">틀렸습니다 (Неверно). Попробуйте еще раз.</span>';
-                btn.style.background = 'rgba(248, 113, 113, 0.1)';
-                btn.style.borderColor = 'var(--accent-red)';
-              }
-            }
-            btn.onclick = () => { savedAnswers[currentGlobalIdx] = idx; renderQuestion(); };
-            answersContainer.appendChild(btn);
-          });
-        }
-        prevBtn.disabled = currentGlobalIdx === 0;
-        nextBtn.textContent = currentGlobalIdx === flatQuestions.length - 1 ? 'Завершить' : 'Далее →';
-      }
-
-      playBtn.addEventListener('click', () => {
-        const q = flatQuestions[currentGlobalIdx];
-        if (!q.tts || playCount >= 2) return;
-        playCount++; playsLeftEl.textContent = 2 - playCount;
-        const utterance = new SpeechSynthesisUtterance(q.tts);
-        utterance.lang = 'ko-KR'; utterance.rate = 0.82; // Корейский речевой движок
-        window.speechSynthesis.speak(utterance);
-      });
-
-      checkBtn.addEventListener('click', () => {
-        const q = flatQuestions[currentGlobalIdx];
-        const input = document.getElementById('answer-input');
-        const userText = input ? input.value.trim() : '';
-        aiHint.hidden = false;
-        if (!userText) { aiHintText.textContent = "Пожалуйста, впишите ответ."; return; }
-        
-        if (userText.toLowerCase() === q.sample.trim().toLowerCase()) {
-          aiHintText.innerHTML = `정답입니다! Ответ верен: <span style="color:var(--accent-green)">${q.sample}</span>`;
-        } else {
-          aiHintText.innerHTML = `틀렸습니다. Правильный ответ: <strong style="color:#fff">${q.sample}</strong>`;
-        }
-      });
-
-      nextBtn.addEventListener('click', () => {
-        if (currentGlobalIdx < flatQuestions.length - 1) { 
-          currentGlobalIdx++; 
-          renderQuestion(); 
-        } else { 
-          // Считаем правильные ответы перед переходом на результаты
-          let correctCount = 0;
-          flatQuestions.forEach((q, idx) => {
-            const userAns = savedAnswers[idx];
-            if (q.type === 'choice' && userAns === q.correctAnswer) correctCount++;
-            if (q.type === 'write' && userAns && userAns.trim().toLowerCase() === q.sample.trim().toLowerCase()) correctCount++;
-          });
-
-          // Сохраняем пакет данных для страницы results.html
-          sessionStorage.setItem('topik_last_results', JSON.stringify({
-            examTitle: currentExam.title,
-            examKey: examKey,
-            totalQuestions: flatQuestions.length,
-            correctCount: correctCount,
-            questions: flatQuestions,
-            userAnswers: savedAnswers
-          }));
-
-          // Перенаправляем на страницу результатов
-          window.location.href = 'results.html'; 
-        }
-      });
-
-      prevBtn.addEventListener('click', () => { if (currentGlobalIdx > 0) { currentGlobalIdx--; renderQuestion(); } });
-
-      renderQuestion();
-    })();
-  </script>
-</body>
-</html>
+    const questions = [
+      {
+        part: "Part 1: 듣기 (Аудирование — Уровень 5-6)",
+        desc: "Послушайте текст лекции и выберите продолжение мысли.",
+        instruction: "다음 전개될 내용으로 가장 알맞은 것을 고르십시오:",
+        text: "Спикер рассуждает о влиянии четвертой промышленной революции на рынок труда.",
+        tts: "4차 산업혁명 시대가 도래함에 따라 인공지능이 인간의 일자리를 대체할 것이라는 우려가 커지고 있습니다. 그러나 역사적으로 기술의 발전은 언제나 새로운 형태의 직업을 창출해 왔습니다. 따라서 우리는...",
+        options: [
+          "A) 인공지능 발전을 전면 중단해야 한다 (Нужно остановить развитие ИИ)",
+          "B) 새로운 시대에 맞는 교육 체계를 구축해야 한다 (Необходимо создать систему образования новой эпохи)",
+          "C) 전통적인 제조업 일자리를 무조건 보호해야 한다 (Нужно защищать рабочие места)"
+        ],
+        correct: 1,
+        type: "choice"
+      },
+      {
+        part: "Part 2: 읽기 (Чтение — Высокий уровень)",
+        desc: "Прочитайте текст и выберите подходящее устойчивое выражение (са
