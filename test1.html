@@ -7,7 +7,6 @@
   <style>
     :root {
       --primary: #3b82f6;
-      --primary-glow: rgba(59, 130, 246, 0.2);
       --bg-main: #090d16;
       --bg-card: rgba(17, 24, 39, 0.7);
       --border: rgba(255, 255, 255, 0.08);
@@ -22,163 +21,165 @@
       font-family: system-ui, -apple-system, sans-serif;
       color: var(--text-main); margin: 0; padding: 0;
     }
-    .test-header { background: rgba(9, 13, 22, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 15px 20px; }
+    .test-header { background: rgba(9, 13, 22, 0.8); border-bottom: 1px solid var(--border); padding: 15px 20px; }
     .test-header-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     .logo-kor { background: linear-gradient(135deg, #3b82f6, #60a5fa); color: #0f172a; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
     .test-grid { display: grid; grid-template-columns: 1fr 300px; gap: 25px; max-width: 900px; margin: 30px auto; padding: 0 20px; }
     @media (max-width: 768px) { .test-grid { grid-template-columns: 1fr; } }
-    .student-guide { background: rgba(59, 130, 246, 0.04); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 20px; height: fit-content; }
-    .guide-title { font-weight: 700; color: #60a5fa; margin-top: 0; margin-bottom: 10px; font-size: 1rem; }
-    .audio-block { background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(17, 24, 39, 0.6)); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 16px; padding: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
-    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 10px var(--primary-glow); }
-    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
-    .question-num { background: var(--primary); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-right: 10px; }
+    
+    /* Меню выбора вариантов */
+    .variant-menu { max-width: 600px; margin: 80px auto; padding: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; text-align: center; }
+    .variant-btn { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; padding: 18px; border-radius: 12px; width: 100%; font-size: 1.1rem; font-weight: 600; margin: 12px 0; cursor: pointer; transition: all 0.2s; }
+    .variant-btn:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
+
+    .student-guide { background: rgba(59, 130, 246, 0.04); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 20px; }
+    .audio-block { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; }
+    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; }
-    .answer-btn:hover { border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.05); }
-    .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; font-size: 1.1rem; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; }
-    .scratchpad-block { margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; }
-    .ai-hint { margin-top: 20px; padding: 15px 20px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
+    .answer-btn:hover { border-color: rgba(59, 130, 246, 0.4); }
+    .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; }
+    .ai-hint { margin-top: 20px; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
     .btn { padding: 12px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: #fff; }
-    .test-nav { display: flex; justify-content: space-between; margin-top: 25px; }
   </style>
 </head>
 <body>
-  <header class="test-header">
-    <div class="test-header-inner">
-      <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK I · ILS</div>
-      <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></div>
+
+  <!-- ЭКРАН 1: СЕЛЕКТОР ВАРИАНТОВ -->
+  <div id="welcome-screen" class="variant-menu">
+    <div style="font-size: 2.5rem; margin-bottom: 10px;">🇰🇷</div>
+    <h2 style="margin-top: 0; font-size: 1.6rem;">Выбор варианта TOPIK I</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Каждый вариант содержит свои уникальные вопросы и ключи.</p>
+    <button class="variant-btn" onclick="startTest(1)">📝 Запустить Вариант 1</button>
+    <button class="variant-btn" onclick="startTest(2)">📝 Запустить Вариант 2</button>
+    <div style="margin-top: 20px;"><a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">← Вернуться на главную</a></div>
+  </div>
+
+  <!-- ЭКРАН 2: ИНТЕРФЕЙС ТЕСТИРОВАНИЯ -->
+  <div id="test-screen" style="display: none;">
+    <header class="test-header">
+      <div class="test-header-inner">
+        <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK I · <span id="header-variant-title">Вариант</span></div>
+        <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></div>
+      </div>
+    </header>
+
+    <div class="test-grid">
+      <main>
+        <h2 id="part-title" style="font-size: 1.4rem; margin: 0 0 5px 0;">Загрузка...</h2>
+        <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 25px 0;"></p>
+
+        <div class="audio-block" id="audio-block" hidden>
+          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
+          <div>
+            <p style="margin:0; font-weight:600; font-size: 0.95rem;">듣기 (Аудиозапись задания)</p>
+            <span style="font-size:0.8rem; color:#60a5fa;">🔄 Бесконечное прослушивание</span>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div id="q-text" style="font-size: 1.25rem; font-weight:700; margin-bottom: 20px; white-space: pre-line;"></div>
+          <div id="answers-container"></div>
+          <div class="ai-hint" id="ai-hint" hidden><p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p></div>
+          <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px;">
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Черновик для перевода и заметок:</label>
+            <textarea class="notes-textarea" id="student-notes" rows="2" placeholder="Сюда можно выписать незнакомые слова..."></textarea>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+          <button class="btn btn-secondary" id="prev-btn">← Назад</button>
+          <button class="btn btn-primary" id="next-btn">Далее →</button>
+        </div>
+      </main>
+      <aside>
+        <div class="student-guide">
+          <h3 style="font-weight: 700; color: #60a5fa; margin-top: 0; font-size: 1rem;">💡 Инструкция эксперта</h3>
+          <p id="guide-content" style="margin: 0; font-size: 0.9rem; line-height: 1.5;"></p>
+        </div>
+      </aside>
     </div>
-  </header>
-
-  <div class="test-grid">
-    <main>
-      <h2 id="part-title" style="font-size: 1.4rem; margin-bottom: 5px; margin-top: 0;">Загрузка...</h2>
-      <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; margin-top: 0;"></p>
-
-      <div class="audio-block" id="audio-block" hidden>
-        <button type="button" class="audio-play-btn" id="play-btn">▶</button>
-        <div>
-          <p style="margin:0; font-weight:600;">듣기 (Аудиозапись задания)</p>
-          <span style="font-size:0.8rem; color:#60a5fa;">🔄 Доступно бесконечное прослушивание</span>
-        </div>
-      </div>
-
-      <div class="question-block">
-        <div style="margin-bottom: 15px;"><span class="question-num" id="q-badge">1</span><span id="q-instruction" style="color:var(--text-muted);"></span></div>
-        <div id="q-text" style="font-size: 1.3rem; font-weight:700; margin: 20px 0; white-space: pre-line;"></div>
-        <div id="answers-container"></div>
-        <div class="ai-hint" id="ai-hint" hidden><p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p></div>
-        <div class="scratchpad-block">
-          <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Место для ваших заметок и перевода (Черновик):</label>
-          <textarea class="notes-textarea" id="student-notes" rows="3" placeholder="Сюда можно выписать незнакомые слова..."></textarea>
-        </div>
-      </div>
-      <div class="test-nav">
-        <button class="btn btn-secondary" id="prev-btn">← Назад</button>
-        <button class="btn btn-primary" id="next-btn">Далее →</button>
-      </div>
-    </main>
-    <aside>
-      <div class="student-guide">
-        <h3 class="guide-title">💡 Что нужно сделать?</h3>
-        <p id="guide-content" style="margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.5;"></p>
-      </div>
-    </aside>
   </div>
 
   <script>
-    const questions = [
-      {
-        part: "Part 1: 듣기 (Аудирование — Задание на логичный ответ)",
-        desc: "Послушайте реплику и выберите наиболее подходящее продолжение диалога.",
-        instruction: "다음은 질문을 듣고 알맞은 대답을 고르십시오:",
-        text: "Собеседник здоровается и вежливо спрашивает, как у вас дела.",
-        tts: "민수 씨, 오랜만이에요. 요즘 어떻게 지내요?",
-        options: [
-          "A) 잘 지내요. 회사 일이 좀 바빠요. (Хорошо поживаю. Дела на фирме немного загружены)",
-          "B) 어제 친구를 만났어요. (Вчера встретил друга)",
-          "C) 제 이름은 민수입니다. (Меня зовут Минсу)"
-        ],
-        correct: 0,
-        guide: "Слушайте вопрос (▶). Спикер спрашивает '어떻게 지내요?' (Как поживаешь?). Самый точный ответ находится под вариантом A: '잘 지내요' (Хорошо поживаю)."
-      },
-      {
-        part: "Part 2: 읽기 (Чтение — Контекстные маркеры)",
-        desc: "Проанализируйте предложение и подберите пропущенное существительное по смыслу.",
-        instruction: "빈칸에 들어갈 가장 알맞은 것을 고르십시오:",
-        text: "머리가 너무 아픕니다. 그래서 (_______)에 가서 약을 샀습니다.",
-        options: [
-          "A) 은행 (Банк)",
-          "B) 공항 (Аэропорт)",
-          "C) 약국 (Аптека)"
-        ],
-        correct: 2,
-        guide: "Изучите контекст: '머리가 아픕니다' (Болит голова) и '약' (лекарство). Лекарства от головной боли покупают исключительно в аптеке (약국 — вариант C)."
-      },
-      {
-        part: "Part 3: 읽기 (Понимание текста — Объявления)",
-        desc: "Прочитайте короткую записку и определите, о чём в ней сообщается.",
-        instruction: "무엇에 대한 이야기입니까? 알맞은 것을 고르십시오:",
-        text: "이번 주 토요일에 우리 집에서 파티를 합니다. 우리 반 친구들이 모두 옵니다. 꼭 오세요.",
-        options: [
-          "A) 고향 (Родина)",
-          "B) 초대 (Приглашение)",
-          "C) 취미 (Хобби)"
-        ],
-        correct: 1,
-        guide: "Ключевые слова текста: '우리 집에서 파티' (пати у меня дома) и '꼭 오세요' (обязательно приходите). Это классический текст-приглашение (초대 — вариант B)."
-      }
-    ];
+    // База данных вопросов по вариантам для TOPIK I
+    const database = {
+      variant1: [
+        { part: "듣기 (Аудирование)", desc: "Послушайте вопрос спикера и подберите единственный логически верный ответ.", text: "Разговор о текущем занятии. Какое действие выполняется сейчас?", tts: "지금 무엇을 해요?", options: ["A) 한국어를 공부해요. (Изучаю корейский язык)", "B) 저녁에 만나요. (Встретимся вечером)", "C) 가방이 커요. (Сумка большая)"], correct: 0, guide: "Спикер спрашивает '지금 무엇을 해요?' (Что ты сейчас делаешь?). Самый точный ответ находится под вариантом A: 'Изучаю корейский'." },
+        { part: "읽기 (Чтение — Локации)", desc: "Определите место работы, основываясь на контекстных маркерах профессии.", text: "Выберите правильное место действия:\n'저는 의사입니다. (_______)에서 일합니다.'", options: ["A) 은행 (Банк)", "B) 공항 (Аэропорт)", "C) 병원 (Больница)"], correct: 2, guide: "Свяжите ключевые маркерные слова '의사' (врач) и '일합니다' (работаю), чтобы безошибочно выбрать больницу (병원 — вариант C)." },
+        { part: "읽기 (Чтение — Анализ текста)", desc: "Внимательно прочитайте короткую записку и выберите её основную тему.", text: "Определите главную тему текста:\n'이번 주 토요일에 우리 집에서 파티를 합니다. 우리 반 친구들이 모두 옵니다. 꼭 오세요.'", options: ["A) 날씨 (Погода)", "B) 초대 (Приглашение)", "C) 취ми (Хобби)"], correct: 1, guide: "Словосочетания '우리 집에서 파티' (вечеринка у меня дома) и призыв '꼭 오세요' (обязательно приходите) прямо указывают на приглашение (초대 — вариант B)." }
+      ],
+      variant2: [
+        { part: "듣기 (Аудирование)", desc: "Послушайте рыночный диалог и укажите, в каком месте находятся говорящие.", text: "Определите локацию, в которой происходит общение спикеров.", tts: "이 사과 얼마예요? 한 개에 천 원입니다.", options: ["A) 서점 (Книжный магазин)", "B) 시장 (Рынок)", "C) 약국 (Аптека)"], correct: 1, guide: "Слова 사과 (яблоко) и 얼마예요 (сколько стоит) указывают на совершение покупок продуктов питания на рынке (시장 — вариант B)." },
+        { part: "읽기 (Чтение — Грамматические частицы)", desc: "Подберите правильное падежное окончание для выражения направления движения.", text: "Вставьте пропущенную частицу:\n'저는 오늘 친구와 함께 시장(____) 가요.'", options: ["A) 에 (Дательный направления)", "B) 에서 (Дательный места действия)", "C) 를 (Винительный падеж)"], correct: 0, guide: "С активным глаголом направления 가요 (идти/направляться) всегда употребляется только падеж направления 에 (вариант A)." },
+        { part: "읽기 (Чтение — Контекстная логика)", desc: "Проанализируйте погодные условия и выберите подходящий предмет обихода.", text: "Какое существительное пропущено по смыслу?\n'밖을 보니 비가 많이 옵니다. 그래서 (_______)을 씁니다.'", options: ["A) 바지 (Брюки)", "B) 구ду (Туфли)", "C) 우산 (Зонт)"], correct: 2, guide: "Если на улице идет сильный дождь (비가 많이 옵니다), то логичным действием будет раскрыть или использовать зонт (우산 — вариант C)." }
+      ]
+    };
 
-    let currentIdx = 0; const userAnswers = {}; const notesCache = {};
+    let activeQuestions = []; let currentIdx = 0; const userAnswers = {}; const notesCache = {};
+
+    function startTest(variantNum) {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('test-screen').style.display = 'block';
+      document.getElementById('header-variant-title').textContent = "Вариант " + variantNum;
+      activeQuestions = database['variant1'];
+      if(variantNum === 2) activeQuestions = database['variant2'];
+      currentIdx = 0; render();
+    }
+
     function render() {
-      const q = questions[currentIdx];
+      const q = activeQuestions[currentIdx];
       document.getElementById('current-q').textContent = currentIdx + 1;
-      document.getElementById('total-q').textContent = questions.length;
-      document.getElementById('q-badge').textContent = currentIdx + 1;
+      document.getElementById('total-q').textContent = activeQuestions.length;
       document.getElementById('part-title').textContent = q.part;
       document.getElementById('part-desc').textContent = q.desc;
-      document.getElementById('q-instruction').textContent = q.instruction;
       document.getElementById('q-text').textContent = q.text;
       document.getElementById('guide-content').textContent = q.guide;
+      
       const notesTextarea = document.getElementById('student-notes');
       notesTextarea.value = notesCache[currentIdx] || '';
       notesTextarea.oninput = () => { notesCache[currentIdx] = notesTextarea.value; };
+      
       const container = document.getElementById('answers-container');
       const hint = document.getElementById('ai-hint');
       container.innerHTML = ''; hint.hidden = true;
-      if (q.tts) { document.getElementById('audio-block').hidden = false; } else { document.getElementById('audio-block').hidden = true; }
+      
+      document.getElementById('audio-block').hidden = !q.tts;
+
       q.options.forEach((opt, idx) => {
         const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = opt;
         if (userAnswers[currentIdx] === idx) {
           hint.hidden = false;
           if (idx === q.correct) {
             btn.style.borderColor = 'var(--accent-green)';
-            document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green)'>정답입니다! 🎉</span>";
+            document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green);font-weight:700;'>정답입니다! 🎉 Вариант выбран верно.</span>";
           } else {
             btn.style.borderColor = 'var(--accent-red)';
-            document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red)'>틀렸습니다. Попробуйте еще раз.</span>";
+            document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red);font-weight:700;'>틀렸습니다. Проанализируйте ошибку и попробуйте снова.</span>";
           }
         }
         btn.onclick = () => { userAnswers[currentIdx] = idx; render(); };
         container.appendChild(btn);
       });
       document.getElementById('prev-btn').disabled = currentIdx === 0;
-      document.getElementById('next-btn').textContent = currentIdx === questions.length - 1 ? "Завершить" : "Далее →";
+      document.getElementById('next-btn').textContent = currentIdx === activeQuestions.length - 1 ? "В меню вариантов" : "Далее →";
     }
+
     document.getElementById('play-btn').onclick = () => {
-      const q = questions[currentIdx]; if (!q.tts) return;
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(q.tts); u.lang = 'ko-KR'; u.rate = 0.85;
+      const u = new SpeechSynthesisUtterance(activeQuestions[currentIdx].tts); u.lang = 'ko-KR'; u.rate = 0.85;
       window.speechSynthesis.speak(u);
     };
+
     document.getElementById('next-btn').onclick = () => {
-      if (currentIdx < questions.length - 1) { currentIdx++; render(); } else { alert("Тест TOPIK I завершен!"); window.location.href = 'index.html'; }
+      if (currentIdx < activeQuestions.length - 1) { currentIdx++; render(); } 
+      else { 
+        alert("Тестирование по выбранному варианту завершено!"); 
+        location.reload();
+      }
     };
     document.getElementById('prev-btn').onclick = () => { if (currentIdx > 0) { currentIdx--; render(); } };
-    render();
   </script>
 </body>
 </html>
