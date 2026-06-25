@@ -20,21 +20,184 @@
       background-color: var(--bg-main);
       background-image: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
       font-family: system-ui, -apple-system, sans-serif;
-      color: var(--text-main);
-      margin: 0; padding: 0;
+      color: var(--text-main); margin: 0; padding: 0;
     }
-    .test-header {
-      background: rgba(9, 13, 22, 0.8);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 15px 20px;
-    }
-    .test-header-inner {
-      max-width: 900px; margin: 0 auto;
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .test-header { background: rgba(9, 13, 22, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 15px 20px; }
+    .test-header-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     .logo-kor { background: linear-gradient(135deg, #a855f7, #c084fc); color: #0f172a; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
-    
+    .test-grid { display: grid; grid-template-columns: 1fr 300px; gap: 25px; max-width: 900px; margin: 30px auto; padding: 0 20px; }
+    @media (max-width: 768px) { .test-grid { grid-template-columns: 1fr; } }
+    .student-guide { background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; height: fit-content; }
+    .guide-title { font-weight: 700; color: #c084fc; margin-top: 0; margin-bottom: 10px; font-size: 1rem; }
+    .audio-block { background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(17, 24, 39, 0.6)); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 16px; padding: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 10px var(--primary-glow); }
+    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+    .question-num { background: var(--primary); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-right: 10px; }
+    .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; }
+    .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.05); }
+    .answer-input, .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; font-size: 1.1rem; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; }
+    .scratchpad-block { margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; }
+    .ai-hint { margin-top: 20px; padding: 15px 20px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
+    .btn { padding: 12px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--primary); }
+    .test-nav { display: flex; justify-content: space-between; margin-top: 25px; }
+  </style>
+</head>
+<body>
+  <header class="test-header">
+    <div class="test-header-inner">
+      <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK II · ILS</div>
+      <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></div>
+    </div>
+  </header>
+
+  <div class="test-grid">
+    <main>
+      <h2 id="part-title" style="font-size: 1.4rem; margin-bottom: 5px; margin-top: 0;">Загрузка...</h2>
+      <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; margin-top: 0;"></p>
+
+      <div class="audio-block" id="audio-block" hidden>
+        <button type="button" class="audio-play-btn" id="play-btn">▶</button>
+        <div>
+          <p style="margin:0; font-weight:600;">듣기 (Аудиозапись задания)</p>
+          <span style="font-size:0.8rem; color:#c084fc;">🔄 Доступно бесконечное прослушивание</span>
+        </div>
+      </div>
+
+      <div class="question-block">
+        <div style="margin-bottom: 15px;"><span class="question-num" id="q-badge">1</span><span id="q-instruction" style="color:var(--text-muted);"></span></div>
+        <div id="q-text" style="font-size: 1.3rem; font-weight:700; margin: 20px 0; white-space: pre-line;"></div>
+        <div id="answers-container"></div>
+        <div class="ai-hint" id="ai-hint" hidden><p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p></div>
+        <div class="scratchpad-block">
+          <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Место для ваших заметок (Черновик):</label>
+          <textarea class="notes-textarea" id="student-notes" rows="3" placeholder="Пишите перевод или схемы здесь..."></textarea>
+        </div>
+      </div>
+      <div class="test-nav">
+        <button class="btn btn-secondary" id="prev-btn" style="color:#fff;">← Назад</button>
+        <button class="btn btn-secondary" id="check-btn" hidden>Проверить ответ</button>
+        <button class="btn btn-primary" id="next-btn">Далее →</button>
+      </div>
+    </main>
+    <aside>
+      <div class="student-guide">
+        <h3 class="guide-title">💡 Что нужно сделать?</h3>
+        <p id="guide-content" style="margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.5;"></p>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        part: "Part 1: 듣기 (Аудирование — Задание на определение темы)",
+        desc: "Послушайте диалог и выберите то, о чём говорят спикеры.",
+        instruction: "다음은 무엇에 대해 이야기하고 있습니까? 알맞은 것을 고르십시오:",
+        text: "Женщина жалуется на сильный дискомфорт в глазах из-за постоянной работы за монитором.",
+        tts: "컴퓨터를 오래 보니까 눈이 너무 침침하고 따가워요. 그래요? 그러면 한 시간마다 십 분씩 꼭 쉬어 주세요.",
+        options: [
+          "A) 취미 생활 (Хобби / Досуг)",
+          "B) 컴퓨터 구매 (Покупка компьютера)",
+          "C) 건강 관리 (Забота о здоровье)"
+        ],
+        correct: 2,
+        type: "choice",
+        guide: "Слушайте диалог (▶). Маркеры: '눈이 따가워요' (глаза режет) и совет '쉬어 주세요' (отдыхайте). Собеседники обсуждают проблемы со здоровьем и уход за организмом (건강 관리 — вариант C)."
+      },
+      {
+        part: "Part 2: 읽기 (Чтение — Грамматика продвинутого уровня)",
+        desc: "Выберите грамматическую конструкцию, выражающую высокую степень вероятности или факта.",
+        instruction: "밑줄 친 부분과 의미가 가장 비슷한 것을 고르십시오:",
+        text: "평소에 성실히 준비했으니 이번 시험에 <u>합격할 수밖에 없다</u>.",
+        options: [
+          "A) 합격할 것이 틀림없다 (Несомненно сдаст / Нет иного выбора, кроме как сдать)",
+          "B) 합격할 리가 없다 (Не может быть, чтобы сдал)",
+          "C) 합격할 뻔했다 (Чуть было не сдал)"
+        ],
+        correct: 0,
+        guide: "Конструкция '-(으)ㄹ 수밖에 없다' выражает безальтернативность действия (нет другого пути). Синонимичная по смыслу конструкция высокой уверенности — '-이 틀림없다' (несомненно, точно так — вариант A)."
+      },
+      {
+        part: "Part 3: 쓰기 (Письмо — Задание 52)",
+        desc: "Вставьте академическую грамматическую концовку, объясняющую причину явления.",
+        instruction: "빈칸에 가장 알맞은 단어와 어미를 입력하십시오:",
+        text: "사람들은 스트레스를 받으면 매운 음식을 찾는다. 매운맛이 통각을 자극하여 일시적으로 뇌의 행복 호р몬을 분비시키기 때문이다. 즉, 매운 음식을 먹음으로써 기분이 좋아진다고 (_____________________).",
+        sample: "느끼기 때문이다",
+        type: "write",
+        guide: "Текст объясняет причину, почему люди любят острую еду (потому что выделяются гормоны). В конце вывода обязательна академическая причинно-следственная форма с глаголом 'чувствовать/воспринимать' — '느끼기 때문이다'."
+      }
+    ];
+
+    let currentIdx = 0; const userAnswers = {}; const notesCache = {};
+    function render() {
+      const q = questions[currentIdx];
+      document.getElementById('current-q').textContent = currentIdx + 1;
+      document.getElementById('total-q').textContent = questions.length;
+      document.getElementById('q-badge').textContent = currentIdx + 1;
+      document.getElementById('part-title').textContent = q.part;
+      document.getElementById('part-desc').textContent = q.desc;
+      document.getElementById('q-instruction').textContent = q.instruction;
+      document.getElementById('q-text').textContent = q.text;
+      document.getElementById('guide-content').textContent = q.guide;
+      const notesTextarea = document.getElementById('student-notes');
+      notesTextarea.value = notesCache[currentIdx] || '';
+      notesTextarea.oninput = () => { notesCache[currentIdx] = notesTextarea.value; };
+      const container = document.getElementById('answers-container');
+      const hint = document.getElementById('ai-hint');
+      const checkBtn = document.getElementById('check-btn');
+      container.innerHTML = ''; hint.hidden = true; checkBtn.hidden = true;
+      if (q.tts) { document.getElementById('audio-block').hidden = false; } else { document.getElementById('audio-block').hidden = true; }
+      if (q.type === 'choice') {
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = opt;
+          if (userAnswers[currentIdx] === idx) {
+            hint.hidden = false;
+            if (idx === q.correct) {
+              btn.style.borderColor = 'var(--accent-green)';
+              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green)'>정답입니다! 👍</span>";
+            } else {
+              btn.style.borderColor = 'var(--accent-red)';
+              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red)'>틀렸습니다. Попробуйте еще раз.</span>";
+            }
+          }
+          btn.onclick = () => { userAnswers[currentIdx] = idx; render(); };
+          container.appendChild(btn);
+        });
+      } else {
+        checkBtn.hidden = false;
+        const txt = document.createElement('textarea'); txt.className = 'answer-input'; txt.rows = 2;
+        txt.placeholder = "Введите ответ на корейском..."; txt.value = userAnswers[currentIdx] || '';
+        txt.oninput = () => { userAnswers[currentIdx] = txt.value; };
+        container.appendChild(txt);
+      }
+      document.getElementById('prev-btn').disabled = currentIdx === 0;
+      document.getElementById('next-btn').textContent = currentIdx === questions.length - 1 ? "Готово" : "Далее →";
+    }
+    document.getElementById('play-btn').onclick = () => {
+      const q = questions[currentIdx]; if (!q.tts) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(q.tts); u.lang = 'ko-KR'; u.rate = 0.8;
+      window.speechSynthesis.speak(u);
+    };
+    document.getElementById('check-btn').onclick = () => {
+      const q = questions[currentIdx]; const ans = (userAnswers[currentIdx] || '').trim();
+      const hint = document.getElementById('ai-hint'); hint.hidden = false;
+      if (ans.toLowerCase() === q.sample.toLowerCase()) {
+        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-green)'>정답입니다! Правильно: ${q.sample}</span>`;
+      } else {
+        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-red)'>Ошибка. Правильный ответ: ${q.sample}</span>`;
+      }
+    };
+    document.getElementById('next-btn').onclick = () => {
+      if (currentIdx < questions.length - 1) { currentIdx++; render(); } else { alert("Тест TOPIK II завершен!"); window.location.href = 'index.html'; }
+    };
+    document.getElementById('prev-btn').onclick = () => { if (currentIdx > 0) { currentIdx--; render(); } };
+    render();
+  </script>
+</body>
+</html>    
     .test-grid {
       display: grid;
       grid-template-columns: 1fr 300px;
