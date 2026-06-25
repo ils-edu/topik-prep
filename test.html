@@ -7,7 +7,6 @@
   <style>
     :root {
       --primary: #a855f7;
-      --primary-glow: rgba(168, 85, 247, 0.2);
       --bg-main: #090d16;
       --bg-card: rgba(17, 24, 39, 0.7);
       --border: rgba(255, 255, 255, 0.08);
@@ -22,133 +21,134 @@
       font-family: system-ui, -apple-system, sans-serif;
       color: var(--text-main); margin: 0; padding: 0;
     }
-    .test-header { background: rgba(9, 13, 22, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 15px 20px; }
+    .test-header { background: rgba(9, 13, 22, 0.8); border-bottom: 1px solid var(--border); padding: 15px 20px; }
     .test-header-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     .logo-kor { background: linear-gradient(135deg, #a855f7, #c084fc); color: #0f172a; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
     .test-grid { display: grid; grid-template-columns: 1fr 300px; gap: 25px; max-width: 900px; margin: 30px auto; padding: 0 20px; }
     @media (max-width: 768px) { .test-grid { grid-template-columns: 1fr; } }
-    .student-guide { background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; height: fit-content; }
-    .guide-title { font-weight: 700; color: #c084fc; margin-top: 0; margin-bottom: 10px; font-size: 1rem; }
-    .audio-block { background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(17, 24, 39, 0.6)); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 16px; padding: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
-    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 10px var(--primary-glow); }
-    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
-    .question-num { background: var(--primary); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-right: 10px; }
+    
+    /* Меню выбора вариантов */
+    .variant-menu { max-width: 600px; margin: 80px auto; padding: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; text-align: center; }
+    .variant-btn { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); color: #c084fc; padding: 18px; border-radius: 12px; width: 100%; font-size: 1.1rem; font-weight: 600; margin: 12px 0; cursor: pointer; transition: all 0.2s; }
+    .variant-btn:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
+
+    .student-guide { background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; }
+    .audio-block { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; }
+    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; }
-    .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.05); }
-    .answer-input, .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; font-size: 1.1rem; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; }
-    .scratchpad-block { margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; }
-    .ai-hint { margin-top: 20px; padding: 15px 20px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
+    .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); }
+    .answer-input, .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1.05rem; }
+    .ai-hint { margin-top: 20px; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
     .btn { padding: 12px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
     .btn-primary { background: var(--primary); color: #fff; }
-    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--primary); }
-    .test-nav { display: flex; justify-content: space-between; margin-top: 25px; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: #fff; }
   </style>
 </head>
 <body>
-  <header class="test-header">
-    <div class="test-header-inner">
-      <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK II · ILS</div>
-      <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></div>
+
+  <!-- ЭКРАН 1: СЕЛЕКТОР ВАРИАНТОВ -->
+  <div id="welcome-screen" class="variant-menu">
+    <div style="font-size: 2.5rem; margin-bottom: 10px;">🔮</div>
+    <h2 style="margin-top: 0; font-size: 1.6rem;">Выбор варианта TOPIK II</h2>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Продвинутый уровень (3-6급) с блоками 쓰기 (Сочинение/Заполнение пропусков).</p>
+    <button class="variant-btn" onclick="startTest(1)">⚡ Запустить Вариант 1</button>
+    <button class="variant-btn" onclick="startTest(2)">⚡ Запустить Вариант 2</button>
+    <div style="margin-top: 20px;"><a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">← Вернуться на главную</a></div>
+  </div>
+
+  <!-- ЭКРАН 2: ИНТЕРФЕЙС ТЕСТИРОВАНИЯ -->
+  <div id="test-screen" style="display: none;">
+    <header class="test-header">
+      <div class="test-header-inner">
+        <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK II · <span id="header-variant-title">Вариант</span></div>
+        <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></div>
+      </div>
+    </header>
+
+    <div class="test-grid">
+      <main>
+        <h2 id="part-title" style="font-size: 1.4rem; margin: 0 0 5px 0;">Загрузка...</h2>
+        <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 25px 0;"></p>
+
+        <div class="audio-block" id="audio-block" hidden>
+          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
+          <div>
+            <p style="margin:0; font-weight:600; font-size: 0.95rem;">듣기 (Прослушивание текста)</p>
+            <span style="font-size:0.8rem; color:#c084fc;">🔄 Академический темп речи</span>
+          </div>
+        </div>
+
+        <div class="question-block">
+          <div id="q-text" style="font-size: 1.25rem; font-weight:700; margin-bottom: 20px; white-space: pre-line; line-height: 1.6;"></div>
+          <div id="answers-container"></div>
+          <div class="ai-hint" id="ai-hint" hidden><p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p></div>
+          <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px;">
+            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Место для анализа грамматики и перевода:</label>
+            <textarea class="notes-textarea" id="student-notes" rows="2" placeholder="Заметки по разбору предложений..."></textarea>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+          <button class="btn btn-secondary" id="prev-btn">← Назад</button>
+          <button class="btn btn-secondary" id="check-btn" style="color: var(--primary); border-color: rgba(168, 85, 247, 0.4);" hidden>Проверить ответ</button>
+          <button class="btn btn-primary" id="next-btn">Далее →</button>
+        </div>
+      </main>
+      <aside>
+        <div class="student-guide">
+          <h3 style="font-weight: 700; color: #c084fc; margin-top: 0; font-size: 1rem;">💡 Критерии оценивания</h3>
+          <p id="guide-content" style="margin: 0; font-size: 0.9rem; line-height: 1.5;"></p>
+        </div>
+      </aside>
     </div>
-  </header>
-
-  <div class="test-grid">
-    <main>
-      <h2 id="part-title" style="font-size: 1.4rem; margin-bottom: 5px; margin-top: 0;">Загрузка...</h2>
-      <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; margin-top: 0;"></p>
-
-      <div class="audio-block" id="audio-block" hidden>
-        <button type="button" class="audio-play-btn" id="play-btn">▶</button>
-        <div>
-          <p style="margin:0; font-weight:600;">듣기 (Аудиозапись задания)</p>
-          <span style="font-size:0.8rem; color:#c084fc;">🔄 Доступно бесконечное прослушивание</span>
-        </div>
-      </div>
-
-      <div class="question-block">
-        <div style="margin-bottom: 15px;"><span class="question-num" id="q-badge">1</span><span id="q-instruction" style="color:var(--text-muted);"></span></div>
-        <div id="q-text" style="font-size: 1.3rem; font-weight:700; margin: 20px 0; white-space: pre-line;"></div>
-        <div id="answers-container"></div>
-        <div class="ai-hint" id="ai-hint" hidden><p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p></div>
-        <div class="scratchpad-block">
-          <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Место для ваших заметок (Черновик):</label>
-          <textarea class="notes-textarea" id="student-notes" rows="3" placeholder="Пишите перевод или схемы здесь..."></textarea>
-        </div>
-      </div>
-      <div class="test-nav">
-        <button class="btn btn-secondary" id="prev-btn" style="color:#fff;">← Назад</button>
-        <button class="btn btn-secondary" id="check-btn" hidden>Проверить ответ</button>
-        <button class="btn btn-primary" id="next-btn">Далее →</button>
-      </div>
-    </main>
-    <aside>
-      <div class="student-guide">
-        <h3 class="guide-title">💡 Что нужно сделать?</h3>
-        <p id="guide-content" style="margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.5;"></p>
-      </div>
-    </aside>
   </div>
 
   <script>
-    const questions = [
-      {
-        part: "Part 1: 듣기 (Аудирование — Задание на определение темы)",
-        desc: "Послушайте диалог и выберите то, о чём говорят спикеры.",
-        instruction: "다음은 무엇에 대해 이야기하고 있습니까? 알맞은 것을 고르십시오:",
-        text: "Женщина жалуется на сильный дискомфорт в глазах из-за постоянной работы за монитором.",
-        tts: "컴퓨터를 오래 보니까 눈이 너무 침침하고 따가워요. 그래요? 그러면 한 시간마다 십 분씩 꼭 쉬어 주세요.",
-        options: [
-          "A) 취미 생활 (Хобби / Досуг)",
-          "B) 컴퓨터 구매 (Покупка компьютера)",
-          "C) 건강 관리 (Забота о здоровье)"
-        ],
-        correct: 2,
-        type: "choice",
-        guide: "Слушайте диалог (▶). Маркеры: '눈이 따가워요' (глаза режет) и совет '쉬어 주세요' (отдыхайте). Собеседники обсуждают проблемы со здоровьем и уход за организмом (건강 관리 — вариант C)."
-      },
-      {
-        part: "Part 2: 읽기 (Чтение — Грамматика продвинутого уровня)",
-        desc: "Выберите грамматическую конструкцию, выражающую высокую степень вероятности или факта.",
-        instruction: "밑줄 친 부분과 의미가 가장 비슷한 것을 고르십시오:",
-        text: "평소에 성실히 준비했으니 이번 시험에 <u>합격할 수밖에 없다</u>.",
-        options: [
-          "A) 합격할 것이 틀림없다 (Несомненно сдаст / Нет иного выбора, кроме как сдать)",
-          "B) 합격할 리가 없다 (Не может быть, чтобы сдал)",
-          "C) 합격할 뻔했다 (Чуть было не сдал)"
-        ],
-        correct: 0,
-        guide: "Конструкция '-(으)ㄹ 수밖에 없다' выражает безальтернативность действия (нет другого пути). Синонимичная по смыслу конструкция высокой уверенности — '-이 틀림없다' (несомненно, точно так — вариант A)."
-      },
-      {
-        part: "Part 3: 쓰기 (Письмо — Задание 52)",
-        desc: "Вставьте академическую грамматическую концовку, объясняющую причину явления.",
-        instruction: "빈칸에 가장 알맞은 단어와 어미를 입력하십시오:",
-        text: "사람들은 스트레스를 받으면 매운 음식을 찾는다. 매운맛이 통각을 자극하여 일시적으로 뇌의 행복 호р몬을 분비시키기 때문이다. 즉, 매운 음식을 먹음으로써 기분이 좋아진다고 (_____________________).",
-        sample: "느끼기 때문이다",
-        type: "write",
-        guide: "Текст объясняет причину, почему люди любят острую еду (потому что выделяются гормоны). В конце вывода обязательна академическая причинно-следственная форма с глаголом 'чувствовать/воспринимать' — '느끼기 때문이다'."
-      }
-    ];
+    // База данных вопросов по вариантам для TOPIK II
+    const database = {
+      variant1: [
+        { part: "듣기 (Аудирование — Тема дискуссии)", desc: "Послушайте мнение спикера и выберите точный предмет экологического обсуждения.", text: "Проанализируйте монолог и определите его центральную проблему.", tts: "환경 오염을 줄이기 위해서는 무분별한 플라스틱 사용을 금지해야 합니다.", options: ["A) 경제 발전의 필요성 (Необходимость развития экономики)", "B) 일자리 창출 문제 (Проблемы создания рабочих мест)", "C) 플라스틱으로 인한 환경 문제 (Экологические проблемы из-за пластика)"], correct: 2, type: "choice", guide: "Спикер делает сильный акцент на выражениях '환경 오염' (загрязнение среды) и '플라스틱 사용' (использование пластика). Верный ответ — C." },
+        { part: "읽기 (Чтение — Четырёхбуквенные идиомы 사자성어)", desc: "Подберите устойчивое выражение, идеально подходящее под описание жизненной ситуации.", text: "Какая идиома передает смысл фразы:\n'어려운 고난을 모두 이겨내고 드디어 목적을 달성했다.'", options: ["A) 동문서답 (Отвечать невпопад)", "B) 고진감래 (После горечи приходит сладость)", "C) 작심삼일 (Решение, принятое всего на три дня)"], correct: 1, type: "choice", guide: "Концепция преодоления тяжелых препятствий ради финального сладкого триумфа корейцами выражается вековой мудростью 고진감래 (вариант B)." },
+        { part: "쓰기 (Письмо — Официальное задание 52)", desc: "Самостоятельно впишите строгую академическую грамматику цели, соблюдая стиль текста 서술체.", text: "Заполните пропуск в тексте:\n'좋은 직장에 취업(___________) 한국어를 열심히 배운다.'", sample: "기 위해서", type: "write", guide: "Для выражения четкого намерения и цели («для того чтобы устроиться») в официальных письменных эссе TOPIK используется конструкция -기 위해서." }
+      ],
+      variant2: [
+        { part: "듣기 (Аудирование — Проф. намерения)", desc: "Послушайте планы лектора и выберите его окончательную цель.", text: "Какое намерение выражает говорящий в своем высказывании?", tts: "한국의 역사적 인물에 대한 책을 쓰고 싶습니다.", options: ["A) 책을 집필하는 것 (Написание/издание книги)", "B) 역사 공부를 그만두는 것 (Прекращение изучения истории)", "C) 도서관을 짓는 것 (Строительство новой библиотеки)"], correct: 0, type: "choice", guide: "Финальная цель говорящего выражена глаголом 구조: '책을 쓰고 싶습니다' (хочу написать книгу). Это синоним книжного дела 집필 (вариант A)." },
+        { part: "읽기 (Чтение — Логическая уверенность)", desc: "Выберите грамматическую связку, указывающую на неоспоримость факта.", text: "Какая грамматика выражает стопроцентную уверенность?\n'그 사람은 매일 연습했으니 성공할 (_______).'", options: ["A) 리가 없다 (Не может быть, чтобы)", "B) 뻔했다 (Едва не случилось)", "C) 것이 틀림없다 (Несомненно, точно так)"], correct: 2, guide: "Поскольку контекст указывает на упорный ежедневный труд ('매일 연습했으니'), результат является гарантированным и несомненным — '것이 틀림없다' (вариант C)." },
+        { part: "쓰기 (Письмо — Задание 51 на логику связок)", desc: "Впишите официальное вводное слово, противопоставляющее два статистических показателя.", text: "Вставьте контрастную конструкцию:\n'도시 인구는 증가한다. (___________), 농촌 인구는 감소한다.'", sample: "반면에", type: "write", guide: "Текст резко разграничивает два процесса: рост городов и опустение деревень. Официальный союз противопоставления — 'В то время как / Напротив' (반면에)." }
+      ]
+    };
 
-    let currentIdx = 0; const userAnswers = {}; const notesCache = {};
+    let activeQuestions = []; let currentIdx = 0; const userAnswers = {}; const notesCache = {};
+
+    function startTest(variantNum) {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('test-screen').style.display = 'block';
+      document.getElementById('header-variant-title').textContent = "Вариант " + variantNum;
+      activeQuestions = database['variant1'];
+      if(variantNum === 2) activeQuestions = database['variant2'];
+      currentIdx = 0; render();
+    }
+
     function render() {
-      const q = questions[currentIdx];
+      const q = activeQuestions[currentIdx];
       document.getElementById('current-q').textContent = currentIdx + 1;
-      document.getElementById('total-q').textContent = questions.length;
-      document.getElementById('q-badge').textContent = currentIdx + 1;
+      document.getElementById('total-q').textContent = activeQuestions.length;
       document.getElementById('part-title').textContent = q.part;
       document.getElementById('part-desc').textContent = q.desc;
-      document.getElementById('q-instruction').textContent = q.instruction;
       document.getElementById('q-text').textContent = q.text;
       document.getElementById('guide-content').textContent = q.guide;
+      
       const notesTextarea = document.getElementById('student-notes');
       notesTextarea.value = notesCache[currentIdx] || '';
       notesTextarea.oninput = () => { notesCache[currentIdx] = notesTextarea.value; };
+      
       const container = document.getElementById('answers-container');
       const hint = document.getElementById('ai-hint');
       const checkBtn = document.getElementById('check-btn');
+      
       container.innerHTML = ''; hint.hidden = true; checkBtn.hidden = true;
-      if (q.tts) { document.getElementById('audio-block').hidden = false; } else { document.getElementById('audio-block').hidden = true; }
+      document.getElementById('audio-block').hidden = !q.tts;
+
       if (q.type === 'choice') {
         q.options.forEach((opt, idx) => {
           const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = opt;
@@ -156,10 +156,10 @@
             hint.hidden = false;
             if (idx === q.correct) {
               btn.style.borderColor = 'var(--accent-green)';
-              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green)'>정답입니다! 👍</span>";
+              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green);font-weight:700;'>정답입니다! 👍 Молодцы.</span>";
             } else {
               btn.style.borderColor = 'var(--accent-red)';
-              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red)'>틀렸습니다. Попробуйте еще раз.</span>";
+              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red);font-weight:700;'>틀렸습니다. Перечитайте задание.</span>";
             }
           }
           btn.onclick = () => { userAnswers[currentIdx] = idx; render(); };
@@ -168,283 +168,38 @@
       } else {
         checkBtn.hidden = false;
         const txt = document.createElement('textarea'); txt.className = 'answer-input'; txt.rows = 2;
-        txt.placeholder = "Введите ответ на корейском..."; txt.value = userAnswers[currentIdx] || '';
+        txt.placeholder = "Введите ваш академический ответ на корейском..."; txt.value = userAnswers[currentIdx] || '';
         txt.oninput = () => { userAnswers[currentIdx] = txt.value; };
         container.appendChild(txt);
       }
       document.getElementById('prev-btn').disabled = currentIdx === 0;
-      document.getElementById('next-btn').textContent = currentIdx === questions.length - 1 ? "Готово" : "Далее →";
+      document.getElementById('next-btn').textContent = currentIdx === activeQuestions.length - 1 ? "В меню вариантов" : "Далее →";
     }
+
     document.getElementById('play-btn').onclick = () => {
-      const q = questions[currentIdx]; if (!q.tts) return;
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(q.tts); u.lang = 'ko-KR'; u.rate = 0.8;
+      const u = new SpeechSynthesisUtterance(activeQuestions[currentIdx].tts); u.lang = 'ko-KR'; u.rate = 0.8;
       window.speechSynthesis.speak(u);
     };
+
     document.getElementById('check-btn').onclick = () => {
-      const q = questions[currentIdx]; const ans = (userAnswers[currentIdx] || '').trim();
+      const q = activeQuestions[currentIdx]; const ans = (userAnswers[currentIdx] || '').trim();
       const hint = document.getElementById('ai-hint'); hint.hidden = false;
       if (ans.toLowerCase() === q.sample.toLowerCase()) {
-        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-green)'>정답입니다! Правильно: ${q.sample}</span>`;
+        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-green);font-weight:700;'>정답입니다! Точный ключ: ${q.sample}</span>`;
       } else {
-        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-red)'>Ошибка. Правильный ответ: ${q.sample}</span>`;
+        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-red);font-weight:700;'>Ошибка. Правильный академический ответ: ${q.sample}</span>`;
       }
     };
+
     document.getElementById('next-btn').onclick = () => {
-      if (currentIdx < questions.length - 1) { currentIdx++; render(); } else { alert("Тест TOPIK II завершен!"); window.location.href = 'index.html'; }
+      if (currentIdx < activeQuestions.length - 1) { currentIdx++; render(); } 
+      else { 
+        alert("Тестирование TOPIK II завершено!"); 
+        location.reload();
+      }
     };
     document.getElementById('prev-btn').onclick = () => { if (currentIdx > 0) { currentIdx--; render(); } };
-    render();
-  </script>
-</body>
-</html>    
-    .test-grid {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 25px;
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-    @media (max-width: 768px) {
-      .test-grid { grid-template-columns: 1fr; }
-    }
-
-    /* Мини-справочник */
-    .student-guide {
-      background: rgba(168, 85, 247, 0.04);
-      border: 1px solid rgba(168, 85, 247, 0.2);
-      border-radius: 16px;
-      padding: 20px;
-      height: fit-content;
-    }
-    .guide-title { font-weight: 700; color: #c084fc; margin-top: 0; margin-bottom: 10px; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-
-    /* Поле для аудио */
-    .audio-block { background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(17, 24, 39, 0.6)); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 16px; padding: 20px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
-    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 10px var(--primary-glow); }
-    
-    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
-    .question-num { background: var(--primary); color: #fff; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-right: 10px; }
-    
-    .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; }
-    .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); background: rgba(168, 85, 247, 0.05); }
-    
-    .answer-input, .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; font-size: 1.1rem; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; }
-    .answer-input:focus, .notes-textarea:focus { border-color: var(--primary); outline: none; }
-    
-    /* Стили для Черновика */
-    .scratchpad-block { margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px; }
-    
-    .ai-hint { margin-top: 20px; padding: 15px 20px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
-    .btn { padding: 12px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--primary); }
-    .test-nav { display: flex; justify-content: space-between; margin-top: 25px; }
-  </style>
-</head>
-<body>
-
-  <header class="test-header">
-    <div class="test-header-inner">
-      <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK.ILS</div>
-      <div style="color: var(--text-muted);">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></div>
-    </div>
-  </header>
-
-  <div class="test-grid">
-    <!-- Левая колонка: Вопросы -->
-    <main>
-      <h2 id="part-title" style="font-size: 1.4rem; margin-bottom: 5px; margin-top: 0;">Загрузка...</h2>
-      <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; margin-top: 0;"></p>
-
-      <div class="audio-block" id="audio-block" hidden>
-        <button type="button" class="audio-play-btn" id="play-btn">▶</button>
-        <div>
-          <p style="margin:0; font-weight:600;">듣기 (Аудиозапись задания)</p>
-          <span style="font-size:0.8rem; color:#c084fc;">🔄 Доступно бесконечное прослушивание</span>
-        </div>
-      </div>
-
-      <div class="question-block">
-        <div style="margin-bottom: 15px;"><span class="question-num" id="q-badge">1</span><span id="q-instruction" style="color:var(--text-muted);"></span></div>
-        <div id="q-text" style="font-size: 1.3rem; font-weight:700; margin: 20px 0;"></div>
-        <div id="answers-container"></div>
-        
-        <div class="ai-hint" id="ai-hint" hidden>
-          <p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p>
-        </div>
-
-        <!-- Место для записей студента (Черновик) -->
-        <div class="scratchpad-block">
-          <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Место для ваших заметок и перевода (Черновик):</label>
-          <textarea class="notes-textarea" id="student-notes" rows="3" placeholder="Здесь вы можете делать любые пометки во время анализа вопроса..."></textarea>
-        </div>
-      </div>
-
-      <div class="test-nav">
-        <button class="btn btn-secondary" id="prev-btn" style="color:#fff;">← Назад</button>
-        <button class="btn btn-secondary" id="check-btn" hidden>Проверить ответ</button>
-        <button class="btn btn-primary" id="next-btn">Далее →</button>
-      </div>
-    </main>
-
-    <!-- Правая колонка: Справочник-Инструкция -->
-    <aside>
-      <div class="student-guide">
-        <h3 class="guide-title">💡 Что нужно сделать?</h3>
-        <p id="guide-content" style="margin: 0; font-size: 0.9rem; color: var(--text-main); line-height: 1.5;"></p>
-      </div>
-    </aside>
-  </div>
-
-  <script>
-    const questions = [
-      {
-        part: "Part 1: 듣기 (Аудирование — Уровень 5-6)",
-        desc: "Послушайте текст лекции и выберите продолжение мысли.",
-        instruction: "다음 전개될 내용으로 가장 알맞은 것을 고르십시오:",
-        text: "Спикер рассуждает о влиянии четвертой промышленной революции на рынок труда.",
-        tts: "4차 산업혁명 시대가 도래함에 따라 인공지능이 인간의 일자리를 대체할 것이라는 우려가 커지고 있습니다. 그러나 역사적으로 기술의 발전은 언제나 새로운 형태의 직업을 창출해 왔습니다. 따라서 우리는...",
-        options: [
-          "A) 인공지능 발전을 전면 중단해야 한다 (Нужно остановить развитие ИИ)",
-          "B) 새로운 시대에 맞는 교육 체계를 구축해야 한다 (Необходимо создать систему образования новой эпохи)",
-          "C) 전통적인 제조업 일자리를 무조건 보호해야 한다 (Нужно защищать рабочие места)"
-        ],
-        correct: 1,
-        type: "choice",
-        guide: "Слушайте корейскую речь (кнопка ▶). Главная задача — понять логику спикера и выбрать вариант, который максимально естественно продолжает его последнее предложение. Вы можете слушать аудиозапись неограниченное число раз."
-      },
-      {
-        part: "Part 2: 읽기 (Чтение — Высокий уровень)",
-        desc: "Прочитайте текст и выберите подходящее устойчивое выражение (사자성어).",
-        instruction: "밑줄 친 부분에 알맞은 사자성어를 고르십시오:",
-        text: "김 과장은 아무리 어려운 상황이 닥쳐도 뼈를 깎는 고통을 견디며 목표를 향해 나아갔다. Его усердие привело к успеху:",
-        options: [
-          "A) 절치부심 (切齒腐心 - Точить зубы от злости)",
-          "B) 고진감래 (苦尽甘来 - После горечи приходит сладость / Успех через труд)",
-          "C) 동문서답 (東問西答 - Отвечать невпопад)"
-        ],
-        correct: 1,
-        type: "choice",
-        guide: "Прочитайте контекст задания. Вам нужно определить характер или судьбу героя и выбрать подходящий по смыслу корейский фразеологизм (из четырех иероглифов). Используйте черновик для разбора незнакомых слов."
-      },
-      {
-        part: "Part 3: 쓰기 (Письмо — Задание 53-54)",
-        desc: "Впишите официальное академическое вводное слово (서술형).",
-        instruction: "빈칸에 가장 알맞은 문장 연결어를 입력하십시오 (Напротив / С другой стороны):",
-        text: "도시 지역은 인구 과밀화로 몸살을 앓고 있다. (___________), 농촌 지역은 인구 감소로 소멸 위기에 처해 있다.",
-        sample: "반면에",
-        type: "write",
-        guide: "Внимательно изучите два контрастных предложения. Вместо пропусков впишите точное соединительное слово на корейском языке, соблюдая правила строгого академического стиля. Нажмите кнопку «Проверить ответ» для самоконтроля."
-      }
-    ];
-
-    let currentIdx = 0;
-    const userAnswers = {};
-    const notesCache = {}; // Кэш для черновика, чтобы записи не стирались при переходах
-
-    function render() {
-      const q = questions[currentIdx];
-      document.getElementById('current-q').textContent = currentIdx + 1;
-      document.getElementById('total-q').textContent = questions.length;
-      document.getElementById('q-badge').textContent = currentIdx + 1;
-      document.getElementById('part-title').textContent = q.part;
-      document.getElementById('part-desc').textContent = q.desc;
-      document.getElementById('q-instruction').textContent = q.instruction;
-      document.getElementById('q-text').textContent = q.text;
-      
-      // Обновляем текст справочника справа
-      document.getElementById('guide-content').textContent = q.guide;
-
-      // Загружаем черновик для текущего вопроса
-      const notesTextarea = document.getElementById('student-notes');
-      notesTextarea.value = notesCache[currentIdx] || '';
-      notesTextarea.oninput = () => { notesCache[currentIdx] = notesTextarea.value; };
-
-      const container = document.getElementById('answers-container');
-      const hint = document.getElementById('ai-hint');
-      const checkBtn = document.getElementById('check-btn');
-      
-      container.innerHTML = '';
-      hint.hidden = true;
-      checkBtn.hidden = true;
-
-      if (q.tts) {
-        document.getElementById('audio-block').hidden = false;
-      } else {
-        document.getElementById('audio-block').hidden = true;
-      }
-
-      if (q.type === 'choice') {
-        q.options.forEach((opt, idx) => {
-          const btn = document.createElement('button');
-          btn.className = 'answer-btn';
-          btn.textContent = opt;
-          
-          if (userAnswers[currentIdx] === idx) {
-            hint.hidden = false;
-            if (idx === q.correct) {
-              btn.style.borderColor = 'var(--accent-green)';
-              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green)'>정답입니다! (Верно) 👍</span>";
-            } else {
-              btn.style.borderColor = 'var(--accent-red)';
-              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red)'>틀렸습니다. Попробуйте еще раз.</span>";
-            }
-          }
-          btn.onclick = () => { userAnswers[currentIdx] = idx; render(); };
-          container.appendChild(btn);
-        });
-      } else {
-        checkBtn.hidden = false;
-        const txt = document.createElement('textarea');
-        txt.className = 'answer-input';
-        txt.rows = 2;
-        txt.placeholder = "Введите ответ на корейском...";
-        txt.value = userAnswers[currentIdx] || '';
-        txt.oninput = () => { userAnswers[currentIdx] = txt.value; };
-        container.appendChild(txt);
-      }
-
-      document.getElementById('prev-btn').disabled = currentIdx === 0;
-      document.getElementById('next-btn').textContent = currentIdx === questions.length - 1 ? "Готово" : "Далее →";
-    }
-
-    document.getElementById('play-btn').onclick = () => {
-      const q = questions[currentIdx];
-      if (!q.tts) return;
-      window.speechSynthesis.cancel(); // Сброс предыдущей речи перед новым стартом
-      const u = new SpeechSynthesisUtterance(q.tts);
-      u.lang = 'ko-KR'; u.rate = 0.8;
-      window.speechSynthesis.speak(u);
-    };
-
-    document.getElementById('check-btn').onclick = () => {
-      const q = questions[currentIdx];
-      const ans = (userAnswers[currentIdx] || '').trim();
-      const hint = document.getElementById('ai-hint');
-      hint.hidden = false;
-      if (ans.toLowerCase() === q.sample.toLowerCase()) {
-        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-green)'>정답입니다! Правильно: ${q.sample}</span>`;
-      } else {
-        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-red)'>틀렸습니다. Правильный ответ: ${q.sample}</span>`;
-      }
-    };
-
-    document.getElementById('next-btn').onclick = () => {
-      if (currentIdx < questions.length - 1) {
-        currentIdx++; render();
-      } else {
-        alert("Тестирование завершено! Вы отлично справились.");
-        window.location.href = 'index.html';
-      }
-    };
-
-    document.getElementById('prev-btn').onclick = () => {
-      if (currentIdx > 0) { currentIdx--; render(); }
-    };
-
-    render();
   </script>
 </body>
 </html>
