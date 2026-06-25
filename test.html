@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Симулятор TOPIK · ILS</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Премиальные стили для симулятора тестов */
+    :root {
+      --primary: #a855f7;
+      --primary-glow: rgba(168, 85, 247, 0.3);
+      --bg-main: #090d16;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-green: #34d399;
+      --accent-red: #f87171;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      background-image: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
+      font-family: system-ui, -apple-system, sans-serif;
+      color: var(--text-main);
+    }
+
+    /* Шапка теста */
+    .test-header {
+      background: rgba(9, 13, 22, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-kor {
+      background: linear-gradient(135deg, #a855f7, #c084fc);
+      color: #0f172a;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    /* Вкладки секций экзамена */
+    .parts-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+    .part-tab {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .part-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    /* Интерактивный аудио-плеер */
+    .audio-block {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(17, 24, 39, 0.6));
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .audio-play-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      width: 45px; height: 45px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 10px var(--primary-glow);
+      transition: transform 0.1s;
+    }
+    .audio-play-btn:active { transform: scale(0.95); }
+
+    /* Окна вопросов и ответов */
+    .question-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .question-num {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    .answer-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 16px 20px;
+      border-radius: 12px;
+      width: 100%;
+      text-align: left;
+      font-size: 1.05rem;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .answer-btn:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      background: rgba(168, 85, 247, 0.05);
+    }
+
+    /* Поле ввода для ручных ответов */
+    .answer-input {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 1.2rem;
+      padding: 15px;
+      border-radius: 12px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 15px;
+    }
+    .answer-input:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    /* Панель подсказок системы */
+    .ai-hint {
+      margin-top: 20px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--primary);
+    }
+  </style>
+</head>
+<body class="test-page">
+  <header class="test-header">
+    <div class="container test-header-inner">
+      <a href="index.html" class="logo logo-sm">
+        <span class="logo-kor">한국</span>
+        <span class="logo-text">TOPIK.ILS</span>
+      </a>
+      <div class="test-meta">
+        <span class="test-level" id="exam-title">TOPIK Test</span>
+        <span class="test-progress">Вопрос <span id="current-q">1</span> из <span id="total-q">3</span></span>
+      </div>
+      <div class="timer" id="timer"><span id="timer-display">40:00</span></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </header>
+
+  <main class="test-main">
+    <div class="container test-container" style="margin-top: 30px;">
+      <!-- Вкладки секций (듣기 / 읽기 / 쓰기) -->
+      <div class="parts-tabs" id="parts-tabs-container"></div>
+
+      <!-- Заголовок и описание текущей секции -->
+      <section class="test-section" style="margin-bottom: 20px;">
+        <h2 id="section-title" class="section-title" style="font-size: 1.4rem; font-weight:700;">Загрузка...</h2>
+        <p id="section-desc" class="section-desc" style="color: var(--text-muted); font-size:0.9rem;"></p>
+      </section>
+
+      <!-- Интерактивный блок аудио-задания -->
+      <section class="audio-block" id="audio-block" hidden>
+        <div class="audio-player" style="display: flex; align-items: center; gap: 15px;">
+          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
+          <div class="audio-info">
+            <p class="audio-title" style="font-weight: 600; margin: 0;">듣기 (Аудиозапись задания)</p>
+            <span class="audio-hint" style="font-size: 0.8rem; color: var(--text-muted);">Осталось прослушиваний: <span id="plays-left">2</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Основной блок вопроса -->
+      <section class="question-block">
+        <div class="question-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+          <span class="question-num" id="q-num-badge">1</span>
+          <p class="question-instruction" id="q-instruction" style="color: var(--text-muted); margin: 0; font-size: 0.95rem;"></p>
+        </div>
+        <div class="question-main-text" id="q-text" style="font-size: 1.5rem; font-weight: 700; color: #fff; margin: 20px 0;"></div>
+        <div id="answers-container"></div>
+        
+        <!-- Панель фидбека (Правильно / Неправильно) -->
+        <div class="ai-hint" id="ai-hint" hidden>
+          <span class="ai-badge" style="background: var(--primary); color: #fff; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Система</span>
+          <p id="ai-hint-text" style="margin: 8px 0 0 0; font-size: 0.95rem;"></p>
+        </div>
+      </section>
+
+      <!-- Кнопки управления тестом -->
+      <nav class="test-nav" style="display: flex; justify-content: space-between; margin-top: 25px;">
+        <button type="button" class="btn btn-ghost" id="prev-btn">← Назад</button>
+        <button type="button" class="btn btn-secondary" id="check-btn" hidden style="border-color: var(--primary); color: var(--primary);">Проверить ответ</button>
+        <button type="button" class="btn btn-primary" id="next-btn" style="background: var(--primary); color: #fff;">Далее →</button>
+      </nav>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const examBank = {};
+
+      // Автоматическая генерация пустых шаблонов для ВСЕХ 10 вариантов (TOPIK I и TOPIK II)
+      function generateBlankTopik(level, variant) {
+        return {
+          title: `TOPIK ${level === 1 ? 'I' : 'II'} — Вариант 0${variant}`,
+          parts: [
+            {
+              id: 'part1', name: 'Part 1: 듣기 (Listening)', description: 'Послушайте аудиозапись на корейском языке и выберите подходящий ответ.',
+              questions: [{ type: 'choice', instruction: '알맞은 대답을 고르십시오 (Выберите правильный ответ):', text: `Пример вопроса 듣ки TOPIK ${level === 1 ? 'I' : 'II'} (Вариант ${variant})`, options: ['A) 안녕하세요 (Привет)', 'B) 감사합니다 (Спасибо)', 'C) 만나서 반갑습니다 (Рад встрече)'], correctAnswer: 0, tts: '안녕하세요' }]
+            },
+            {
+              id: 'part2', name: 'Part 2: 읽기 (Reading)', description: 'Прочитайте текст и определите его главную тему или вставьте пропущенное слово.',
+              questions: [{ type: 'choice', instruction: '무엇에 대한 이야기입니까? (О чем текст?):', text: '저는 한국어를 공부합니다. 재미있습니다.', options: ['A) 공부 (Учеба)', 'B) 날씨 (Погода)', 'C) 주말 (Выходные)'], correctAnswer: 0 }]
+            },
+            {
+              id: 'part3', name: 'Part 3: 쓰기 (Writing)', description: 'Впишите пропущенные грамматические конструкции или слова (Задание повышенной сложности).',
+              questions: [{ type: 'write', instruction: '알맞은 문장을 쓰십시오 (Впишите правильное слово):', text: 'Запишите перевод слова «Школа» на корейском языке:', sample: '학교' }]
+            }
+          ]
+        };
+      }
+
+      for (let l = 1; l <= 2; l++) {
+        for (let v = 1; v <= 5; v++) {
+          examBank[`topik${l}-v${v}`] = generateBlankTopik(l, v);
+        }
+      }
+
+      // БОЕВОЙ ПРИМЕР С РЕАЛЬНЫМИ ВОПРОСАМИ ДЛЯ TOPIK I — ВАРИАНТ 1
+      examBank['topik1-v1'] = {
+        title: 'TOPIK I — Вариант 01 (Основной)',
+        parts: [
+          {
+            id: 'part1', name: 'Part 1: 듣기 (Аудирование)', description: 'Послушайте вопрос и выберите правильную реплику для ответа.',
+            questions: [
+              { type: 'choice', instruction: 'Выберите наиболее логичный ответ на услышанное слово:', text: 'Что ответить собеседнику?', tts: '만나서 반갑습니다', options: ['A) 네, 반갑습니다 (Да, рад встрече)', 'B) 아니요, 한국 사람입니다 (Нет, я кореец)', 'C) 집에 가요 (Я иду домой)'], correctAnswer: 0 }
+            ]
+          },
+          {
+            id: 'part2', name: 'Part 2: 읽기 (Чтение)', description: 'Внимательно прочитайте корейское предложение и выберите верное пропущенное слово.',
+            questions: [
+              { type: 'choice', instruction: 'Какое слово идеально подходит по смыслу?:', text: '오늘 시장에서 피자를 ____.', options: ['A) 마셔요 (Пью)', 'B) 먹어요 (Ем)', 'C) 봐요 (Смотреть)'], correctAnswer: 1 }
+            ]
+          },
+          {
+            id: 'part3', name: 'Part 3: 쓰기 (Письмо)', description: 'Проверьте свои навыки правописания слов и базовых выражений.',
+            questions: [
+              { type: 'write', instruction: 'Впишите перевод слова «Друг» на корейском:', text: 'Переведите слово «Друг»:', sample: '친구' }
+            ]
+          }
+        ]
+      };
+
+      // Логика работы симулятора
+      const urlParams = new URLSearchParams(window.location.search);
+      const examKey = urlParams.get('exam') || 'topik1-v1';
+      const currentExam = examBank[examKey] || examBank['topik1-v1'];
+
+      let flatQuestions = [];
+      currentExam.parts.forEach(part => {
+        part.questions.forEach(q => {
+          flatQuestions.push({ ...q, partId: part.id, partName: part.name, partDesc: part.description });
+        });
+      });
+
+      let currentGlobalIdx = 0, playCount = 0;
+      const savedAnswers = {};
+
+      const examTitleEl = document.getElementById('exam-title');
+      const sectionTitleEl = document.getElementById('section-title');
+      const sectionDescEl = document.getElementById('section-desc');
+      const qInstructionEl = document.getElementById('q-instruction');
+      const qTextEl = document.getElementById('q-text');
+      const currentQEl = document.getElementById('current-q');
+      const totalQEl = document.getElementById('total-q');
+      const answersContainer = document.getElementById('answers-container');
+      const audioBlock = document.getElementById('audio-block');
+      const playBtn = document.getElementById('play-btn');
+      const playsLeftEl = document.getElementById('plays-left');
+      const nextBtn = document.getElementById('next-btn');
+      const prevBtn = document.getElementById('prev-btn');
+      const checkBtn = document.getElementById('check-btn');
+      const aiHint = document.getElementById('ai-hint');
+      const aiHintText = document.getElementById('ai-hint-text');
+      const tabsContainer = document.getElementById('parts-tabs-container');
+
+      examTitleEl.textContent = currentExam.title;
+      totalQEl.textContent = flatQuestions.length;
+
+      function renderTabs(activePartId) {
+        tabsContainer.innerHTML = '';
+        currentExam.parts.forEach(part => {
+          const tab = document.createElement('div');
+          tab.className = `part-tab ${part.id === activePartId ? 'active' : ''}`;
+          tab.textContent = part.name.split(':')[0];
+          tabsContainer.appendChild(tab);
+        });
+      }
+
+      function renderQuestion() {
+        const q = flatQuestions[currentGlobalIdx];
+        currentQEl.textContent = currentGlobalIdx + 1;
+        document.getElementById('q-num-badge').textContent = currentGlobalIdx + 1;
+        renderTabs(q.partId);
+
+        sectionTitleEl.textContent = q.partName;
+        sectionDescEl.textContent = q.partDesc;
+        qInstructionEl.textContent = q.instruction;
+        qTextEl.textContent = q.text;
+
+        document.getElementById('progress-fill').style.width = `${((currentGlobalIdx + 1) / flatQuestions.length) * 100}%`;
+
+        if (q.tts) { audioBlock.hidden = false; playCount = 0; playsLeftEl.textContent = '2'; } 
+        else { audioBlock.hidden = true; }
+
+        answersContainer.innerHTML = ''; aiHint.hidden = true; checkBtn.hidden = false;
+
+        if (q.type === 'write') {
+          checkBtn.hidden = false;
+          answersContainer.innerHTML = `<textarea id="answer-input" class="answer-input" rows="2" placeholder="Введите ваш ответ на корейском языке..."></textarea>`;
+          const input = document.getElementById('answer-input');
+          input.value = savedAnswers[currentGlobalIdx] || '';
+          input.addEventListener('input', () => savedAnswers[currentGlobalIdx] = input.value);
+        } 
+        else if (q.type === 'choice') {
+          checkBtn.hidden = true;
+          q.options.forEach((option, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = option;
+
+            if (savedAnswers[currentGlobalIdx] === idx) {
+              aiHint.hidden = false;
+              if (idx === q.correctAnswer) {
+                aiHintText.innerHTML = '<span style="color:var(--accent-green); font-weight:700;">맞습니다! (Верно) 👍</span>';
+                btn.style.background = 'rgba(52, 211, 153, 0.1)';
+                btn.style.borderColor = 'var(--accent-green)';
+              } else {
+                aiHintText.innerHTML = '<span style="color:var(--accent-red); font-weight:700;">틀렸습니다 (Неверно). Попробуйте еще раз.</span>';
+                btn.style.background = 'rgba(248, 113, 113, 0.1)';
+                btn.style.borderColor = 'var(--accent-red)';
+              }
+            }
+            btn.onclick = () => { savedAnswers[currentGlobalIdx] = idx; renderQuestion(); };
+            answersContainer.appendChild(btn);
+          });
+        }
+        prevBtn.disabled = currentGlobalIdx === 0;
+        nextBtn.textContent = currentGlobalIdx === flatQuestions.length - 1 ? 'Завершить' : 'Далее →';
+      }
+
+      playBtn.addEventListener('click', () => {
+        const q = flatQuestions[currentGlobalIdx];
+        if (!q.tts || playCount >= 2) return;
+        playCount++; playsLeftEl.textContent = 2 - playCount;
+        const utterance = new SpeechSynthesisUtterance(q.tts);
+        utterance.lang = 'ko-KR'; utterance.rate = 0.82; // Корейский речевой движок Apple/Google
+        window.speechSynthesis.speak(utterance);
+      });
+
+      checkBtn.addEventListener('click', () => {
+        const q = flatQuestions[currentGlobalIdx];
+        const input = document.getElementById('answer-input');
+        const userText = input ? input.value.trim() : '';
+        aiHint.hidden = false;
+        if (!userText) { aiHintText.textContent = "Пожалуйста, впишите ответ."; return; }
+        
+        if (userText.toLowerCase() === q.sample.trim().toLowerCase()) {
+          aiHintText.innerHTML = `정답입니다! Ответ верен: <span style="color:var(--accent-green)">${q.sample}</span>`;
+        } else {
+          aiHintText.innerHTML = `틀렸습니다. Правильный ответ: <strong style="color:#fff">${q.sample}</strong>`;
+        }
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (currentGlobalIdx < flatQuestions.length - 1) { currentGlobalIdx++; renderQuestion(); } 
+        else { alert('Экзамен TOPIK успешно завершен!'); window.location.href = 'index.html'; }
+      });
+
+      prevBtn.addEventListener('click', () => { if (currentGlobalIdx > 0) { currentGlobalIdx--; renderQuestion(); } });
+
+      renderQuestion();
+    })();
+  </script>
+</body>
+</html>
