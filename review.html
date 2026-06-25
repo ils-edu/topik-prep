@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Результаты экзамена · TOPIK.ILS</title>
+  <style>
+    :root {
+      --bg: #05050a;
+      --card-bg: rgba(13, 13, 25, 0.7);
+      --border: rgba(168, 85, 247, 0.15);
+      --text: #f3f4f6;
+      --text-muted: #71717a;
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.25);
+      --green: #10b981;
+      --red: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+
+    .header {
+      backdrop-filter: blur(16px); background: rgba(5, 5, 10, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05); height: 70px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-weight: 800; font-size: 1.2rem; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .logo-badge { background: linear-gradient(135deg, var(--purple), #06b6d4); color: #000; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 900; }
+
+    /* Карточка общего результата */
+    .score-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px;
+      padding: 40px; margin-top: 40px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      position: relative; overflow: hidden;
+    }
+    .score-ellipse {
+      width: 130px; height: 130px; border-radius: 50%; border: 6px solid rgba(255,255,255,0.03);
+      border-top-color: var(--purple); margin: 0 auto 20px auto; display: flex; align-items: center;
+      justify-content: center; font-size: 2rem; font-weight: 800; color: #fff;
+      box-shadow: 0 0 20px var(--purple-glow);
+    }
+    .score-status { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+    .score-meta { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px; }
+
+    .btn-group { display: flex; gap: 15px; justify-content: center; }
+    .btn {
+      padding: 12px 28px; border-radius: 12px; font-weight: 600; text-decoration: none; cursor: pointer;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); border: none; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.08); }
+
+    /* Список вопросов для разбора ошибок */
+    .breakdown-title { font-size: 1.25rem; font-weight: 700; margin: 40px 0 20px 0; color: #fff; }
+    .q-item {
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px;
+      padding: 20px; margin-bottom: 16px; border-left: 4px solid var(--text-muted);
+    }
+    .q-item.correct { border-left-color: var(--green); background: rgba(16, 185, 129, 0.02); }
+    .q-item.incorrect { border-left-color: var(--red); background: rgba(239, 68, 68, 0.02); }
+    
+    .q-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .q-badge { font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+    .correct .q-badge { background: rgba(16, 185, 129, 0.1); color: var(--green); }
+    .incorrect .q-badge { background: rgba(239, 68, 68, 0.1); color: var(--red); }
+    
+    .q-text { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 12px; }
+    .q-ans-info { font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; }
+    .q-ans-info strong { color: #fff; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-badge">한국어</span>
+        <span>TOPIK.ILS</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="score-card">
+      <div class="score-ellipse" id="score-pct">0%</div>
+      <div class="score-status" id="score-status">Анализ ответов...</div>
+      <div class="score-meta" id="score-summary">Вы ответили правильно на 0 из 0 вопросов.</div>
+      
+      <div class="btn-group">
+        <a href="index.html" class="btn btn-secondary">В личный кабинет</a>
+        <button onclick="restartExam()" class="btn btn-primary">Пройти ещё раз</button>
+      </div>
+    </div>
+
+    <h3 class="breakdown-title">Детальный разбор результатов</h3>
+    <div id="breakdown-list"></div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Извлекаем сохраненные данные из sessionStorage (их туда запишет симулятор теста перед перенаправлением)
+      const resultsData = JSON.parse(sessionStorage.getItem('topik_last_results'));
+      
+      if (!resultsData) {
+        document.getElementById('score-status').textContent = "Данные теста не найдены";
+        return;
+      }
+
+      const { examTitle, totalQuestions, correctCount, questions, userAnswers, examKey } = resultsData;
+      const percent = Math.round((correctCount / totalQuestions) * 100);
+
+      // Заполняем виджет результатов
+      document.getElementById('score-pct').textContent = `${percent}%`;
+      document.getElementById('score-summary').textContent = `Вы ответили правильно на ${correctCount} из ${totalQuestions} вопросов симулятора.`;
+      
+      const statusEl = document.getElementById('score-status');
+      if (percent >= 80) statusEl.textContent = "합격! Великолепный результат! 🎉";
+      else if (percent >= 50) statusEl.textContent = "Хороший результат, вы близки к цели! 👍";
+      else statusEl.textContent = "Нужно немного потренироваться! 💪";
+
+      // Генерируем разбор по каждому вопросу
+      const listContainer = document.getElementById('breakdown-list');
+      
+      questions.forEach((q, idx) => {
+        const userAns = userAnswers[idx];
+        let isCorrect = false;
+
+        if (q.type === 'choice') {
+          isCorrect = (userAns === q.correctAnswer);
+        } else if (q.type === 'write') {
+          isCorrect = (userAns && userAns.trim().toLowerCase() === q.sample.trim().toLowerCase());
+        }
+
+        const item = document.createElement('div');
+        item.className = `q-item ${isCorrect ? 'correct' : 'incorrect'}`;
+
+        let userAnsText = '';
+        let correctAnsText = '';
+
+        if (q.type === 'choice') {
+          userAnsText = userAns !== undefined ? q.options[userAns] : 'Нет ответа';
+          correctAnsText = q.options[q.correctAnswer];
+        } else {
+          userAnsText = userAns ? userAns : 'Нет ответа';
+          correctAnsText = q.sample;
+        }
+
+        item.innerHTML = `
+          <div class="q-header">
+            <span style="color:var(--text-muted); font-size:0.85rem;">Вопрос ${idx + 1} • ${q.partName.split(':')[0]}</span>
+            <span class="q-badge">${isCorrect ? 'Верно' : 'Ошибка'}</span>
+          </div>
+          <div class="q-text">${q.text}</div>
+          <div class="q-ans-info">
+            <div>Ваш ответ: <strong style="color: ${isCorrect ? 'var(--green)' : 'var(--red)'}">${userAnsText}</strong></div>
+            ${!isCorrect ? `<div>Правильный ответ: <strong style="color: var(--green)">${correctAnsText}</strong></div>` : ''}
+          </div>
+        `;
+        listContainer.appendChild(item);
+      });
+
+      // Функция для перезапуска текущего теста
+      window.restartExam = function() {
+        window.location.href = `test.html?exam=${examKey}`;
+      };
+    });
+  </script>
+</body>
+</html>
