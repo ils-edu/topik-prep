@@ -1,899 +1,270 @@
-(() => {
-  'use strict';
-
-  // Извлекаем точный ID выбранного варианта из URL (например: test.html?exam=topik1-v3)
-  const urlParams = new URLSearchParams(window.location.search);
-  const examKey = urlParams.get('exam') || 'topik1-v1';
-
-  // РЕПОЗИТОРИЙ ОФИЦИАЛЬНЫХ ЭКЗАМЕНАЦИОННЫХ ВАРИАНТОВ (기출문제)
-  const examRepository = {
-    
-    // ==========================================
-    // 📑 ПУЛ ВАРИАНТОВ TOPIK I (1-2 ГЫП)
-    // ==========================================
-    
-    'topik1-v1': [
-      { type: 'choice', text: '64th TOPIK I — Q1. 무엇에 대한 이야기입니까?\n"우유를 마십니다. 맛있습니다."', options: ['① 음식 (Еда/Напитки)', '② 나이 (Возраст)', '③ 날짜 (Дата)', '④ 이름 (Имя)'], answer: 1, points: 5 },
-      { type: 'choice', text: '64th TOPIK I — Q3. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"시장에 갑니다. 과일을 ( )."', options: ['① 멉니다', '② 삽니다 (Покупаю)', '③ 아픕니다', '④ 모릅니다'], answer: 2, points: 5 },
-      { type: 'choice', text: '60th TOPIK I — Q9. 다음은 무엇에 대한 안내문입니까?\n"이용 시간: 09:00 ~ 18:00 / 매주 월요일은 쉽니다."', options: ['① 가격', '② 취미', '③ 휴일 (Выходной)', '④ 주소'], answer: 3, points: 5 },
-      { type: 'choice', text: '83rd TOPIK I — Q15. 빈칸에 들어갈 알맞은 조사를 고르십시오.\n"오늘 아침 ( ) 빵을 먹었습니다."', options: ['① 에 (В / время)', '② 가', '③ 를', '④ 에서'], answer: 1, points: 5 }
-    ],
-    
-    'topik1-v2': [
-      { type: 'choice', text: '60th TOPIK I — Q2. 무엇에 대한 이야기입니까?\n"동생이 있습니다. 아주 귀엽습니다."', options: ['① 가족 (Семья)', '② 직업 (Профессия)', '③ 주말 (Выходные)', '④ 날씨 (Погода)'], answer: 1, points: 5 },
-      { type: 'choice', text: '64th TOPIK I — Q5. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"방이 너무 ( ). 불을 켭니다."', options: ['① 좁습니다', '② 어둡습니다 (Темно)', '③ 가깝습니다', '④ 조용합니다'], answer: 2, points: 5 },
-      { type: 'choice', text: '83rd TOPIK I — Q10. 다음은 무엇에 대한 안내문입니까?\n"피아노 치기, 영화 보기, 축구하기."', options: ['① 쇼핑', '② 계획', '③ 약속', '④ 취미 (Хобби)'], answer: 4, points: 5 },
-      { type: 'choice', text: '92nd TOPIK I — Q18. 문맥에 알맞은 형태를 고르십시오.\n"내일은 친구 생일입니다. 그래서 선물을 ( )."', options: ['① 샀습니다', '② 사겠습니다 (Куплю)', '③ 사고 싶었습니다', '④ 사지 않았습니다'], answer: 2, points: 5 }
-    ],
-    
-    'topik1-v3': [
-      { type: 'choice', text: '64th TOPIK I — Q2. 무엇에 대한 이야기입니까?\n"저는 스물두 살입니다. 학생입니다."', options: ['① 나라', '② 이름', '③ 나이 (Возраст)', '④ 가방'], answer: 3, points: 5 },
-      { type: 'choice', text: '60th TOPIK I — Q6. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"은행에 갑니다. 돈을 ( )."', options: ['① 바꿉니다 (Меняю/Снимаю)', '② 입습니다', '③ 가르칩니다', '④ 전화합니다'], answer: 1, points: 5 },
-      { type: 'choice', text: '92nd TOPIK I — Q11. 다음은 무엇에 대한 안내문입니까?\n"서울시 종로구 인사동길 12"', options: ['① 이름', '② 주소 (Адрес)', '③ 날짜', '④ 직업'], answer: 2, points: 5 },
-      { type: 'choice', text: '64th TOPIK I — Q21. 밑줄 친 표현의 의미로 알맞은 것을 고르십시오.\n"비가 오니까 우산을 가지고 ( )."', options: ['① 가세요 (Идите)', '② 오세요', '③ 보세요', '④ 드세요'], answer: 1, points: 5 }
-    ],
-    
-    'topik1-v4': [
-      { type: 'choice', text: '83rd TOPIK I — Q1. 무엇에 대한 이야기입니까?\n"한국어 공부가 재미있습니다. 매일 학원에 갑니다."', options: ['① 공부 (Учеба)', '② 계절', '③ 휴일', '④ 요일'], answer: 1, points: 5 },
-      { type: 'choice', text: '92nd TOPIK I — Q4. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"머리가 ( ). 약을 먹었습니다."', options: ['① 맑습니다', '② 좋습니다', '③ 아픕니다 (Болит)', '④ 작습니다'], answer: 3, points: 5 },
-      { type: 'choice', text: '64th TOPIK I — Q12. 다음 문장의 의미와 같은 것을 고르십시오.\n"여기는 주차장입니다. 차를 세우십시오."', options: ['① 물건을 사는 곳', '② 차를 세우는 곳 (Место парковки)', '③ 음식을 먹는 곳', '④ 차를 고치는 곳'], answer: 2, points: 5 },
-      { type: 'choice', text: '60th TOPIK I — Q25. 알맞은 접속사를 고르십시오.\n"눈이 많이 내렸습니다. ( ) 길이 미끄럽습니다."', options: ['① 하지만', '② 그래서 (Поэтому)', '③ 그런데', '④ 그러면'], answer: 2, points: 5 }
-    ],
-    
-    'topik1-v5': [
-      { type: 'choice', text: '92nd TOPIK I — Q3. 무엇에 대한 이야기입니까?\n"백화점에 갑니다. 옷을 삽니다."', options: ['① 날짜', '② 쇼핑 (Шопинг)', '③ 친구', '④ 취미'], answer: 2, points: 5 },
-      { type: 'choice', text: '83rd TOPIK I — Q7. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"약속 시간이 지났습니다. 친구가 아직 안 ( )."', options: ['① 옵니다 (Не приходит)', '② 갑니다', '③ 만납니다', '④ 전화합니다'], answer: 1, points: 5 },
-      { type: 'choice', text: '60th TOPIK I — Q14. 다음은 무엇에 대한 안내문입니까?\n"1층: 식당 / 2층: 서점 / 3층: 옷가게"', options: ['① 이용 방법', '② 층별 안내 (Инфо по этажам)', '③ 영업 시간', '④ 위치 안내'], answer: 2, points: 5 },
-      { type: 'choice', text: '64th TOPIK I — Q29. 문맥상 가장 알맞은 단어를 고르십시오.\n"기차표가 없습니다. 버스를 타고 ( ) 합니다."', options: ['① 가야 (Должен поехать)', '② 가려고', '③ 가지만', '④ 가다가'], answer: 1, points: 5 }
-    ],
-
-    // ==========================================
-    // 📑 ПУЛ ВАРИАНТОВ TOPIK II (3-6 ГЫП)
-    // ==========================================
-    
-    'topik2-v1': [
-      { type: 'choice', text: '64th TOPIK II — Q1. ( )에 들어갈 알맞은 것을 고르십시오.\n"공장을 다녀 본 ( ) 이 일은 그리 어렵지 않았다."', options: ['① 탓에', '② 셈 치고', '③ 바에야', '④ 적으로써 (На основе опыта)'], answer: 4, points: 2 },
-      { type: 'choice', text: '60th TOPIK II — Q13. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 지갑을 잃어버렸다.\n(나) 경찰서에 가서 신고를 했다.\n(다) 다행히 친절한 사람이 지갑을 찾아 주었다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (다)-(가)-(나)', '④ (가)-(다)-(나)'], answer: 1, points: 3 },
-      { type: 'write', text: '64th TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"유미 씨, 그동안 고ма웠습니다. 다음 주에 저는 고향으로 [ ㄱ ]. 떠나기 전에 얼굴을 보고 싶습니다."', sample: '돌아가게 되었습니다' },
-      { type: 'write', text: '60th TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"매운맛은 맛이 아니라 통증이다. 그럼에도 매운 음식을 먹으면 뇌가 통증을 줄이기 위해 엔도르핀을 [ ㄴ ]. 그래서 스트레스가 풀리는 느낌을 받는다."', sample: '분비하기 때문이다' }
-    ],
-    
-    'topik2-v2': [
-      { type: 'choice', text: '60th TOPIK II — Q1. ( )에 들어갈 알맞은 것을 고르십시오.\n"무슨 일을 ( ) 열심히 하는 모습이 보기 좋다."', options: ['① 하든지 (Что бы ни делал)', '② 하도록', '③ 하다 보면', '④ 하느라고'], answer: 1, points: 2 },
-      { type: 'choice', text: '64th TOPIK II — Q14. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 요즘은 스마트폰으로 책을 읽는 사람이 많다.\n(나) 그러나 종이책만의 매력을 잊지 못하는 독자도 있다.\n(다) 이들을 위해 종이 냄새가 나는 디지털 기기도 출시되었다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (가)-(다)-(나)', '④ (다)-(가)-(나)'], answer: 1, points: 3 },
-      { type: 'write', text: '60th TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"백화점 고객센터입니다. 문의하신 상품은 현재 재고가 부족하여 바로 [ ㄱ ]. 다음 주 월요일까지 배송해 드리겠습니다."', sample: '보내드리기 어렵습니다' },
-      { type: 'write', text: '64th TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"사람은 보통 거울을 보면 자신의 단점을 가리려고 한다. 그러나 거울 속에 비친 모습은 있는 그대로를 [ ㄴ ]. 이를 거부하기보다는 수용하는 자세가 필요하다."', sample: '보여주기 때문이다' }
-    ],
-    
-    'topik2-v3': [
-      { type: 'choice', text: '83rd TOPIK II — Q2. ( )에 들어갈 알맞은 것을 고르십시오.\n"부모는 자녀의 거울이라는 말이 있듯이 자녀는 부모의 행동을 ( ) 성장한다."', options: ['① 따라 하면서 (Повторяя/Копируя)', '② 따르다 보면', '③ 따르기 마련이라', '④ 따르는 척하면서'], answer: 1, points: 2 },
-      { type: 'choice', text: '83rd TOPIK II — Q15. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 씨앗을 심고 매일 물을 주었다.\n(나) 마침내 예쁜 꽃이 피어났다.\n(다) 얼마 후 조그만 싹이 트기 시작했다.', options: ['① (가)-(나)-(다)', '② (가)-(다)-(나)', '③ (다)-(가)-(나)', '④ (나)-(가)-(다)'], answer: 2, points: 3 },
-      { type: 'write', text: '83rd TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"한국어 말하기 대회에 참가하고 싶습니다. 신청 마감일이 내일까지인데 혹시 이메일로도 신청서를 [ ㄱ ]?"', sample: '제출해도 됩니까' },
-      { type: 'write', text: '83rd TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"식물이 자랄 때 햇빛은 필수적이다. 만약 햇빛을 충분히 받지 못하면 줄기가 가늘어지고 잎이 황색으로 [ ㄴ ]. 따라서 실내 식물은 주기적으로 햇볕을 쬐어주어야 한다."', sample: '변하게 된다' }
-    ],
-    
-    'topik2-v4': [
-      { type: 'choice', text: '92nd TOPIK II — Q1. ( )에 들어갈 알맞은 것을 고르십시오.\n"시험을 앞두고 잠을 ( ) 공부했더니 몸이 아주 피곤하다."', options: ['① 줄여 가며 (Уменьшая/Урезая)', '② 줄이다시피', '③ 줄이는 대신에', '④ 줄일 정도로'], answer: 1, points: 2 },
-      { type: 'choice', text: '92nd TOPIK II — Q13. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 고래는 허파로 숨을 쉬는 포유류 동물이다.\n(나) 그래서 물 밖으로 나와 주기적으로 호흡을 해야 한다.\n(다) 이때 머리 위에 있는 구멍을 통해 물을 뿜어내는 것처럼 보인다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (가)-(다)-(나)', '④ (다)-(가)-(나)'], answer: 1, points: 3 },
-      { type: 'write', text: '92nd TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"도서관장 마이클입니다. 지난달 대출하신 도서의 반납 예정일이 지났습니다. 이번 주말까지 도서를 [ ㄱ ] 주시면 연체료가 면제됩니다."', sample: '반납해' },
-      { type: 'write', text: '92nd TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"기술의 발전은 인간의 삶을 편리하게 만든다. 그러나 기술에 지나치게 의존하면 인간의 사고 능력이 [ ㄴ ]. 가끔은 цифровой 디톡스가 필요한 이유가 여기에 있다."', sample: '퇴화할 수 있다' }
-    ],
-    
-    'topik2-v5': [
-      { type: 'choice', text: '64th TOPIK II — Q2. ( )에 들어갈 알맞은 것을 고르십시오.\n"정부가 대책을 발표했음에도 불구하고 물가는 여전히 ( ) 기세를 보이고 있다."', options: ['① 오를 대로 오른', '② 오를 세라', '③ 오를 듯한', '④ 오를 대로 오르는'], answer: 4, points: 2 },
-      { type: 'choice', text: '60th TOPIK II — Q15. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 조선시대의 핵심 왕실 기록물들이 유네스코에 등재되었다.\n(나) 이것은 전 세계적으로 역사적 가치를 공식 인정받은 결과이다.\n(다) 앞으로 철저한 보존과 철저한 디지털화 관리가 요구된다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (다)-(가)-(나)', '④ (가)-(다)-(나)'], answer: 1, points: 3 },
-      { type: 'write', text: '73rd TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"하우스메이트를 구합니다. 방은 두 개이며, 거실과 주방을 함께 [ ㄱ ]. 관심 있으신 분은 연락 바랍니다."', sample: '사용하게 됩니다' },
-      { type: 'write', text: '73rd TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"낮은 산을 오를 때는 운동화를 신어도 무방하다. 그러나 높은 산을 오를 때는 반드시 전문 등산화를 [ ㄴ ]. 거친 바위와 미끄러운 흙길에서 발목 부상을 예방할 수 있기 때문이다."', sample: '착용해야 한다' }
-    ]
-  };
-
-  // Выбираем конкретный массив вопросов на основе ключа, иначе откатываемся на topik1-v1
-  const database = examRepository[examKey] || examRepository['topik1-v1'];
-  const questions = Object.freeze(database);
-
-  let currentIdx = 0;
-  const userAnswers = new Array(questions.length).fill(null);
-
-  function renderQuestion() {
-    if (currentIdx >= questions.length) {
-      finishExam();
-      return;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Симулятор TOPIK · Официальный пул заданий</title>
+  <style>
+    :root {
+      --bg: #05050a;
+      --card-bg: rgba(13, 13, 25, 0.7);
+      --border: rgba(168, 85, 247, 0.15);
+      --text: #f3f4f6;
+      --text-muted: #71717a;
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.25);
+      --cyan: #06b6d4;
     }
 
-    const q = questions[currentIdx];
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
+    body { background-color: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; padding: 40px 20px; }
+    .container { max-width: 750px; margin: 0 auto; }
+
+    .test-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan)); width: 0%; }
     
-    document.getElementById('progress').style.width = `${(currentIdx / questions.length) * 100}%`;
-    document.getElementById('q-meta').textContent = `Вопрос ${currentIdx + 1} из ${questions.length} (${q.type === 'choice' ? 'Тест' : 'Письменно'})`;
-    document.getElementById('q-text').textContent = q.text;
+    .q-meta { font-size: 0.85rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .q-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 30px; line-height: 1.5; color: #fff; white-space: pre-line; }
 
-    const zone = document.getElementById('interaction-zone');
-    zone.innerHTML = '';
-
-    if (q.type === 'choice') {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'options-group';
-      
-      q.options.forEach((opt, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.textContent = opt;
-        btn.onclick = () => saveChoiceAnswer(index + 1);
-        wrapper.appendChild(btn);
-      });
-      
-      zone.appendChild(wrapper);
-
-    } else if (q.type === 'write') {
-      const input = document.createElement('textarea');
-      input.className = 'write-input';
-      input.rows = 3;
-      input.placeholder = 'Введите ваш ответ на корейском языке...';
-      input.id = 'write-field';
-
-      const submitBtn = document.createElement('button');
-      submitBtn.className = 'action-btn';
-      submitBtn.textContent = 'Подтвердить ответ и далее';
-      submitBtn.onclick = () => saveWriteAnswer();
-
-      zone.appendChild(input);
-      zone.appendChild(submitBtn);
+    /* Варианты ответов */
+    .options-group { display: flex; flex-direction: column; gap: 14px; }
+    .option-btn {
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+      padding: 16px 20px; text-align: left; color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
     }
-  }
+    .option-btn:hover { background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.3); }
+    .option-btn:disabled { cursor: not-allowed; opacity: 0.6; }
 
-  function saveChoiceAnswer(selectedOption) {
-    disableAllInputs();
-    userAnswers[currentIdx] = selectedOption;
-
-    setTimeout(() => {
-      currentIdx++;
-      renderQuestion();
-    }, 300);
-  }
-
-  function saveWriteAnswer() {
-    const field = document.getElementById('write-field');
-    if (!field) return;
-
-    const val = field.value.trim();
-    if (!val) {
-      alert('Пожалуйста, напишите ответ перед переходом к следующему вопросу.');
-      return;
+    /* Письменная часть */
+    .write-input {
+      width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+      padding: 16px; color: #fff; font-size: 1.1rem; font-family: inherit; margin-bottom: 20px; resize: none;
     }
+    .write-input:focus { border-color: var(--purple); outline: none; }
+    .write-input:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    disableAllInputs();
-    userAnswers[currentIdx] = val;
-
-    currentIdx++;
-    renderQuestion();
-  }
-
-  function disableAllInputs() {
-    document.querySelectorAll('.option-btn, #write-field, .action-btn').forEach(el => {
-      el.disabled = true;
-    });
-  }
-
-  function finishExam() {
-    let correctCount = 0;
-
-    questions.forEach((q, idx) => {
-      const uAns = userAnswers[idx];
-      if (q.type === 'choice') {
-        if (Number(uAns) === Number(q.answer)) correctCount++;
-      } else if (q.type === 'write') {
-        // Мягкое сравнение строк без учета пробелов и регистра
-        if (uAns && String(uAns).replace(/\s+/g, '').toLowerCase() === String(q.sample).replace(/\s+/g, '').toLowerCase()) {
-          correctCount++;
-        }
-      }
-    });
-
-    const resultsPayload = {
-      examKey: examKey,
-      totalQuestions: questions.length,
-      correctCount: correctCount,
-      questions: questions.map(q => ({
-        type: q.type,
-        text: q.text,
-        correctAnswer: q.options ? q.options[q.answer - 1] : null,
-        sample: q.sample || null
-      })),
-      userAnswers: userAnswers.map((u, i) => {
-        if (questions[i].type === 'choice') {
-          return questions[i].options[u - 1] || 'Нет ответа';
-        }
-        return u;
-      })
-    };
-
-    sessionStorage.setItem('topik_last_results', JSON.stringify(resultsPayload));
-    window.location.href = 'results.html';
-  }
-
-  document.addEventListener('DOMContentLoaded', renderQuestion);
-})();
-.variant-btn small { font-weight: 400; font-size: 0.8rem; opacity: 0.85; }
-
-    .student-guide { background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; position: sticky; top: 90px; }
-    .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-    .tag { font-size: 0.72rem; font-weight: 700; padding: 4px 9px; border-radius: 999px; letter-spacing: 0.02em; }
-    .tag-listen { background: rgba(52, 211, 153, 0.15); color: var(--accent-green); }
-    .tag-read { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
-    .tag-write { background: rgba(168, 85, 247, 0.18); color: #c084fc; }
-    .audio-block { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
-    .audio-play-btn { background: var(--primary); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; flex-shrink: 0; }
-    .question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    .answer-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: var(--text-main); padding: 16px 20px; border-radius: 12px; width: 100%; text-align: left; font-size: 1.05rem; margin: 10px 0; cursor: pointer; transition: all 0.2s; display: block; }
-    .answer-btn:hover { border-color: rgba(168, 85, 247, 0.4); }
-    .answer-btn.correct-choice { border-color: var(--accent-green); background: rgba(52, 211, 153, 0.08); }
-    .answer-btn.wrong-choice { border-color: var(--accent-red); background: rgba(248, 113, 113, 0.08); }
-    .answer-input, .notes-textarea { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); color: #fff; padding: 15px; border-radius: 12px; width: 100%; box-sizing: border-box; font-family: inherit; font-size: 1.05rem; }
-    .ai-hint { margin-top: 20px; padding: 15px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border-left: 4px solid var(--primary); }
-    .breakdown { margin-top: 16px; padding: 16px; border-radius: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); }
-    .breakdown h4 { margin: 0 0 10px 0; font-size: 0.85rem; color: #c084fc; text-transform: uppercase; letter-spacing: 0.03em; }
-    .breakdown-item { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.92rem; line-height: 1.4; }
-    .breakdown-item:first-child { border-top: none; }
-    .breakdown-mark { flex-shrink: 0; font-weight: 800; width: 18px; }
-    .breakdown-item.is-correct .breakdown-mark { color: var(--accent-green); }
-    .breakdown-item.is-wrong .breakdown-mark { color: var(--accent-red); }
-    .btn { padding: 12px 24px; font-size: 0.95rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-secondary { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); color: #fff; }
-    .score-badge { font-size: 0.85rem; color: var(--text-muted); }
+    .action-btn {
+      background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none;
+      padding: 14px 32px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem;
+    }
+    .action-btn:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
 
-  <div id="welcome-screen" class="variant-menu">
-    <div style="font-size: 2.5rem; margin-bottom: 10px;">🔮</div>
-    <h2 style="margin-top: 0; font-size: 1.6rem;">Выбор варианта TOPIK II</h2>
-    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">5 разных вариантов, структура приближена к реальному TOPIK II (듣기 · 읽기 · 쓰기 51/52), уровень 3–6급. После каждого ответа — подробный разбор всех вариантов.</p>
-    <button class="variant-btn" onclick="startTest(1)">⚡ Вариант 1 <small>Общество и экология</small></button>
-    <button class="variant-btn" onclick="startTest(2)">⚡ Вариант 2 <small>Культура и наука</small></button>
-    <button class="variant-btn" onclick="startTest(3)">⚡ Вариант 3 <small>Экономика и бизнес</small></button>
-    <button class="variant-btn" onclick="startTest(4)">⚡ Вариант 4 <small>Философия и психология отношений</small></button>
-    <button class="variant-btn" onclick="startTest(5)">⚡ Вариант 5 <small>Технологии и цифровое общество</small></button>
-    <div style="margin-top: 20px;"><a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none;">← Вернуться на главную</a></div>
-  </div>
-
-  <div id="test-screen" style="display: none;">
-    <header class="test-header">
-      <div class="test-header-inner">
-        <div style="font-weight:800; font-size:1.2rem;"><span class="logo-kor">한국</span>TOPIK II · <span id="header-variant-title">Вариант</span></div>
-        <div class="score-badge">Вопрос <span id="current-q">1</span> из <span id="total-q">6</span> · Верно: <span id="score-count">0</span></div>
-      </div>
-      <div class="progress-track"><div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div></div>
-    </header>
-
-    <div class="test-grid">
-      <main>
-        <div class="tag-row" id="tag-row"></div>
-        <h2 id="part-title" style="font-size: 1.4rem; margin: 0 0 5px 0;">Загрузка...</h2>
-        <p id="part-desc" style="color: var(--text-muted); font-size: 0.95rem; margin: 0 0 25px 0;"></p>
-
-        <div class="audio-block" id="audio-block" hidden>
-          <button type="button" class="audio-play-btn" id="play-btn">▶</button>
-          <div style="flex:1;">
-            <p style="margin:0; font-weight:600; font-size: 0.95rem;">듣기 (Прослушивание текста)</p>
-            <span style="font-size:0.8rem; color:#c084fc;" id="audio-status">🔄 Академический темп речи · можно прослушать несколько раз</span>
-          </div>
-          <button type="button" class="btn btn-secondary" id="transcript-btn" style="font-size:0.8rem; padding:8px 12px; flex-shrink:0;">Показать текст</button>
-        </div>
-        <div id="transcript-box" hidden style="background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin-bottom: 25px; font-size: 1.05rem; line-height: 1.6;"></div>
-
-        <div class="question-block">
-          <div id="q-text" style="font-size: 1.25rem; font-weight:700; margin-bottom: 20px; white-space: pre-line; line-height: 1.6;"></div>
-          <div id="answers-container"></div>
-          <div class="ai-hint" id="ai-hint" hidden><p id="ai-hint-text" style="margin:0; font-size:0.95rem;"></p></div>
-          <div class="breakdown" id="breakdown" hidden>
-            <h4>📖 Разбор ошибок и вариантов</h4>
-            <div id="breakdown-list"></div>
-          </div>
-          <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px;">
-            <label style="display:block; font-size:0.85rem; color:var(--text-muted); margin-bottom:8px; font-weight:600;">📝 Место для анализа грамматики и перевода:</label>
-            <textarea class="notes-textarea" id="student-notes" rows="2" placeholder="Заметки по разбору предложений..."></textarea>
-          </div>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 25px;">
-          <button class="btn btn-secondary" id="prev-btn">← Назад</button>
-          <button class="btn btn-secondary" id="check-btn" style="color: var(--primary); border-color: rgba(168, 85, 247, 0.4);" hidden>Проверить ответ</button>
-          <button class="btn btn-primary" id="next-btn">Далее →</button>
-        </div>
-      </main>
-      <aside>
-        <div class="student-guide">
-          <h3 style="font-weight: 700; color: #c084fc; margin-top: 0; font-size: 1rem;">💡 Критерии оценивания</h3>
-          <p id="guide-content" style="margin: 0; font-size: 0.9rem; line-height: 1.5;"></p>
-        </div>
-      </aside>
+  <main class="container">
+    <div class="test-card">
+      <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+      <div class="q-meta" id="q-meta">Загрузка структуры...</div>
+      <div class="q-text" id="q-text">Пожалуйста, подождите...</div>
+      
+      <div id="interaction-zone"></div>
     </div>
-  </div>
+  </main>
 
   <script>
-    // ==========================================================================
-    // БАЗА ВОПРОСОВ. Каждый вариант: 2×듣기, 2×읽기, 2×쓰기(51,52) — 6 вопросов,
-    // структура приближена к реальным блокам TOPIK II. optionAnalysis даёт разбор
-    // КАЖДОГО варианта ответа (а не только правильного), чтобы точно видеть, где ошибка.
-    // ==========================================================================
-    const database = {
+    (() => {
+      'use strict';
 
-      variant1: [ // Общество и экология
-        { tag: "listen", part: "듣기 · Основная тема", desc: "Прослушайте монолог и определите его центральную тему.",
-          text: "Определите, о какой проблеме идёт речь в высказывании.",
-          tts: "최근 일회용품 사용이 급증하면서 쓰레기 문제가 심각해지고 있습니다. 특히 플라스틱 폐기물은 자연적으로 분해되지 않아 환경에 큰 부담을 주고 있습니다.",
-          type: "choice",
-          options: ["A) 재활용 산업의 최신 기술 동향", "B) 일회용품 사용 증가로 인한 환경 문제", "C) 쓰레기 수거 방식의 지역별 차이"],
-          correct: 1,
-          optionAnalysis: [
-            "A — упоминания о технологиях переработки в тексте нет вообще, это додуманная деталь.",
-            "B — верно: ключевые слова «일회용품 사용 급증» (рост использования одноразовых вещей) и «환경에 큰 부담» (нагрузка на среду) прямо называют тему.",
-            "C — про различия в способах сбора мусора по регионам речи не идёт, это отвлекающий вариант."
-          ],
-          guide: "В заданиях на 주제 (главную тему) ищите повторяющиеся ключевые слова и итоговый вывод говорящего, а не первое упомянутое существительное." },
+      const urlParams = new URLSearchParams(window.location.search);
+      const examKey = urlParams.get('exam') || 'topik1-v1';
 
-        { tag: "listen", part: "듣기 · Отношение говорящего", desc: "Определите, какую позицию занимает говорящий по отношению к проблеме.",
-          text: "Как говорящий относится к описанной ситуации?",
-          tts: "정부가 나서서 강력한 규제를 만들지 않는 이상, 개인의 노력만으로는 환경 문제를 해결하기 어렵다고 봅니다.",
-          type: "choice",
-          options: ["A) 개인의 실천만으로 충분하다고 본다", "B) 정부 차원의 강력한 규제가 필요하다고 본다", "C) 환경 문제는 이미 해결되었다고 본다"],
-          correct: 1,
-          optionAnalysis: [
-            "A — говорящий прямо утверждает обратное: «개인의 노력만으로는 (…) 어렵다» — усилий одних людей недостаточно.",
-            "B — верно: «정부가 나서서 강력한 규제를 만들지 않는 이상» означает, что без вмешательства государства проблему не решить.",
-            "C — в тексте нет утверждения, что проблема уже решена; наоборот, подчёркивается её нерешённость."
-          ],
-          guide: "В заданиях на позицию говорящего важна условная конструкция «-지 않는 이상» (если не..., то не...) — она задаёт необходимое условие." },
-
-        { tag: "read", part: "읽기 · Грамматика предупреждения", desc: "Выберите грамматическую конструкцию, предупреждающую о негативном результате при продолжении действия.",
-          text: "Выберите верный вариант:\n'의사의 지시를 따르지 (_______) 병이 악화될 수 있다.'",
-          type: "choice",
-          options: ["A) 다가는 (если так продолжать, то...)", "B) 다니까 (раз уж говорят, что...)", "C) 다 보니 (по мере того как обнаружил)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '-다가는' предупреждает, что продолжение текущего действия (не следовать указаниям врача) приведёт к плохому исходу.",
-            "B — '-다니까' передаёт услышанную информацию как причину, а не предупреждение о риске; смысл предложения не подходит.",
-            "C — '-다 보니' описывает постепенное осознание факта в процессе действия, а не гипотетическое предупреждение."
-          ],
-          guide: "'-다가는' почти всегда стоит рядом с негативным последствием (악화되다, 다치다, 실패하다 и т.п.) — это главный маркер для узнавания." },
-
-        { tag: "read", part: "읽기 · Идиома 사자성어", desc: "Подберите идиому, соответствующую описанной ситуации.",
-          text: "Какая идиома передаёт смысл фразы:\n'어려운 고난을 모두 이겨내고 드디어 목적을 달성했다.'",
-          type: "choice",
-          options: ["A) 동문서답 (отвечать невпопад)", "B) 고진감래 (после горечи приходит сладость)", "C) 작심삼일 (решение всего на три дня)"],
-          correct: 1,
-          optionAnalysis: [
-            "A — идиома об ответах не по теме разговора, ситуация с преодолением трудностей здесь ни при чём.",
-            "B — верно: '고진감래' буквально «горечь уходит, сладость приходит» — про итоговый успех после долгих трудностей.",
-            "C — идиома о решении, которого хватает всего на 3 дня, то есть о неустойчивости намерений — противоположно смыслу фразы."
-          ],
-          guide: "사자성어 в TOPIK II часто описывают: (1) исход после трудностей, (2) черты характера, (3) отношения между людьми. Сначала определите категорию, затем идиому." },
-
-        { tag: "write", part: "쓰기 51 · Официальный стиль", desc: "Заполните пропуск в официальном объявлении, используя устойчивую формулу вежливой просьбы.",
-          text: "Заполните пропуск:\n'환경 보호를 위해 텀블러 지참을 부탁드리오니 협조해 주시기 (___________).'",
-          type: "write",
-          sample: "바랍니다",
-          altAnswers: ["바랍니다.", "바래요"],
-          analysisNote: "Формула '-기 바랍니다' — стандартное завершение официальных объявлений и просьб (аналог «просим Вас…»). Частая ошибка — использовать разговорное '바래요' или менее формальное '주세요', что не подходит стилю письменных объявлений в TOPIK.",
-          guide: "В заданиях 51 всегда определяйте тип текста (объявление / письмо / инструкция) — от этого зависит регистр вежливости концовки." },
-
-        { tag: "write", part: "쓰기 52 · Академическое эссе", desc: "Впишите грамматику противопоставления двух статистических тенденций.",
-          text: "Заполните пропуск союзом официальной речи:\n'도시 인구는 계속 증가하고 있다. (___________), 농촌 인구는 매년 감소하는 추세이다.'",
-          type: "write",
-          sample: "반면에",
-          altAnswers: ["반면", "이와 반대로"],
-          analysisNote: "'반면에' вводит контраст между двумя противоположными процессами и типично для сравнения графиков/статистики в 52 번. Ошибочные варианты вроде '그런데' звучат слишком разговорно и не выражают чёткого противопоставления.",
-          guide: "Ищите в тексте два противоположных числовых тренда (растёт/падает) — это прямой сигнал использовать '반면(에)'." }
-      ],
-
-      variant2: [ // Культура и наука
-        { tag: "listen", part: "듣기 · Основная тема", desc: "Определите главную тему высказывания о культурном наследии.",
-          text: "О чём говорит выступающий?",
-          tts: "한 국가의 전통 문화재는 그 나라의 역사와 정체성을 보여주는 소중한 자산입니다. 따라서 후손들에게 온전히 전달하기 위한 보존 노력이 반드시 필요합니다.",
-          type: "choice",
-          options: ["A) 문화재 보존의 필요성", "B) 관광 산업 활성화 방안", "C) 전통 공예 기술자 양성 정책"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: акцент на «보존 노력이 반드시 필요합니다» (усилия по сохранению необходимы) — это и есть тема.",
-            "B — про туризм и его развитие в тексте не сказано ни слова.",
-            "C — про подготовку мастеров традиционных ремёсел речь не идёт, это додуманная деталь."
-          ],
-          guide: "Если в тексте есть тезис + аргумент («поэтому необходимо...»), главная тема почти всегда совпадает с итоговым тезисом, а не с первым примером." },
-
-        { tag: "listen", part: "듣기 · Намерение говорящего", desc: "Определите, с какой целью учёный делится информацией.",
-          text: "Какое намерение выражает говорящий?",
-          tts: "이번 연구를 통해 기존 이론으로는 설명할 수 없었던 현상을 새롭게 규명했습니다. 앞으로 후속 연구를 계속 진행할 계획입니다.",
-          type: "choice",
-          options: ["A) 연구 결과를 알리고 향후 계획을 밝히려는 것", "B) 연구비 지원 부족을 호소하려는 것", "C) 다른 학자의 이론을 비판하려는 것"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: сначала сообщается результат («새롭게 규명했습니다»), затем — план дальнейших действий («후속 연구를 계속 진행할 계획»).",
-            "B — жалоб на нехватку финансирования в тексте нет.",
-            "C — критики конкретной чужой теории не прозвучало, только упоминание, что старая теория не объясняла явление."
-          ],
-          guide: "В интервью с учёными обычно два слоя: (1) констатация нового результата, (2) намерение на будущее — вопрос может касаться любого из них, читайте внимательно." },
-
-        { tag: "read", part: "읽기 · Грамматика 'как раз в этот момент'", desc: "Выберите грамматику, описывающую действие, прерванное другим событием.",
-          text: "Выберите верный вариант:\n'마침 도서관에 가려던 (_______) 친구에게서 같이 가자는 연락이 왔다.'",
-          type: "choice",
-          options: ["A) 차에 (как раз в тот момент, когда...)", "B) 김에 (заодно, пользуясь случаем)", "C) 대로 (согласно тому, как...)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '-던 차에' описывает момент, когда говорящий как раз собирался что-то сделать, и тут произошло другое совпадающее событие.",
-            "B — '-는 김에' означает «раз уж делаю одно, заодно сделаю и другое» — не подходит по смыслу (нет двух действий одного субъекта).",
-            "C — '-는 대로' означает «в соответствии с», «как только» в другом значении — не про совпадение по времени."
-          ],
-          guide: "'-던 차에' почти всегда встречается с 마침 (как раз) — это надёжная подсказка для узнавания конструкции." },
-
-        { tag: "read", part: "읽기 · Идиома о быстром прогрессе", desc: "Подберите идиому, описывающую стремительный прогресс в учёбе.",
-          text: "Какая идиома соответствует фразе:\n'그의 한국어 실력은 짧은 시간 안에 몰라보게 좋아졌다.'",
-          type: "choice",
-          options: ["A) 일취월장 (стремительный прогресс день ото дня)", "B) 유비무환 (готовность — залог отсутствия бед)", "C) 순망치한 (взаимная зависимость, «нет губ — мёрзнут зубы»)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '일취월장' буквально «прогресс день за днём, месяц за месяцем» — точное соответствие «몰라보게 좋아졌다».",
-            "B — идиома про важность подготовки к будущим трудностям, здесь нет речи о превентивных мерах.",
-            "C — идиома про взаимозависимость двух сторон, не про личный прогресс одного человека."
-          ],
-          guide: "Идиомы про обучение и развитие (일취월장, 괄목상대) стоит выучить отдельным блоком — они часто встречаются в разделах про образование и науку." },
-
-        { tag: "write", part: "쓰기 51 · Официальный стиль", desc: "Заполните пропуск в объявлении музея, используя формулу вежливой просьбы к посетителям.",
-          text: "Заполните пропуск:\n'이번 전시는 사전 예약을 하신 분에 한해 관람이 가능하오니 이 점 양해해 주시기 (___________).'",
-          type: "write",
-          sample: "바랍니다",
-          altAnswers: ["바랍니다."],
-          analysisNote: "И снова формула '-기 바랍니다' — она универсальна для завершения официальных просьб/объявлений. Ошибка — закончить фразу как разговорную ('부탁해요'), что нарушает регистр официального текста.",
-          guide: "Объявления учреждений (музеи, вокзалы, компании) в TOPIK почти всегда завершаются на -기 바랍니다 или -여 주시기 바랍니다." },
-
-        { tag: "write", part: "쓰기 52 · Академическое эссе", desc: "Впишите грамматику дополнительного аргумента («не только..., но и...»).",
-          text: "Заполните пропуск:\n'전통문화는 한 나라의 역사적 가치를 지닐 (___________) 미래 세대에게 정체성을 심어주는 역할도 한다.'",
-          type: "write",
-          sample: "뿐만 아니라",
-          altAnswers: ["뿐 아니라"],
-          analysisNote: "'-(으)ㄹ 뿐만 아니라' добавляет второй, не менее важный аргумент к первому — классическая структура академического абзаца с двумя доводами. Частая ошибка — использовать простое '그리고', которое не подчёркивает усиление аргумента.",
-          guide: "Если в предложении явно два довода одинаковой важности («не только А, но и Б»), это почти всегда сигнал для '-뿐만 아니라'." }
-      ],
-
-      variant3: [ // Экономика и бизнес
-        { tag: "listen", part: "듣기 · Основная тема", desc: "Определите тему выступления экономического аналитика.",
-          text: "Определите основную тему высказывания.",
-          tts: "물가가 지속적으로 상승함에 따라 소비자들이 지출을 대폭 줄이고 있습니다. 이로 인해 소매업체들의 매출도 함께 감소하는 추세입니다.",
-          type: "choice",
-          options: ["A) 고용 시장의 활성화", "B) 물가 상승으로 인한 소비 위축", "C) 금리 인하에 따른 대출 증가"],
-          correct: 1,
-          optionAnalysis: [
-            "A — про рынок труда и занятость в тексте нет ни слова.",
-            "B — верно: «물가가 상승함에 따라 (…) 지출을 대폭 줄이고» прямо описывает снижение потребления из-за роста цен.",
-            "C — про снижение процентных ставок и рост кредитования речи не идёт."
-          ],
-          guide: "В экономических текстах TOPIK часто идёт цепочка причина → следствие («물가 상승 → 소비 감소 → 매출 감소»); тема обычно охватывает первое звено этой цепочки." },
-
-        { tag: "listen", part: "듣기 · Отношение говорящего", desc: "Определите оценку говорящим текущей ситуации.",
-          text: "Как говорящий оценивает нынешнюю экономическую ситуацию?",
-          tts: "단기적인 처방보다는 근본적인 산업 구조 개혁이 이루어지지 않는다면 이 침체는 장기화될 가능성이 큽니다.",
-          type: "choice",
-          options: ["A) 단기 대책만으로 충분히 해결될 것이다", "B) 구조적 개혁이 없으면 침체가 장기화될 것이다", "C) 이미 경기 침체는 끝났다"],
-          correct: 1,
-          optionAnalysis: [
-            "A — говорящий прямо противопоставляет «단기적인 처방» структурной реформе, называя её недостаточной.",
-            "B — верно: конструкция «-이루어지지 않는다면 (…) 가능성이 크다» указывает на условие и вероятный длительный кризис.",
-            "C — утверждения, что кризис уже закончился, в тексте нет — наоборот, прогнозируется его продолжение."
-          ],
-          guide: "Условные конструкции '-지 않는다면' в экономических текстах почти всегда вводят прогноз с негативным сценарием — ищите вывод после них." },
-
-        { tag: "read", part: "읽기 · Категорическая невозможность", desc: "Выберите грамматику, исключающую вероятность действия.",
-          text: "Выберите верный вариант:\n'그렇게 성실한 직원이 회삿돈을 횡령했을 (_______).'",
-          type: "choice",
-          options: ["A) 리가 없다 (не может быть, чтобы...)", "B) 기 마련이다 (естественно, что...)", "C) 곤 한다 (время от времени случается)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '-(으)ㄹ 리가 없다' выражает твёрдую убеждённость в невозможности действия, опираясь на характеристику субъекта («성실한 직원»).",
-            "B — '-기 마련이다' описывает закономерность («так уж заведено»), а не отрицание конкретного факта.",
-            "C — '-곤 하다' описывает повторяющееся действие в прошлом, что не подходит по смыслу предложения."
-          ],
-          guide: "'-(으)ㄹ 리가 없다' почти всегда опирается на предыдущую характеристику субъекта (честный/старательный/аккуратный), которая логически исключает результат." },
-
-        { tag: "read", part: "읽기 · Передача услышанной информации", desc: "Выберите грамматическую форму косвенной речи из новостей.",
-          text: "Вставьте нужную форму:\n'내일부터 전국적으로 물가가 추가로 오른다는 뉴스를 (_______) 걱정이 커졌다.'",
-          type: "choice",
-          options: ["A) 듣고 나서 (после того как услышал)", "B) 듣다시피 (как вы слышите/знаете)", "C) 듣기만 하면 (стоит только услышать)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '-고 나서' указывает на последовательность «сначала услышал новость → затем возникло беспокойство».",
-            "B — '-다시피' используется для отсылки к уже известной обеим сторонам информации («как вы знаете»), а не для описания момента получения новости.",
-            "C — '-기만 하면' означает «стоит только сделать X, как сразу Y» в смысле привычной реакции, что избыточно и не подходит по стилю новостного контекста."
-          ],
-          guide: "Если структура предложения — «услышал новость → появилась реакция», ищите последовательную грамматику (-고 나서, -자), а не форму цитирования (-다고 하다) или отсылки к общеизвестному (-다시피)." },
-
-        { tag: "write", part: "쓰기 51 · Официальный стиль", desc: "Заполните пропуск в деловом письме-запросе о встрече.",
-          text: "Заполните пропуск:\n'계약 조건에 대해 논의할 시간을 내 주실 수 있는지 답변해 주시기 (___________).'",
-          type: "write",
-          sample: "바랍니다",
-          altAnswers: ["바랍니다."],
-          analysisNote: "Деловая переписка о встречах и переговорах в TOPIK 51 также опирается на '-기 바랍니다'. Ошибка — закончить фразу неформальным '주세요' или личным '좋겠어요', что неуместно в деловом письме.",
-          guide: "В деловых письмах ищите слова 계약/논의/답변 — они сигнализируют, что нужен формальный, а не разговорный финал предложения." },
-
-        { tag: "write", part: "쓰기 52 · Академическое эссе", desc: "Впишите грамматику зависимости одного показателя от другого.",
-          text: "Заполните пропуск:\n'기업의 투자가 늘어남(___________) 일자리도 함께 증가하는 경향을 보인다.'",
-          type: "write",
-          sample: "에 따라",
-          altAnswers: ["에 따라서"],
-          analysisNote: "'-에 따라' описывает изменение одного явления в зависимости от изменения другого — стандартная конструкция для описания корреляции показателей в академических текстах и графиках. Ошибочный вариант '때문에' указывал бы на прямую причину, а не на пропорциональную зависимость.",
-          guide: "Если два показателя изменяются пропорционально друг другу (растёт X → растёт Y), используйте '-에 따라', а не '-기 때문에' (жёсткая причинность)." }
-      ],
-
-      variant4: [ // Философия и психология отношений
-        { tag: "listen", part: "듣기 · Основная тема", desc: "Определите главную мысль автора о человеческих отношениях.",
-          text: "Какова основная мысль говорящего?",
-          tts: "대화를 나눌 때 자신의 말을 하기에 급급하기보다 상대방의 이야기를 끝까지 경청하는 자세가 무엇보다 중요합니다.",
-          type: "choice",
-          options: ["A) 대화 시 경청의 중요성", "B) 자신의 의견을 당당히 말하는 법", "C) 대화 속도를 조절하는 기술"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: ключевая фраза «경청하는 자세가 무엇보다 중요합니다» прямо называет умение слушать главной мыслью.",
-            "B — текст, наоборот, предостерегает от того, чтобы «급급하기» говорить только о себе.",
-            "C — про технику регулирования темпа речи в тексте не сказано."
-          ],
-          guide: "В текстах на тему общения ищите противопоставление «не X, а Y» (자신의 말 하기 vs 경청하기) — правильный ответ обычно совпадает с частью после «а»." },
-
-        { tag: "listen", part: "듣기 · Намерение говорящего", desc: "Определите цель высказывания психолога.",
-          text: "С какой целью говорит психолог?",
-          tts: "타인과 건강한 관계를 맺으려면 상대방에게 모든 것을 맞추기보다 자신의 경계를 분명히 하는 것이 필요하다는 점을 강조하고 싶습니다.",
-          type: "choice",
-          options: ["A) 경계 설정의 중요성을 강조하려는 것", "B) 무조건적인 배려를 권장하려는 것", "C) 인간관계를 피하라고 조언하려는 것"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: «자신의 경계를 분명히 하는 것이 필요하다는 점을 강조» напрямую называет цель — подчеркнуть важность личных границ.",
-            "B — говорящий, наоборот, предостерегает от «모든 것을 맞추기» (подстраиваться под всё), а не рекомендует это.",
-            "C — совета избегать отношений в тексте нет, речь о том, как строить их здоровым образом."
-          ],
-          guide: "Психологические тексты TOPIK часто строятся как «вместо А — делайте Б»; цель говорящего обычно связана именно с рекомендацией Б." },
-
-        { tag: "read", part: "읽기 · Сожаление о прошлом", desc: "Выберите грамматику, выражающую сожаление об упущенной возможности.",
-          text: "Выберите верный вариант:\n'그때 조금만 더 참았(_______) 이렇게까지 관계가 틀어지지는 않았을 것이다.'",
-          type: "choice",
-          options: ["A) 더라면 (если бы тогда...)", "B) 느라고 (из-за того, что делал)", "C) 다시피 (практически как)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '-았/었더라면' выражает гипотетическое условие в прошлом, которое привело бы к другому результату — классика для сожаления.",
-            "B — '-느라고' объясняет причину/оправдание («потому что был занят тем-то»), а не гипотезу о прошлом.",
-            "C — '-다시피' используется в значении «почти как», «как вы знаете» — не подходит по грамматической структуре и смыслу."
-          ],
-          guide: "'-았/었더라면' почти всегда сопровождается предположением о другом результате в будущем-от-прошлого («...않았을 것이다», «...좋았을 텐데»)." },
-
-        { tag: "read", part: "읽기 · Отсутствие альтернативы", desc: "Выберите конструкцию, указывающую на отсутствие иного выбора.",
-          text: "Выберите верный вариант:\n'두 사람이 계속 부딪힌다면 결국 거리를 둘 (_______) 다른 방법이 없다.'",
-          type: "choice",
-          options: ["A) 수밖에 (нет иного выбора, кроме как)", "B) 수 있도록 (для того чтобы смочь)", "C) 셈이다 (можно считать, что)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '-(으)ㄹ 수밖에 없다' прямо означает «нет другого выхода, кроме как...», что совпадает со второй частью предложения «다른 방법이 없다».",
-            "B — '-수 있도록' выражает цель («чтобы смочь сделать»), а не констатацию безальтернативности.",
-            "C — '-셈이다' means «по сути, можно сказать, что...» — это оценка результата, а не заявление об отсутствии выбора."
-          ],
-          guide: "Если во второй части предложения буквально сказано «다른 방법이 없다» (другого способа нет) — это почти всегда подсказка для '-수밖에 없다'." },
-
-        { tag: "write", part: "쓰기 51 · Официальный стиль", desc: "Заполните пропуск в приглашении на психологический семинар.",
-          text: "Заполните пропуск:\n'세미나 참석을 원하시는 분은 늦어도 이번 주 금요일까지 신청해 주시기 (___________).'",
-          type: "write",
-          sample: "바랍니다",
-          altAnswers: ["바랍니다."],
-          analysisNote: "Формула '-기 바랍니다' завершает вежливую просьбу зарегистрироваться к определённому сроку. Ошибка — использовать неформальное окончание типа '해 주세요~', что снижает официальный регистр объявления.",
-          guide: "Приглашения на мероприятия с указанием срока (까지) в TOPIK почти всегда требуют '-기 바랍니다' в конце." },
-
-        { tag: "write", part: "쓰기 52 · Академическое эссе", desc: "Впишите грамматику сильного уступительного допущения.",
-          text: "Заполните пропуск:\n'인간관계에서 아무리 힘든 갈등이 있(___________) 진심 어린 대화를 통해 해결할 수 있다.'",
-          type: "write",
-          sample: "더라도",
-          altAnswers: ["을지라도", "다 하더라도"],
-          analysisNote: "'아무리 -더라도' — устойчивая пара «как бы ни..., но всё равно...», часто встречается в эссе о преодолении трудностей через диалог. Ошибка — использовать простое '-지만', которое слабее по смыслу и не сочетается с усилителем 아무리.",
-          guide: "Слово 'аmuri' (아무리) в начале почти всегда требует уступительного окончания -더라도 / -을지라도 дальше в предложении — это парная конструкция." }
-      ],
-
-      variant5: [ // Технологии и цифровое общество
-        { tag: "listen", part: "듣기 · Основная тема", desc: "Определите тему высказывания о влиянии технологий на общение.",
-          text: "О чём говорит выступающий?",
-          tts: "스마트폰 사용 시간이 늘어나면서 오히려 실제 대면 대화 시간은 줄어들고 있다는 조사 결과가 나왔습니다.",
-          type: "choice",
-          options: ["A) 스마트폰 보급률의 국가별 차이", "B) 스마트폰 사용 증가로 인한 대면 소통 감소", "C) 스마트폰 신제품 출시 일정"],
-          correct: 1,
-          optionAnalysis: [
-            "A — про различия в распространённости смартфонов по странам в тексте нет.",
-            "B — верно: «사용 시간이 늘어나면서 (…) 대면 대화 시간은 줄어들고 있다» напрямую описывает эту связь.",
-            "C — про выпуск новых моделей смартфонов речи вообще не идёт."
-          ],
-          guide: "Технологические тексты часто содержат конструкцию «X 늘어나면서 Y 줄어들다» (пока растёт X, падает Y) — эта пара обычно и есть искомая тема." },
-
-        { tag: "listen", part: "듣기 · Отношение говорящего", desc: "Определите позицию говорящего относительно искусственного интеллекта.",
-          text: "Как говорящий оценивает развитие искусственного интеллекта?",
-          tts: "인공지능이 아무리 발전하더라도 인간 고유의 창의성과 공감 능력을 완전히 대체하기는 어려울 것이라고 봅니다.",
-          type: "choice",
-          options: ["A) 인공지능이 결국 인간을 완전히 대체할 것이다", "B) 인공지능이 인간의 창의성까지 대체하기는 어렵다", "C) 인공지능 개발은 즉시 중단되어야 한다"],
-          correct: 1,
-          optionAnalysis: [
-            "A — говорящий прямо утверждает противоположное: «완전히 대체하기는 어려울 것」 — то есть полная замена маловероятна.",
-            "B — верно: это почти дословно повторяет вывод говорящего о трудности замены творчества и эмпатии.",
-            "C — призыва немедленно прекратить разработку ИИ в тексте нет."
-          ],
-          guide: "Уступительная конструкция '아무리 -더라도' в начале почти всегда вводит мнение говорящего, которое звучит после неё — ищите именно вывод, а не саму уступку." },
-
-        { tag: "read", part: "읽기 · Грамматика тенденции", desc: "Выберите грамматику, описывающую усиливающуюся тенденцию.",
-          text: "Выберите верный вариант:\n'온라인 쇼핑이 보편화되(_______) 오프라인 매장은 점점 사라지고 있다.'",
-          type: "choice",
-          options: ["A) ㅁ에 따라 (по мере того как...)", "B) ㄴ답시고 (мол, якобы для того чтобы)", "C) ㄴ데도 불구하고 (несмотря на то что)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '-(으)ㅁ에 따라' описывает изменение одного явления параллельно другому — здесь: по мере распространения онлайн-шопинга.",
-            "B — '-ㄴ답시고' содержит иронично-критичный оттенок («мол, якобы»), что не подходит нейтральному описанию тенденции.",
-            "C — '-ㄴ데도 불구하고' означает «несмотря на», то есть вводит противоречие, а не параллельное развитие процессов."
-          ],
-          guide: "Если оба процесса в предложении меняются согласованно (один растёт — другой падает/растёт вместе), это '-에 따라', а не противительная конструкция." },
-
-        { tag: "read", part: "읽기 · Идиома об информационном обществе", desc: "Подберите идиому, описывающую избыток информации.",
-          text: "Какая идиома соответствует ситуации:\n'너무 많은 정보 속에서 무엇이 진짜인지 판단하기가 어려워졌다.'",
-          type: "choice",
-          options: ["A) 옥석구분 (различить нефрит и камень — отделить ценное от бесполезного)", "B) 감언이설 (сладкие речи, лесть)", "C) 자업자득 (пожинать то, что посеял)"],
-          correct: 0,
-          optionAnalysis: [
-            "A — верно: '옥석구분' буквально «различать нефрит и обычный камень», то есть отделять ценное/достоверное от бесполезного/ложного — точно соответствует проблеме избытка информации.",
-            "B — идиома про лесть и обманчиво приятные речи, не про объём информации.",
-            "C — идиома про то, что человек сам виноват в своих последствиях, к теме информации отношения не имеет."
-          ],
-          guide: "Идиомы про 정보/판단 (информацию и суждение) стоит запоминать отдельно от идиом про характер и судьбу — они относятся к разным смысловым группам." },
-
-        { tag: "write", part: "쓰기 51 · Официальный стиль", desc: "Заполните пропуск в объявлении об обновлении приложения.",
-          text: "Заполните пропуск:\n'서비스 이용에 불편을 드려 죄송하며, 빠른 시일 내에 개선해 드릴 것을 약속(___________).'",
-          type: "write",
-          sample: "드립니다",
-          altAnswers: ["드립니다.", "드리겠습니다"],
-          analysisNote: "'약속드립니다' — вежливая форма обещания в официальных уведомлениях (например, от IT-компании пользователям). Ошибка — использовать разговорное '약속할게요', что нарушает формальный регистр публичного объявления.",
-          guide: "Извинения от лица компании/сервиса в TOPIK 51 обычно завершаются повышенно-вежливой глагольной формой на -드립니다." },
-
-        { tag: "write", part: "쓰기 52 · Академическое эссе", desc: "Впишите грамматику предположения об ожидаемом результате.",
-          text: "Заполните пропуск:\n'인공지능 기술이 발전할수록 다양한 산업 분야에서 생산성이 크게 향상될 것으로 (___________).'",
-          type: "write",
-          sample: "예상된다",
-          altAnswers: ["기대된다", "전망된다"],
-          analysisNote: "Пассивная форма '-것으로 예상된다/전망된다' типична для академических прогнозов в письменной речи — она обезличивает утверждение, делая его более объективным. Ошибка — писать от первого лица «저는 예상합니다», что не соответствует безличному академическому стилю эссе TOPIK 52.",
-          guide: "В академических прогнозах ищите обезличенные пассивные конструкции (-것으로 예상된다/전망된다/보인다) вместо личных высказываний «я думаю»." }
-      ]
-    };
-
-    const variantMeta = {
-      1: "Общество и экология", 2: "Культура и наука", 3: "Экономика и бизнес",
-      4: "Философия и психология отношений", 5: "Технологии и цифровое общество"
-    };
-
-    let activeQuestions = []; let currentIdx = 0; const userAnswers = {}; const notesCache = {};
-    const answeredCorrect = {};
-
-    function startTest(variantNum) {
-      document.getElementById('welcome-screen').style.display = 'none';
-      document.getElementById('test-screen').style.display = 'block';
-      document.getElementById('header-variant-title').textContent = "Вариант " + variantNum + " · " + variantMeta[variantNum];
-      activeQuestions = database['variant' + variantNum];
-      currentIdx = 0;
-      for (const k in userAnswers) delete userAnswers[k];
-      for (const k in notesCache) delete notesCache[k];
-      for (const k in answeredCorrect) delete answeredCorrect[k];
-      render();
-    }
-
-    function updateProgress() {
-      const pct = ((currentIdx) / activeQuestions.length) * 100;
-      document.getElementById('progress-fill').style.width = pct + '%';
-      const correctCount = Object.values(answeredCorrect).filter(Boolean).length;
-      document.getElementById('score-count').textContent = correctCount;
-    }
-
-    function tagLabel(tag) {
-      if (tag === 'listen') return '<span class="tag tag-listen">듣기 LISTENING</span>';
-      if (tag === 'read') return '<span class="tag tag-read">읽기 READING</span>';
-      return '<span class="tag tag-write">쓰기 WRITING</span>';
-    }
-
-    function render() {
-      const q = activeQuestions[currentIdx];
-      document.getElementById('current-q').textContent = currentIdx + 1;
-      document.getElementById('total-q').textContent = activeQuestions.length;
-      document.getElementById('tag-row').innerHTML = tagLabel(q.tag);
-      document.getElementById('part-title').textContent = q.part;
-      document.getElementById('part-desc').textContent = q.desc;
-      document.getElementById('q-text').textContent = q.text;
-      document.getElementById('guide-content').textContent = q.guide;
-      updateProgress();
-
-      const notesTextarea = document.getElementById('student-notes');
-      notesTextarea.value = notesCache[currentIdx] || '';
-      notesTextarea.oninput = () => { notesCache[currentIdx] = notesTextarea.value; };
-
-      const container = document.getElementById('answers-container');
-      const hint = document.getElementById('ai-hint');
-      const checkBtn = document.getElementById('check-btn');
-      const breakdown = document.getElementById('breakdown');
-      const breakdownList = document.getElementById('breakdown-list');
-
-      container.innerHTML = ''; hint.hidden = true; checkBtn.hidden = true;
-      breakdown.hidden = true; breakdownList.innerHTML = '';
-      document.getElementById('audio-block').hidden = !q.tts;
-      if (window.speechSynthesis) window.speechSynthesis.cancel();
-      resetPlayButton();
-      const transcriptBox = document.getElementById('transcript-box');
-      transcriptBox.hidden = true;
-      transcriptBox.textContent = q.tts || '';
-      document.getElementById('transcript-btn').textContent = 'Показать текст';
-
-      if (q.type === 'choice') {
-        q.options.forEach((opt, idx) => {
-          const btn = document.createElement('button'); btn.className = 'answer-btn'; btn.textContent = opt;
-          if (userAnswers[currentIdx] === idx) {
-            hint.hidden = false;
-            if (idx === q.correct) {
-              btn.classList.add('correct-choice');
-              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-green);font-weight:700;'>정답입니다! 👍 Отлично, ответ верный.</span>";
-              answeredCorrect[currentIdx] = true;
-            } else {
-              btn.classList.add('wrong-choice');
-              document.getElementById('ai-hint-text').innerHTML = "<span style='color:var(--accent-red);font-weight:700;'>틀렸습니다. Смотрите разбор ниже — там объяснено, почему каждый вариант верен или нет.</span>";
-              answeredCorrect[currentIdx] = false;
-            }
-            breakdown.hidden = false;
-            q.optionAnalysis.forEach((text, aIdx) => {
-              const row = document.createElement('div');
-              row.className = 'breakdown-item ' + (aIdx === q.correct ? 'is-correct' : 'is-wrong');
-              const mark = aIdx === q.correct ? '✓' : '✗';
-              const selectedTag = aIdx === idx ? ' <em>(ваш выбор)</em>' : '';
-              row.innerHTML = `<span class="breakdown-mark">${mark}</span><span>${text}${selectedTag}</span>`;
-              breakdownList.appendChild(row);
-            });
+      // ЧЕТКАЯ ОФИЦИАЛЬНАЯ СТРУКТУРА ТЕСТОВ (БЕЗ РАНДОМА)
+      const examRepository = {
+        
+        // --- ПОЛНОЦЕННЫЙ ЭКЗАМЕН TOPIK I (읽기 - Чтение) ---
+        'topik1': [
+          {
+            type: 'choice',
+            text: '[TOPIK I - Лексика] 다음은 무엇에 대한 이야기입니까?\n"우유를 마십니다. 맛있습니다."',
+            options: ['① 음식 (Еда/Напитки)', '② 나이 (Возраст)', '③ 날짜 (Дата)', '④ 이름 (Имя)'],
+            answer: 1
+          },
+          {
+            type: 'choice',
+            text: '[TOPIK I - Грамматические маркеры] 빈칸에 들어갈 알맞은 조사를 고르십시오.\n"오늘 아침 ( ) 빵과 사과를 먹었습니다."',
+            options: ['① 에', '② 가', '③ 를', '④ 에서'],
+            answer: 1
+          },
+          {
+            type: 'choice',
+            text: '[TOPIK I - Анализ объявлений] 다음은 무엇에 대한 안내문입니까?\n"이용 시간: 09:00 ~ 18:00 / 매주 월요일은 쉽니다."',
+            options: ['① 가격 (Цена)', '② 취미 (Хобби)', '③ 휴일 (Выходной)', '④ 주소 (Адрес)'],
+            answer: 3
+          },
+          {
+            type: 'choice',
+            text: '[TOPIK I - Контекстный глагол] 빈칸에 들어갈 가장 알맞은 것을 고르십시오.\n"방이 너무 ( ). 불을 켭니다."',
+            options: ['① 좁습니다', '② 어둡습니다 (Темно)', '③ 가깝습니다', '④ 조용합니다'],
+            answer: 2
+          },
+          {
+            type: 'choice',
+            text: '[TOPIK I - Поиск логики] 문맥에 알맞은 окончание 고르십시오.\n"내일은 친구 생일입니다. 그래서 오늘 선물을 ( )."',
+            options: ['① 샀습니다', '② 샀겠군요', '③ 사려고 합니다 (Собираюсь купить)', '④ 사지 않았습니다'],
+            answer: 3
           }
-          btn.onclick = () => { userAnswers[currentIdx] = idx; render(); };
-          container.appendChild(btn);
-        });
-      } else {
-        checkBtn.hidden = false;
-        const txt = document.createElement('textarea'); txt.className = 'answer-input'; txt.rows = 2;
-        txt.placeholder = "Введите ваш академический ответ на корейском..."; txt.value = userAnswers[currentIdx] || '';
-        txt.oninput = () => { userAnswers[currentIdx] = txt.value; };
-        container.appendChild(txt);
-        if (userAnswers[currentIdx] && userAnswers['_checked' + currentIdx]) {
-          showWriteResult(q, userAnswers[currentIdx]);
+        ],
+
+        // --- ПОЛНОЦЕННЫЙ ЭКЗАМЕН TOPIK II (읽기 Тесты + 쓰기 Письмо) ---
+        'topik2': [
+          {
+            type: 'choice',
+            text: '[TOPIK II - Продвинутая грамматика] ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"공장을 다녀 본 ( ) 이 일은 그리 어렵지 않았다."',
+            options: ['① 탓에', '② 셈 치고', '③ 바에야', '④ 경험을 바탕으로 (На основе опыта)'],
+            answer: 4
+          },
+          {
+            type: 'choice',
+            text: '[TOPIK II - Грамматика выбора] ( )에 들어갈 알맞은 것을 고르십시오.\n"무슨 일을 ( ) 열심히 하는 모습이 보기 좋다."',
+            options: ['① 하든지 (Что бы ни делал)', '② 하도록', '③ 하다 보면', '④ 하느라고'],
+            answer: 1
+          },
+          {
+            type: 'choice',
+            text: '[TOPIK II - Логическое построение] 다음을 순서대로 알맞게 배열한 것을 고르십시오.\n\n(가) 지갑을 잃어버렸다.\n(나) 경찰서에 가서 신고를 했다.\n(다) 다행히 친절한 사람이 지갑을 찾아 주었다.',
+            options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (다)-(가)-(나)', '④ (가)-(다)-(나)'],
+            answer: 1
+          },
+          {
+            type: 'write',
+            text: '[TOPIK II - Письмо 쓰기 Задание №51]\nТекстуальный пропуск. Впишите строго одну фразу вместо [ ㄱ ]:\n\n"유미 씨, 그동안 고마웠습니다. 다음 주에 저는 고향으로 [  ㄱ  ]. 떠나기 전에 얼굴을 보고 싶습니다."',
+            sample: '돌아가게 되었습니다'
+          },
+          {
+            type: 'write',
+            text: '[TOPIK II - Письмо 쓰기 Задание №52]\nАкадемический пропуск. Впишите строго одну фразу вместо [ ㄴ ]:\n\n"매운맛은 맛이 아니라 통증이다. 그럼에도 매운 음식을 먹으면 뇌가 통증을 줄이기 위해 엔도르핀을 [  ㄴ  ]. 그래서 스트레스가 풀리는 느낌을 받는다."',
+            sample: '분비하기 때문이다'
+          }
+        ]
+      };
+
+      // Определяем, какую именно базу загрузить (если в URL есть слово topik2, грузим topik2, иначе topik1)
+      const currentType = examKey.toLowerCase().includes('topik2') ? 'topik2' : 'topik1';
+      const questions = Object.freeze(examRepository[currentType]);
+
+      let currentIdx = 0;
+      const userAnswers = new Array(questions.length).fill(null);
+
+      function renderQuestion() {
+        if (currentIdx >= questions.length) {
+          finishExam();
+          return;
+        }
+
+        const q = questions[currentIdx];
+        
+        document.getElementById('progress').style.width = `${(currentIdx / questions.length) * 100}%`;
+        document.getElementById('q-meta').textContent = `Задание ${currentIdx + 1} из ${questions.length} | ${currentType.toUpperCase()}`;
+        document.getElementById('q-text').textContent = q.text;
+
+        const zone = document.getElementById('interaction-zone');
+        zone.innerHTML = '';
+
+        if (q.type === 'choice') {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'options-group';
+          
+          q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = opt;
+            btn.onclick = () => saveChoiceAnswer(index + 1);
+            wrapper.appendChild(btn);
+          });
+          
+          zone.appendChild(wrapper);
+
+        } else if (q.type === 'write') {
+          const input = document.createElement('textarea');
+          input.className = 'write-input';
+          input.rows = 3;
+          input.placeholder = 'Введите ваш ответ на корейском языке (только пропущенную фразу)...';
+          input.id = 'write-field';
+
+          const submitBtn = document.createElement('button');
+          submitBtn.className = 'action-btn';
+          submitBtn.textContent = 'Зафиксировать ответ и идти далее';
+          submitBtn.onclick = () => saveWriteAnswer();
+
+          zone.appendChild(input);
+          zone.appendChild(submitBtn);
         }
       }
-      document.getElementById('prev-btn').disabled = currentIdx === 0;
-      document.getElementById('next-btn').textContent = currentIdx === activeQuestions.length - 1 ? "В меню вариантов" : "Далее →";
-    }
 
-    function showWriteResult(q, rawAns) {
-      const ans = (rawAns || '').trim().toLowerCase();
-      const accepted = [q.sample, ...(q.altAnswers || [])].map(s => s.toLowerCase());
-      const isCorrect = accepted.some(a => ans.includes(a) || a.includes(ans));
-      const hint = document.getElementById('ai-hint'); hint.hidden = false;
-      const breakdown = document.getElementById('breakdown'); breakdown.hidden = false;
-      const breakdownList = document.getElementById('breakdown-list'); breakdownList.innerHTML = '';
-      answeredCorrect[currentIdx] = isCorrect;
-      if (isCorrect) {
-        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-green);font-weight:700;'>정답입니다! Эталонный ключ: «${q.sample}»</span>`;
-      } else {
-        document.getElementById('ai-hint-text').innerHTML = `<span style='color:var(--accent-red);font-weight:700;'>Не совсем так. Эталонный ключ: «${q.sample}»</span>`;
-      }
-      const row = document.createElement('div');
-      row.className = 'breakdown-item ' + (isCorrect ? 'is-correct' : 'is-wrong');
-      row.innerHTML = `<span class="breakdown-mark">${isCorrect ? '✓' : '✗'}</span><span>${q.analysisNote}</span>`;
-      breakdownList.appendChild(row);
-      updateProgress();
-    }
+      function saveChoiceAnswer(selectedOption) {
+        disableAllInputs();
+        userAnswers[currentIdx] = selectedOption;
 
-    // ---------------- Аудио (Web Speech API) ----------------
-    const ttsSupported = 'speechSynthesis' in window;
-    let koreanVoice = null;
-    let voicesReady = false;
-
-    function pickKoreanVoice() {
-      if (!ttsSupported) return;
-      const voices = window.speechSynthesis.getVoices();
-      if (!voices || voices.length === 0) return;
-      koreanVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ko')) || null;
-      voicesReady = true;
-    }
-
-    if (ttsSupported) {
-      pickKoreanVoice();
-      window.speechSynthesis.onvoiceschanged = pickKoreanVoice;
-    }
-
-    function resetPlayButton() {
-      const btn = document.getElementById('play-btn');
-      if (!btn) return;
-      btn.textContent = '▶';
-      btn.disabled = false;
-    }
-
-    function setAudioStatus(msg, isError) {
-      const el = document.getElementById('audio-status');
-      if (!el) return;
-      el.textContent = msg;
-      el.style.color = isError ? 'var(--accent-red)' : '#c084fc';
-    }
-
-    document.getElementById('play-btn').onclick = () => {
-      const btn = document.getElementById('play-btn');
-      const q = activeQuestions[currentIdx];
-
-      if (!ttsSupported) {
-        setAudioStatus('⚠️ Ваш браузер не поддерживает синтез речи. Откройте текст кнопкой справа или используйте Chrome/Edge на компьютере.', true);
-        document.getElementById('transcript-box').hidden = false;
-        document.getElementById('transcript-btn').textContent = 'Скрыть текст';
-        return;
+        setTimeout(() => {
+          currentIdx++;
+          renderQuestion();
+        }, 300);
       }
 
-      // Если уже что-то говорит — остановить (кнопка работает как toggle)
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-        resetPlayButton();
-        setAudioStatus('🔄 Академический темп речи · можно прослушать несколько раз', false);
-        return;
+      function saveWriteAnswer() {
+        const field = document.getElementById('write-field');
+        if (!field) return;
+
+        const val = field.value.trim();
+        if (!val) {
+          alert('Пожалуйста, введите фразу для заполнения пропуска.');
+          return;
+        }
+
+        disableAllInputs();
+        userAnswers[currentIdx] = val;
+
+        currentIdx++;
+        renderQuestion();
       }
 
-      window.speechSynthesis.cancel(); // на всякий случай сбрасываем очередь перед стартом
-
-      const u = new SpeechSynthesisUtterance(q.tts);
-      u.lang = 'ko-KR';
-      u.rate = 0.8;
-      if (koreanVoice) u.voice = koreanVoice;
-
-      u.onstart = () => {
-        btn.textContent = '⏸';
-        setAudioStatus('▶ Воспроизведение...', false);
-      };
-      u.onend = () => {
-        resetPlayButton();
-        setAudioStatus('🔄 Академический темп речи · можно прослушать несколько раз', false);
-      };
-      u.onerror = () => {
-        resetPlayButton();
-        setAudioStatus('⚠️ Не удалось воспроизвести аудио (нет корейского голоса в системе). Нажмите «Показать текст» справа.', true);
-        document.getElementById('transcript-box').hidden = false;
-        document.getElementById('transcript-btn').textContent = 'Скрыть текст';
-      };
-
-      if (!koreanVoice && !voicesReady) {
-        setAudioStatus('⏳ Загрузка голосов... если звука не будет, воспользуйтесь кнопкой «Показать текст».', false);
-      } else if (!koreanVoice) {
-        setAudioStatus('ℹ️ Корейский голос не найден в системе, использую голос по умолчанию.', false);
+      function disableAllInputs() {
+        document.querySelectorAll('.option-btn, #write-field, .action-btn').forEach(el => {
+          el.disabled = true;
+        });
       }
 
-      try {
-        window.speechSynthesis.speak(u);
-      } catch (e) {
-        u.onerror();
+      function finishExam() {
+        let correctCount = 0;
+
+        questions.forEach((q, idx) => {
+          const uAns = userAnswers[idx];
+          if (q.type === 'choice') {
+            if (Number(uAns) === Number(q.answer)) correctCount++;
+          } else if (q.type === 'write') {
+            // Мягкая очистка текста от лишних пробелов для проверки ввода
+            const cleanUser = String(uAns).replace(/\s+/g, '').toLowerCase();
+            const cleanSample = String(q.sample).replace(/\s+/g, '').toLowerCase();
+            if (cleanUser === cleanSample) correctCount++;
+          }
+        });
+
+        const resultsPayload = {
+          examKey: currentType,
+          totalQuestions: questions.length,
+          correctCount: correctCount,
+          questions: questions.map(q => ({
+            type: q.type,
+            text: q.text,
+            correctAnswer: q.options ? q.options[q.answer - 1] : null,
+            sample: q.sample || null
+          })),
+          userAnswers: userAnswers.map((u, i) => {
+            if (questions[i].type === 'choice') {
+              return questions[i].options[u - 1] || 'Нет ответа';
+            }
+            return u;
+          })
+        };
+
+        sessionStorage.setItem('topik_last_results', JSON.stringify(resultsPayload));
+        window.location.href = 'results.html';
       }
-    };
 
-    document.getElementById('transcript-btn').onclick = () => {
-      const box = document.getElementById('transcript-box');
-      const btn = document.getElementById('transcript-btn');
-      box.hidden = !box.hidden;
-      btn.textContent = box.hidden ? 'Показать текст' : 'Скрыть текст';
-    };
-
-    document.getElementById('check-btn').onclick = () => {
-      const q = activeQuestions[currentIdx];
-      userAnswers['_checked' + currentIdx] = true;
-      showWriteResult(q, userAnswers[currentIdx]);
-    };
-
-    document.getElementById('next-btn').onclick = () => {
-      if (currentIdx < activeQuestions.length - 1) { currentIdx++; render(); }
-      else {
-        const total = activeQuestions.length;
-        const correct = Object.values(answeredCorrect).filter(Boolean).length;
-        alert(`Тестирование завершено!\nПравильных ответов: ${correct} из ${total}.`);
-        document.getElementById('test-screen').style.display = 'none';
-        document.getElementById('welcome-screen').style.display = 'block';
-      }
-    };
-    document.getElementById('prev-btn').onclick = () => { if (currentIdx > 0) { currentIdx--; render(); } };
+      document.addEventListener('DOMContentLoaded', renderQuestion);
+    })();
   </script>
 </body>
 </html>
