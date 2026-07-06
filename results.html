@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Результаты тестирования · TOPIK.ILS</title>
-  <link rel="stylesheet" href="style.css">
   <style>
-    /* Кастомные премиум-стили для страницы результатов */
+    /* Премиум-стили для страницы результатов */
     :root {
       --bg: #05050a;
       --card-bg: rgba(13, 13, 25, 0.7);
@@ -16,155 +15,91 @@
       --purple: #a855f7;
       --purple-glow: rgba(168, 85, 247, 0.25);
       --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.2);
       --red: #ef4444;
+      --cyan: #06b6d4;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
 
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       padding-bottom: 60px;
     }
 
-    /* Главный виджет с процентами */
+    body::before {
+      content: ''; position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 400px; background: var(--purple); filter: blur(150px); opacity: 0.1; pointer-events: none;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+
+    /* Шапка сайта */
+    .site-header {
+      backdrop-filter: blur(16px); background: rgba(5, 5, 10, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05); position: sticky; top: 0; z-index: 50; margin-bottom: 30px;
+    }
+    .header-inner { height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 1.2rem; color: #fff; }
+    .logo-kor { background: linear-gradient(135deg, var(--purple), var(--cyan)); color: #000; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 900; }
+
+    /* Главный виджет с баллами */
     .score-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 40px;
-      margin-top: 40px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-
-    .score-circle {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      border: 6px solid rgba(255, 255, 255, 0.03);
-      border-top-color: var(--purple);
-      border-right-color: var(--purple);
-      margin: 0 auto 20px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #fff;
-      box-shadow: 0 0 25px var(--purple-glow);
-    }
-
-    .score-status {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .score-meta {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 30px;
-    }
-
-    /* Кнопки навигации */
-    .btn-group {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px;
+      padding: 40px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden;
     }
     
-    .btn-action {
-      padding: 12px 28px;
-      border-radius: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
+    .score-circle {
+      width: 150px; height: 150px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.02);
+      border-top-color: var(--purple); border-right-color: var(--purple); margin: 0 auto 24px auto;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 0 30px var(--purple-glow); background: rgba(5, 5, 10, 0.5);
     }
+    .score-circle .points { font-size: 2.4rem; font-weight: 900; color: #fff; line-height: 1; }
+    .score-circle .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; }
 
-    .btn-retry {
-      background: linear-gradient(135deg, var(--purple), #7c3aed);
-      color: #fff;
-      border: none;
-      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
-    }
-    .btn-retry:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
+    .score-status { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; color: #fff; }
+    .score-level { font-size: 1.1rem; font-weight: 600; color: var(--cyan); margin-bottom: 12px; display: inline-block; padding: 4px 16px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 50px; }
+    .score-level.failed { color: var(--red); background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.2); }
+    .score-meta { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px; line-height: 1.5; }
 
-    .btn-home {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #fff;
+    /* Экспертный фидбек */
+    .feedback-box {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px;
+      padding: 20px; text-align: left; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.6;
     }
-    .btn-home:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
+    .feedback-box strong { color: #fff; display: block; margin-bottom: 6px; font-size: 1rem; }
+
+    /* Кнопки навигации */
+    .btn-group { display: flex; gap: 15px; justify-content: center; }
+    .btn-action { padding: 14px 32px; border-radius: 14px; font-weight: 700; text-decoration: none; cursor: pointer; font-size: 0.95rem; }
+    .btn-retry { background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
+    .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); }
+    .btn-home { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #fff; }
+    .btn-home:hover { background: rgba(255, 255, 255, 0.08); }
 
     /* Сетка разбора вопросов */
-    .breakdown-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin: 45px 0 20px 0;
-      color: #fff;
-      border-left: 4px solid var(--purple);
-      padding-left: 12px;
-    }
-
-    .q-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 16px;
-      border-left: 5px solid var(--text-muted);
-    }
-
-    .q-card.correct {
-      border-left-color: var(--green);
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.02), transparent);
-    }
-
-    .q-card.incorrect {
-      border-left-color: var(--red);
-      background: linear-gradient(90deg, rgba(239, 68, 68, 0.02), transparent);
-    }
-
-    .q-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .status-badge {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
+    .breakdown-title { font-size: 1.4rem; font-weight: 800; margin: 45px 0 20px 0; color: #fff; border-left: 4px solid var(--purple); padding-left: 14px; }
+    .q-card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.02); border-radius: 18px; padding: 24px; margin-bottom: 16px; border-left: 5px solid var(--text-muted); }
+    .q-card.correct { border-left-color: var(--green); background: linear-gradient(90deg, rgba(16, 185, 129, 0.01), transparent); }
+    .q-card.incorrect { border-left-color: var(--red); background: linear-gradient(90deg, rgba(239, 68, 68, 0.01), transparent); }
+    
+    .q-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .q-num { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .status-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px; }
     .correct .status-badge { background: rgba(16, 185, 129, 0.1); color: var(--green); }
     .incorrect .status-badge { background: rgba(239, 68, 68, 0.1); color: var(--red); }
 
-    .q-card-text {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 14px;
-    }
-
-    .answers-log {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .q-card-text { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 16px; line-height: 1.4; }
+    .answers-log { font-size: 0.95rem; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 10px; }
+    .ans-row { display: flex; gap: 8px; }
+    .ans-label { color: var(--text-muted); min-width: 110px; }
+    .ans-val { font-weight: 600; }
+    .correct .ans-val.user { color: var(--green); }
+    .incorrect .ans-val.user { color: var(--red); }
+    .ans-val.true { color: var(--green); }
   </style>
 </head>
 <body>
@@ -180,13 +115,23 @@
 
   <main class="container">
     <div class="score-card">
-      <div class="score-circle" id="result-pct">0%</div>
-      <div class="score-status" id="result-status">Анализ...</div>
-      <div class="score-meta" id="result-meta">Вы ответили правильно на 0 из 0 вопросов.</div>
+      <div class="score-circle">
+        <div class="points" id="result-score">0</div>
+        <div class="label">Баллов</div>
+      </div>
+      <div class="score-status" id="result-status">Обработка...</div>
+      <div class="score-level" id="result-level">-</div>
       
+      <div class="score-meta" id="result-meta">Сбор и верификация метаданных экзаменационной сессии...</div>
+      
+      <div class="feedback-box" id="result-feedback">
+        <strong>Анализ компетенций:</strong>
+        Загрузка персональных рекомендаций...
+      </div>
+
       <div class="btn-group">
-        <a href="index.html" class="btn-action btn-home">В личный кабинет</a>
-        <button onclick="retryExam()" class="btn-action btn-retry">Повторить попытку</button>
+        <a href="index.html" class="btn-action btn-home">В панель тестов</a>
+        <button onclick="retryExam()" class="btn-action btn-retry">Пройти заново</button>
       </div>
     </div>
 
@@ -195,35 +140,163 @@
   </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Подтягиваем сгенерированный в test.html пакет результатов
-      const sessionData = JSON.parse(sessionStorage.getItem('topik_last_results'));
-      
-      if (!sessionData) {
-        document.getElementById('result-status').textContent = "Результаты не найдены";
-        return;
+    (() => {
+      'use strict';
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // 1. Чтение и немедленная заморозка данных во избежание внешних манипуляций
+        const rawData = sessionStorage.getItem('topik_last_results');
+        if (!rawData) {
+          showError("Результаты тестирования не найдены. Вернитесь назад и завершите тест.");
+          return;
+        }
+
+        const sessionData = Object.freeze(JSON.parse(rawData));
+        const { examKey, totalQuestions, correctCount, questions, userAnswers } = sessionData;
+
+        // 2. Определение типа экзамена и перевод процентов в стандартизированные баллы TOPIK
+        const isTopik2 = examKey.toLowerCase().includes('topik2');
+        const maxScore = isTopik2 ? 300 : 200;
+        
+        // Каждое задание весит одинаково в рамках симуляции
+        const finalScore = Math.round((correctCount / totalQuestions) * maxScore); 
+
+        // 3. Расчет уровней (Гып) согласно регламенту NIIED
+        let statusTitle = "";
+        let levelBadge = "";
+        let feedbackText = "";
+        let isPassed = false;
+
+        if (!isTopik2) {
+          // Шкала оценки TOPIK I
+          if (finalScore >= 140) {
+            statusTitle = "축하합니다! Экзамен сдан! 🎉";
+            levelBadge = "TOPIK I • 2 Гып (Выше начального)";
+            feedbackText = "Отличная работа! Вы продемонстрировали уверенное знание базовой грамматики, можете составлять простые эссе и понимать повседневную речь. Рекомендуем начинать подготовку к TOPIK II!";
+            isPassed = true;
+          } else if (finalScore >= 80) {
+            statusTitle = "Поздравляем! Экзамен сдан! 👍";
+            levelBadge = "TOPIK I • 1 Гып (Элементарный)";
+            feedbackText = "Хороший старт! Вы справились с базовыми конструкциями, знаете алфавит и простые диалоги. Для перехода на 2 Гып сделайте упор на расширение словарного запаса (минимум 1500 слов) и регулярное чтение коротких текстов.";
+            isPassed = true;
+          } else {
+            statusTitle = "Тест не пройден 📑";
+            levelBadge = "Уровень не определен (Ниже 80 баллов)";
+            feedbackText = "К сожалению, набранных баллов недостаточно для получения сертификата. Рекомендуем повторить основы: падежные окончания, базовые глаголы движения и вежливые формы речи. Пройдите симулятор повторно.";
+          }
+        } else {
+          // Шкала оценки TOPIK II
+          if (finalScore >= 230) {
+            statusTitle = "Выдающийся результат! 👑";
+            levelBadge = "TOPIK II • 6 Гып (Профессиональный)";
+            feedbackText = "Уровень носителя языка! Вы способны вести исследовательскую и профессиональную деятельность на корейском языке, прекрасно понимаете сложные экономические, политические и культурные контексты.";
+            isPassed = true;
+          } else if (finalScore >= 190) {
+            statusTitle = "Прекрасный результат! 🚀";
+            levelBadge = "TOPIK II • 5 Гып (Высокий)";
+            feedbackText = "Высокий уровень владения языком. Вы свободно коммуницируете в социальной и академической сферах. Для идеала обратите внимание на самые сложные задания секции 쓰기 (сочинение №54).";
+            isPassed = true;
+          } else if (finalScore >= 150) {
+            statusTitle = "Успешная сдача! ✨";
+            levelBadge = "TOPIK II • 4 Гып (Средний продвинутый)";
+            feedbackText = "Отличный средний уровень. Вы без труда понимаете новости, телепередачи и можете работать в корейских компаниях. Продолжайте развивать навык аудирования в быстром темпе.";
+            isPassed = true;
+          } else if (finalScore >= 120) {
+            statusTitle = "Экзамен успешно сдан! ✔";
+            levelBadge = "TOPIK II • 3 Гып (Средний базовый)";
+            feedbackText = "Порог средней ступени взят! Вы можете изъясняться в стандартных жизненных ситуациях. Чтобы расти дальше, усложняйте изучаемую грамматику и избавляйтесь от использования базовых слов, заменяя их на иероглифические (한자).";
+            isPassed = true;
+          } else {
+            statusTitle = "Экзамен не сдан 🦾";
+            levelBadge = "Уровень не определен (Ниже 120 баллов)";
+            feedbackText = "Для TOPIK II требуется более глубокое знание академического пласта языка. Вам не хватило баллов до 3 Гыпа. Сосредоточьтесь на разборе структуры письменной секции (задания 51-53) — это самый быстрый способ поднять балл.";
+          }
+        }
+
+        // 4. Отрендерить результаты в UI
+        document.getElementById('result-score').textContent = finalScore;
+        document.getElementById('result-status').textContent = statusTitle;
+        
+        const lvlEl = document.getElementById('result-level');
+        lvlEl.textContent = levelBadge;
+        if (!isPassed) lvlEl.classList.add('failed');
+
+        document.getElementById('result-meta').textContent = `Вы правильно решили ${correctCount} из ${totalQuestions} вопросов. Ваша итоговая оценка сформирована на основе официальных проходных критериев NIIED (Южная Корея).`;
+        document.getElementById('result-feedback').innerHTML = `<strong>Аналитический разбор эксперта:</strong> ${feedbackText}`;
+
+        // 5. Отрисовка интерактивных карточек разбора ошибок
+        const container = document.getElementById('breakdown-container');
+        const fragment = document.createDocumentFragment();
+
+        questions.forEach((q, idx) => {
+          const uAns = userAnswers[idx];
+          let isRight = false;
+
+          if (q.type === 'choice') {
+            isRight = (String(uAns) === String(q.correctAnswer));
+          } else if (q.type === 'write') {
+            isRight = (uAns && String(uAns).trim().toLowerCase() === String(q.sample).trim().toLowerCase());
+          }
+
+          const card = document.createElement('div');
+          card.className = `q-card ${isRight ? 'correct' : 'incorrect'}`;
+
+          card.innerHTML = `
+            <div class="q-card-header">
+              <span class="q-num">Вопрос №${idx + 1}</span>
+              <span class="status-badge">${isRight ? 'Правильно' : 'Ошибка'}</span>
+            </div>
+            <div class="q-card-text">${escapeHtml(q.text || 'Текст вопроса отсутствует')}</div>
+            <div class="answers-log">
+              <div class="ans-row">
+                <span class="ans-label">Ваш ответ:</span>
+                <span class="ans-val user">${escapeHtml(uAns || 'Вы пропустили этот вопрос')}</span>
+              </div>
+              ${!isRight ? `
+              <div class="ans-row">
+                <span class="ans-label">Правильный:</span>
+                <span class="ans-val true">${escapeHtml(q.type === 'choice' ? q.correctAnswer : q.sample)}</span>
+              </div>
+              ` : ''}
+            </div>
+          `;
+          fragment.appendChild(card);
+        });
+
+        container.appendChild(fragment);
+      });
+
+      // Вспомогательная функция защиты от XSS атак через поля ввода
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
       }
 
-      const { examKey, totalQuestions, correctCount, questions, userAnswers } = sessionData;
-      const scorePercent = Math.round((correctCount / totalQuestions) * 100);
+      // Глобальная функция перезапуска симулятора
+      window.retryExam = function() {
+        const rawData = sessionStorage.getItem('topik_last_results');
+        if (rawData) {
+          const { examKey } = JSON.parse(rawData);
+          window.location.href = `test.html?exam=${examKey}`;
+        } else {
+          window.location.href = 'index.html';
+        }
+      };
 
-      // Отрисовка круглого информера
-      document.getElementById('result-pct').textContent = `${scorePercent}%`;
-      document.getElementById('result-meta').textContent = `Вы успешно выполнили ${correctCount} из ${totalQuestions} заданий симулятора.`;
-      
-      const statusText = document.getElementById('result-status');
-      if (scorePercent >= 80) statusText.textContent = "합격! Отличный результат! 🎉";
-      else if (scorePercent >= 50) statusText.textContent = "Хорошо! Тест сдан! 👍";
-      else statusText.textContent = "Нужно немного подучить! 💪";
-
-      // Генерация карточек разбора
-      const container = document.getElementById('breakdown-container');
-      
-      questions.forEach((q, idx) => {
-        const uAns = userAnswers[idx];
-        let isRight = false;
-
-        if (q.type === 'choice') {
-          isRight = (uAns === q.correctAnswer);
-        } else if (q.type === 'write') {
-          isRight = (uAns && uAns.trim().toLowerCase() === q.sample.trim
+      function showError(msg) {
+        const status = document.getElementById('result-status');
+        if (status) status.textContent = "Ошибка сессии";
+        const meta = document.getElementById('result-meta');
+        if (meta) meta.textContent = msg;
+        const feedback = document.getElementById('result-feedback');
+        if (feedback) feedback.style.display = 'none';
+      }
+    })();
+  </script>
+</body>
+</html>
