@@ -1,40 +1,218 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Симулятор TOPIK II · ILS</title>
-  <style>
-    :root {
-      --primary: #a855f7;
-      --bg-main: #090d16;
-      --bg-card: rgba(17, 24, 39, 0.7);
-      --border: rgba(255, 255, 255, 0.08);
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --accent-green: #34d399;
-      --accent-red: #f87171;
-    }
-    * { box-sizing: border-box; }
-    body {
-      background-color: var(--bg-main);
-      background-image: radial-gradient(circle at 50% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%);
-      font-family: system-ui, -apple-system, sans-serif;
-      color: var(--text-main); margin: 0; padding: 0;
-    }
-    .test-header { background: rgba(9, 13, 22, 0.8); border-bottom: 1px solid var(--border); padding: 15px 20px; position: sticky; top: 0; z-index: 10; }
-    .test-header-inner { max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .logo-kor { background: linear-gradient(135deg, #a855f7, #c084fc); color: #0f172a; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-right: 5px; }
-    .progress-track { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-    .progress-bar-bg { height: 6px; background: rgba(255,255,255,0.06); border-radius: 4px; margin-top: 10px; overflow: hidden; }
-    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #a855f7, #c084fc); border-radius: 4px; transition: width .3s ease; }
-    .test-grid { display: grid; grid-template-columns: 1fr 300px; gap: 25px; max-width: 900px; margin: 30px auto; padding: 0 20px; }
-    @media (max-width: 768px) { .test-grid { grid-template-columns: 1fr; } }
+(() => {
+  'use strict';
 
-    .variant-menu { max-width: 640px; margin: 40px auto; padding: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; text-align: center; }
-    .variant-btn { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); color: #c084fc; padding: 16px 20px; border-radius: 12px; width: 100%; font-size: 1rem; font-weight: 600; margin: 8px 0; cursor: pointer; transition: all 0.2s; text-align: left; display: flex; flex-direction: column; gap: 3px; }
-    .variant-btn:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
-    .variant-btn small { font-weight: 400; font-size: 0.8rem; opacity: 0.85; }
+  // Извлекаем точный ID выбранного варианта из URL (например: test.html?exam=topik1-v3)
+  const urlParams = new URLSearchParams(window.location.search);
+  const examKey = urlParams.get('exam') || 'topik1-v1';
+
+  // РЕПОЗИТОРИЙ ОФИЦИАЛЬНЫХ ЭКЗАМЕНАЦИОННЫХ ВАРИАНТОВ (기출문제)
+  const examRepository = {
+    
+    // ==========================================
+    // 📑 ПУЛ ВАРИАНТОВ TOPIK I (1-2 ГЫП)
+    // ==========================================
+    
+    'topik1-v1': [
+      { type: 'choice', text: '64th TOPIK I — Q1. 무엇에 대한 이야기입니까?\n"우유를 마십니다. 맛있습니다."', options: ['① 음식 (Еда/Напитки)', '② 나이 (Возраст)', '③ 날짜 (Дата)', '④ 이름 (Имя)'], answer: 1, points: 5 },
+      { type: 'choice', text: '64th TOPIK I — Q3. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"시장에 갑니다. 과일을 ( )."', options: ['① 멉니다', '② 삽니다 (Покупаю)', '③ 아픕니다', '④ 모릅니다'], answer: 2, points: 5 },
+      { type: 'choice', text: '60th TOPIK I — Q9. 다음은 무엇에 대한 안내문입니까?\n"이용 시간: 09:00 ~ 18:00 / 매주 월요일은 쉽니다."', options: ['① 가격', '② 취미', '③ 휴일 (Выходной)', '④ 주소'], answer: 3, points: 5 },
+      { type: 'choice', text: '83rd TOPIK I — Q15. 빈칸에 들어갈 알맞은 조사를 고르십시오.\n"오늘 아침 ( ) 빵을 먹었습니다."', options: ['① 에 (В / время)', '② 가', '③ 를', '④ 에서'], answer: 1, points: 5 }
+    ],
+    
+    'topik1-v2': [
+      { type: 'choice', text: '60th TOPIK I — Q2. 무엇에 대한 이야기입니까?\n"동생이 있습니다. 아주 귀엽습니다."', options: ['① 가족 (Семья)', '② 직업 (Профессия)', '③ 주말 (Выходные)', '④ 날씨 (Погода)'], answer: 1, points: 5 },
+      { type: 'choice', text: '64th TOPIK I — Q5. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"방이 너무 ( ). 불을 켭니다."', options: ['① 좁습니다', '② 어둡습니다 (Темно)', '③ 가깝습니다', '④ 조용합니다'], answer: 2, points: 5 },
+      { type: 'choice', text: '83rd TOPIK I — Q10. 다음은 무엇에 대한 안내문입니까?\n"피아노 치기, 영화 보기, 축구하기."', options: ['① 쇼핑', '② 계획', '③ 약속', '④ 취미 (Хобби)'], answer: 4, points: 5 },
+      { type: 'choice', text: '92nd TOPIK I — Q18. 문맥에 알맞은 형태를 고르십시오.\n"내일은 친구 생일입니다. 그래서 선물을 ( )."', options: ['① 샀습니다', '② 사겠습니다 (Куплю)', '③ 사고 싶었습니다', '④ 사지 않았습니다'], answer: 2, points: 5 }
+    ],
+    
+    'topik1-v3': [
+      { type: 'choice', text: '64th TOPIK I — Q2. 무엇에 대한 이야기입니까?\n"저는 스물두 살입니다. 학생입니다."', options: ['① 나라', '② 이름', '③ 나이 (Возраст)', '④ 가방'], answer: 3, points: 5 },
+      { type: 'choice', text: '60th TOPIK I — Q6. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"은행에 갑니다. 돈을 ( )."', options: ['① 바꿉니다 (Меняю/Снимаю)', '② 입습니다', '③ 가르칩니다', '④ 전화합니다'], answer: 1, points: 5 },
+      { type: 'choice', text: '92nd TOPIK I — Q11. 다음은 무엇에 대한 안내문입니까?\n"서울시 종로구 인사동길 12"', options: ['① 이름', '② 주소 (Адрес)', '③ 날짜', '④ 직업'], answer: 2, points: 5 },
+      { type: 'choice', text: '64th TOPIK I — Q21. 밑줄 친 표현의 의미로 알맞은 것을 고르십시오.\n"비가 오니까 우산을 가지고 ( )."', options: ['① 가세요 (Идите)', '② 오세요', '③ 보세요', '④ 드세요'], answer: 1, points: 5 }
+    ],
+    
+    'topik1-v4': [
+      { type: 'choice', text: '83rd TOPIK I — Q1. 무엇에 대한 이야기입니까?\n"한국어 공부가 재미있습니다. 매일 학원에 갑니다."', options: ['① 공부 (Учеба)', '② 계절', '③ 휴일', '④ 요일'], answer: 1, points: 5 },
+      { type: 'choice', text: '92nd TOPIK I — Q4. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"머리가 ( ). 약을 먹었습니다."', options: ['① 맑습니다', '② 좋습니다', '③ 아픕니다 (Болит)', '④ 작습니다'], answer: 3, points: 5 },
+      { type: 'choice', text: '64th TOPIK I — Q12. 다음 문장의 의미와 같은 것을 고르십시오.\n"여기는 주차장입니다. 차를 세우십시오."', options: ['① 물건을 사는 곳', '② 차를 세우는 곳 (Место парковки)', '③ 음식을 먹는 곳', '④ 차를 고치는 곳'], answer: 2, points: 5 },
+      { type: 'choice', text: '60th TOPIK I — Q25. 알맞은 접속사를 고르십시오.\n"눈이 많이 내렸습니다. ( ) 길이 미끄럽습니다."', options: ['① 하지만', '② 그래서 (Поэтому)', '③ 그런데', '④ 그러면'], answer: 2, points: 5 }
+    ],
+    
+    'topik1-v5': [
+      { type: 'choice', text: '92nd TOPIK I — Q3. 무엇에 대한 이야기입니까?\n"백화점에 갑니다. 옷을 삽니다."', options: ['① 날짜', '② 쇼핑 (Шопинг)', '③ 친구', '④ 취미'], answer: 2, points: 5 },
+      { type: 'choice', text: '83rd TOPIK I — Q7. ( )에 들어갈 가장 알맞은 것을 고르십시오.\n"약속 시간이 지났습니다. 친구가 아직 안 ( )."', options: ['① 옵니다 (Не приходит)', '② 갑니다', '③ 만납니다', '④ 전화합니다'], answer: 1, points: 5 },
+      { type: 'choice', text: '60th TOPIK I — Q14. 다음은 무엇에 대한 안내문입니까?\n"1층: 식당 / 2층: 서점 / 3층: 옷가게"', options: ['① 이용 방법', '② 층별 안내 (Инфо по этажам)', '③ 영업 시간', '④ 위치 안내'], answer: 2, points: 5 },
+      { type: 'choice', text: '64th TOPIK I — Q29. 문맥상 가장 알맞은 단어를 고르십시오.\n"기차표가 없습니다. 버스를 타고 ( ) 합니다."', options: ['① 가야 (Должен поехать)', '② 가려고', '③ 가지만', '④ 가다가'], answer: 1, points: 5 }
+    ],
+
+    // ==========================================
+    // 📑 ПУЛ ВАРИАНТОВ TOPIK II (3-6 ГЫП)
+    // ==========================================
+    
+    'topik2-v1': [
+      { type: 'choice', text: '64th TOPIK II — Q1. ( )에 들어갈 알맞은 것을 고르십시오.\n"공장을 다녀 본 ( ) 이 일은 그리 어렵지 않았다."', options: ['① 탓에', '② 셈 치고', '③ 바에야', '④ 적으로써 (На основе опыта)'], answer: 4, points: 2 },
+      { type: 'choice', text: '60th TOPIK II — Q13. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 지갑을 잃어버렸다.\n(나) 경찰서에 가서 신고를 했다.\n(다) 다행히 친절한 사람이 지갑을 찾아 주었다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (다)-(가)-(나)', '④ (가)-(다)-(나)'], answer: 1, points: 3 },
+      { type: 'write', text: '64th TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"유미 씨, 그동안 고ма웠습니다. 다음 주에 저는 고향으로 [ ㄱ ]. 떠나기 전에 얼굴을 보고 싶습니다."', sample: '돌아가게 되었습니다' },
+      { type: 'write', text: '60th TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"매운맛은 맛이 아니라 통증이다. 그럼에도 매운 음식을 먹으면 뇌가 통증을 줄이기 위해 엔도르핀을 [ ㄴ ]. 그래서 스트레스가 풀리는 느낌을 받는다."', sample: '분비하기 때문이다' }
+    ],
+    
+    'topik2-v2': [
+      { type: 'choice', text: '60th TOPIK II — Q1. ( )에 들어갈 알맞은 것을 고르십시오.\n"무슨 일을 ( ) 열심히 하는 모습이 보기 좋다."', options: ['① 하든지 (Что бы ни делал)', '② 하도록', '③ 하다 보면', '④ 하느라고'], answer: 1, points: 2 },
+      { type: 'choice', text: '64th TOPIK II — Q14. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 요즘은 스마트폰으로 책을 읽는 사람이 많다.\n(나) 그러나 종이책만의 매력을 잊지 못하는 독자도 있다.\n(다) 이들을 위해 종이 냄새가 나는 디지털 기기도 출시되었다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (가)-(다)-(나)', '④ (다)-(가)-(나)'], answer: 1, points: 3 },
+      { type: 'write', text: '60th TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"백화점 고객센터입니다. 문의하신 상품은 현재 재고가 부족하여 바로 [ ㄱ ]. 다음 주 월요일까지 배송해 드리겠습니다."', sample: '보내드리기 어렵습니다' },
+      { type: 'write', text: '64th TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"사람은 보통 거울을 보면 자신의 단점을 가리려고 한다. 그러나 거울 속에 비친 모습은 있는 그대로를 [ ㄴ ]. 이를 거부하기보다는 수용하는 자세가 필요하다."', sample: '보여주기 때문이다' }
+    ],
+    
+    'topik2-v3': [
+      { type: 'choice', text: '83rd TOPIK II — Q2. ( )에 들어갈 알맞은 것을 고르십시오.\n"부모는 자녀의 거울이라는 말이 있듯이 자녀는 부모의 행동을 ( ) 성장한다."', options: ['① 따라 하면서 (Повторяя/Копируя)', '② 따르다 보면', '③ 따르기 마련이라', '④ 따르는 척하면서'], answer: 1, points: 2 },
+      { type: 'choice', text: '83rd TOPIK II — Q15. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 씨앗을 심고 매일 물을 주었다.\n(나) 마침내 예쁜 꽃이 피어났다.\n(다) 얼마 후 조그만 싹이 트기 시작했다.', options: ['① (가)-(나)-(다)', '② (가)-(다)-(나)', '③ (다)-(가)-(나)', '④ (나)-(가)-(다)'], answer: 2, points: 3 },
+      { type: 'write', text: '83rd TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"한국어 말하기 대회에 참가하고 싶습니다. 신청 마감일이 내일까지인데 혹시 이메일로도 신청서를 [ ㄱ ]?"', sample: '제출해도 됩니까' },
+      { type: 'write', text: '83rd TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"식물이 자랄 때 햇빛은 필수적이다. 만약 햇빛을 충분히 받지 못하면 줄기가 가늘어지고 잎이 황색으로 [ ㄴ ]. 따라서 실내 식물은 주기적으로 햇볕을 쬐어주어야 한다."', sample: '변하게 된다' }
+    ],
+    
+    'topik2-v4': [
+      { type: 'choice', text: '92nd TOPIK II — Q1. ( )에 들어갈 알맞은 것을 고르십시오.\n"시험을 앞두고 잠을 ( ) 공부했더니 몸이 아주 피곤하다."', options: ['① 줄여 가며 (Уменьшая/Урезая)', '② 줄이다시피', '③ 줄이는 대신에', '④ 줄일 정도로'], answer: 1, points: 2 },
+      { type: 'choice', text: '92nd TOPIK II — Q13. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 고래는 허파로 숨을 쉬는 포유류 동물이다.\n(나) 그래서 물 밖으로 나와 주기적으로 호흡을 해야 한다.\n(다) 이때 머리 위에 있는 구멍을 통해 물을 뿜어내는 것처럼 보인다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (가)-(다)-(나)', '④ (다)-(가)-(나)'], answer: 1, points: 3 },
+      { type: 'write', text: '92nd TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"도서관장 마이클입니다. 지난달 대출하신 도서의 반납 예정일이 지났습니다. 이번 주말까지 도서를 [ ㄱ ] 주시면 연체료가 면제됩니다."', sample: '반납해' },
+      { type: 'write', text: '92nd TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"기술의 발전은 인간의 삶을 편리하게 만든다. 그러나 기술에 지나치게 의존하면 인간의 사고 능력이 [ ㄴ ]. 가끔은 цифровой 디톡스가 필요한 이유가 여기에 있다."', sample: '퇴화할 수 있다' }
+    ],
+    
+    'topik2-v5': [
+      { type: 'choice', text: '64th TOPIK II — Q2. ( )에 들어갈 알맞은 것을 고르십시오.\n"정부가 대책을 발표했음에도 불구하고 물가는 여전히 ( ) 기세를 보이고 있다."', options: ['① 오를 대로 오른', '② 오를 세라', '③ 오를 듯한', '④ 오를 대로 오르는'], answer: 4, points: 2 },
+      { type: 'choice', text: '60th TOPIK II — Q15. 순서대로 알맞게 배열한 것을 고르십시오.\n(가) 조선시대의 핵심 왕실 기록물들이 유네스코에 등재되었다.\n(나) 이것은 전 세계적으로 역사적 가치를 공식 인정받은 결과이다.\n(다) 앞으로 철저한 보존과 철저한 디지털화 관리가 요구된다.', options: ['① (가)-(나)-(다)', '② (나)-(가)-(다)', '③ (다)-(가)-(나)', '④ (가)-(다)-(나)'], answer: 1, points: 3 },
+      { type: 'write', text: '73rd TOPIK II — Q51 (Writing). Заполните официальный пропуск [ㄱ]:\n\n"하우스메이트를 구합니다. 방은 두 개이며, 거실과 주방을 함께 [ ㄱ ]. 관심 있으신 분은 연락 바랍니다."', sample: '사용하게 됩니다' },
+      { type: 'write', text: '73rd TOPIK II — Q52 (Writing). Заполните официальный пропуск [ㄴ]:\n\n"낮은 산을 오를 때는 운동화를 신어도 무방하다. 그러나 높은 산을 오를 때는 반드시 전문 등산화를 [ ㄴ ]. 거친 바위와 미끄러운 흙길에서 발목 부상을 예방할 수 있기 때문이다."', sample: '착용해야 한다' }
+    ]
+  };
+
+  // Выбираем конкретный массив вопросов на основе ключа, иначе откатываемся на topik1-v1
+  const database = examRepository[examKey] || examRepository['topik1-v1'];
+  const questions = Object.freeze(database);
+
+  let currentIdx = 0;
+  const userAnswers = new Array(questions.length).fill(null);
+
+  function renderQuestion() {
+    if (currentIdx >= questions.length) {
+      finishExam();
+      return;
+    }
+
+    const q = questions[currentIdx];
+    
+    document.getElementById('progress').style.width = `${(currentIdx / questions.length) * 100}%`;
+    document.getElementById('q-meta').textContent = `Вопрос ${currentIdx + 1} из ${questions.length} (${q.type === 'choice' ? 'Тест' : 'Письменно'})`;
+    document.getElementById('q-text').textContent = q.text;
+
+    const zone = document.getElementById('interaction-zone');
+    zone.innerHTML = '';
+
+    if (q.type === 'choice') {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'options-group';
+      
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        btn.onclick = () => saveChoiceAnswer(index + 1);
+        wrapper.appendChild(btn);
+      });
+      
+      zone.appendChild(wrapper);
+
+    } else if (q.type === 'write') {
+      const input = document.createElement('textarea');
+      input.className = 'write-input';
+      input.rows = 3;
+      input.placeholder = 'Введите ваш ответ на корейском языке...';
+      input.id = 'write-field';
+
+      const submitBtn = document.createElement('button');
+      submitBtn.className = 'action-btn';
+      submitBtn.textContent = 'Подтвердить ответ и далее';
+      submitBtn.onclick = () => saveWriteAnswer();
+
+      zone.appendChild(input);
+      zone.appendChild(submitBtn);
+    }
+  }
+
+  function saveChoiceAnswer(selectedOption) {
+    disableAllInputs();
+    userAnswers[currentIdx] = selectedOption;
+
+    setTimeout(() => {
+      currentIdx++;
+      renderQuestion();
+    }, 300);
+  }
+
+  function saveWriteAnswer() {
+    const field = document.getElementById('write-field');
+    if (!field) return;
+
+    const val = field.value.trim();
+    if (!val) {
+      alert('Пожалуйста, напишите ответ перед переходом к следующему вопросу.');
+      return;
+    }
+
+    disableAllInputs();
+    userAnswers[currentIdx] = val;
+
+    currentIdx++;
+    renderQuestion();
+  }
+
+  function disableAllInputs() {
+    document.querySelectorAll('.option-btn, #write-field, .action-btn').forEach(el => {
+      el.disabled = true;
+    });
+  }
+
+  function finishExam() {
+    let correctCount = 0;
+
+    questions.forEach((q, idx) => {
+      const uAns = userAnswers[idx];
+      if (q.type === 'choice') {
+        if (Number(uAns) === Number(q.answer)) correctCount++;
+      } else if (q.type === 'write') {
+        // Мягкое сравнение строк без учета пробелов и регистра
+        if (uAns && String(uAns).replace(/\s+/g, '').toLowerCase() === String(q.sample).replace(/\s+/g, '').toLowerCase()) {
+          correctCount++;
+        }
+      }
+    });
+
+    const resultsPayload = {
+      examKey: examKey,
+      totalQuestions: questions.length,
+      correctCount: correctCount,
+      questions: questions.map(q => ({
+        type: q.type,
+        text: q.text,
+        correctAnswer: q.options ? q.options[q.answer - 1] : null,
+        sample: q.sample || null
+      })),
+      userAnswers: userAnswers.map((u, i) => {
+        if (questions[i].type === 'choice') {
+          return questions[i].options[u - 1] || 'Нет ответа';
+        }
+        return u;
+      })
+    };
+
+    sessionStorage.setItem('topik_last_results', JSON.stringify(resultsPayload));
+    window.location.href = 'results.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', renderQuestion);
+})();
+.variant-btn small { font-weight: 400; font-size: 0.8rem; opacity: 0.85; }
 
     .student-guide { background: rgba(168, 85, 247, 0.04); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 20px; position: sticky; top: 90px; }
     .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
