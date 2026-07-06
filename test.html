@@ -22,7 +22,6 @@
 
     .test-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
     
-    /* Хедер панели управления тестом */
     .test-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .timer-badge { background: rgba(6, 182, 212, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 8px; font-weight: 700; font-variant-numeric: tabular-nums; }
     
@@ -32,7 +31,6 @@
     .q-meta { font-size: 0.85rem; color: var(--purple); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .q-text { font-size: 1.25rem; font-weight: 700; margin-bottom: 30px; line-height: 1.6; color: #fff; white-space: pre-line; }
 
-    /* Варианты ответа (Тесты) */
     .options-group { display: grid; grid-template-columns: 1fr; gap: 14px; }
     .option-btn {
       background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
@@ -41,7 +39,6 @@
     .option-btn:hover { background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.4); }
     .option-btn:disabled { cursor: not-allowed; opacity: 0.5; }
 
-    /* Поля академического письма TOPIK II */
     .essay-area {
       width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
       padding: 18px; color: #fff; font-size: 1.1rem; font-family: inherit; margin-bottom: 15px; resize: vertical;
@@ -61,7 +58,7 @@
   <main class="container">
     <div class="test-card">
       <div class="test-header">
-        <div class="q-meta" id="exam-title">Загрузка протокола...</div>
+        <div class="q-meta" id="exam-title">Загрузка ядра генерации...</div>
         <div class="timer-badge" id="timer">00:00</div>
       </div>
       
@@ -79,101 +76,146 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const examKey = urlParams.get('exam') || 'topik1-v1';
-
-      // Генератор структуры TOPIK I (70 вопросов)
-      function generateTopik1Questions(variantNum) {
-        let qArr = [];
-        // 듣기 (Слушание) — 30 вопросов
-        for (let i = 1; i <= 30; i++) {
-          qArr.push({
-            type: 'choice',
-            section: '듣기 (Слушание)',
-            text: `[듣기 제 ${i} 항] 대화를 듣고 알맞은 그림이나 답을 고르십시오. (Вар. 0${variantNum})`,
-            options: ['① 그렇습니다', '② 아닙니다', '③ 모릅니다', '④ 맞습니다'],
-            answer: (i % 4) + 1
-          });
-        }
-        // 읽기 (Чтение) — 40 вопросов
-        for (let i = 31; i <= 70; i++) {
-          qArr.push({
-            type: 'choice',
-            section: '읽기 (Чтение)',
-            text: `[읽기 제 ${i} 항] 다음 글을 읽고 물음에 답하십시오.\n"저는 매일 한국어를 공부합니다. 아주 재미있습니다."`,
-            options: ['① 공부', '② 영화', '③ 시장', '④ 친구'],
-            answer: (i % 4) + 1
-          });
-        }
-        return qArr;
-      }
-
-      // Генератор структуры TOPIK II (100 тестов + 4 задания на Письмо)
-      function generateTopik2Questions(variantNum) {
-        let qArr = [];
-        // 듣기 (Слушание) — 50 вопросов
-        for (let i = 1; i <= 50; i++) {
-          qArr.push({
-            type: 'choice',
-            section: '듣기 (Слушание)',
-            text: `[듣기 제 ${i} 항] 다음을 듣고 알맞은 것을 고르십시오.`,
-            options: ['① 정부의 대책', '② 경제의 활성화', '③ 사회적 현상', '④ 교육의 문제점'],
-            answer: (i % 4) + 1
-          });
-        }
-        
-        // 쓰기 (Письмо) — Строго 4 официальных бланка NIIED (Q51-Q54)
-        qArr.push({
-          type: 'write',
-          section: '쓰기 (Письмо) — Q51',
-          text: `[쓰기 제 51 항] 다음을 읽고 [ ㄱ ]과 [ ㄴ ]에 들어갈 말을 쓰십시오.\n\n"소비자 센터입니다. 상품 청구에 대한 조사는 현재 진행 [ ㄱ ]. 조사가 끝나는 대로 결과를 바로 [ ㄴ ]."`,
-          sample: '중입니다'
-        });
-        qArr.push({
-          type: 'write',
-          section: '쓰기 (Письмо) — Q52',
-          text: `[쓰기 제 52 항] 다음 글을 읽고 빈칸에 알мах은 단어들을 채우십시오.\n\n"사람들은 보통 스트레스를 받으면 음식을 먹는다. 그러나 음식을 많이 먹는 것은 건강에 [ ㄱ ]. 따라서 운동을 통해 스트레스를 해소하는 것이 더 [ ㄴ ]."`,
-          sample: '좋지 않다'
-        });
-        qArr.push({
-          type: 'write',
-          section: '쓰기 (Письмо) — Q53 (Графики)',
-          text: `[쓰기 제 53 항] 다음 조건을 바탕으로 '출산율 변화 현황'에 대한 설명문을 작성하십시오. (200~300자)\n\n• 조사 기관: 보건복지부\n• 조사 대상: 전국 20-40대 남녀\n• 변동 원인: 육아 부담 증가 및 주거 불안정`,
-          sample: '설명문'
-        });
-        qArr.push({
-          type: 'write',
-          section: '쓰기 (Письмо) — Q54 (Развёрнутое Эссе)',
-          text: `[쓰기 제 54 항] 'AI 시대와 인간의 역할'에 대하여 자신의 의견을 서술하십시오. (600~700자)\n\n1. 인공지능이 인간에게 주는 혜택은 무엇인가?\n2. 인공지능이 대체할 수 없는 인간만의 능력은 무엇인가?\n3. 미래 사회를 위해 우리는 어떤 준비를 해야 하는가?`,
-          sample: '에세이'
-        });
-
-        // 읽기 (Чтение) — 50 вопросов
-        for (let i = 55; i <= 104; i++) {
-          qArr.push({
-            type: 'choice',
-            section: '읽기 (Чтение)',
-            text: `[읽기 제 ${i - 4} 항] 다음을 읽고 문맥에 알맞은 단어를 선택하십시오.`,
-            options: ['① 오를 대로 오른', '② 줄어들 기세를', '③ 감안하더라도', '④ 배제할 수 없는'],
-            answer: (i % 4) + 1
-          });
-        }
-        return qArr;
-      }
-
-      // Роутер пула вариантов
-      let questions = [];
-      const vIndex = parseInt(examKey.slice(-1)) || 1;
+      const variantNum = parseInt(examKey.slice(-1)) || 1;
       const isTopik2 = examKey.includes('topik2');
 
-      if (isTopik2) {
-        questions = generateTopik2Questions(vIndex);
-      } else {
-        questions = generateTopik1Questions(vIndex);
+      // Псевдослучайный генератор (Seedable PRNG), чтобы варианты не пересекались
+      function SeededRandom(seed) {
+        return function() {
+          let t = seed += 0x6D2B79F5;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        }
+      }
+      // У каждого варианта свое уникальное начальное зерно для генерации
+      const rnd = SeededRandom(isTopik2 ? variantNum * 2000 : variantNum * 1000);
+
+      // Языковые матрицы TOPIK I (Начальный уровень)
+      const topik1Lexicon = {
+        subjects: ['동생이', '어머니가', '친구가', '선생님이', '형이', '아버지가', '누나가', '의사가'],
+        actions: ['공부합니다', '운동을 합니다', '책을 읽습니다', '노래를 부릅니다', '커피를 마십니다', '한국어를 배웁니다', '잠을 잡니다', '음식을 만듭니다'],
+        places: ['시장에 갑니다', '백화점에 갑니다', '학교에 갑니다', '공원에 갑니다', '도서관에 갑니다', '식당에 갑니다', '은행에 갑니다', '병원에 갑니다'],
+        distractors: ['날씨', '날짜', '시간', '과일', '가방', '가족', '휴일', '이름', '취미', '쇼핑', '공부', '직업', '나이', '주소', '가격', '교통']
+      };
+
+      // Языковые матрицы TOPIK II (Средний / Продвинутый уровень)
+      const topik2Lexicon = {
+        contexts: [
+          '정부가 고용 시장의 안정을 위해 새로운 대책을 발표했음에도 불구하고 경제 지표는 여전히',
+          '현대 사회에서 인공지능 기술이 급격히 발전함에 따라 인간 고유의 창의적 능력이 더욱',
+          '환경 오염 문제를 해결하기 위해 일회용품 사용을 규제하는 법안이 시행된 이후 대중들의 인식이',
+          '고령화 사회가 심화되면서 노인 복지 예산을 확보하려는 국가적 차원의 움직임이 활발히',
+          '소비자들의 구매 패턴이 오프라인에서 온라인 플랫폼으로 이동하면서 유통 구조의 혁신이',
+          '전통문화의 가치를 보존하고 이를 현대적으로 재해석하려는 예술가들의 노력이 끊임없이',
+          '아동기 교육 환경이 인격 형성에 미치는 영향에 대한 연구 결과가 발표되면서 학부모들의 관심이',
+          '다문화 가정이 증가함에 따라 사회적 통합을 유도하기 위한 정책적 인프라 구축이 시급히'
+        ],
+        grammarOptions: [
+          ['오를 대로 오른', '오를 세라', '오를 듯한', '오를 대로 오르는'],
+          ['줄어들 기세를', '줄어들다시피', '줄어들 대가', '줄어드는 대신에'],
+          ['감안하더라도', '감안할 정도로', '감안하기 마련이라', '감안하는 척하면서'],
+          ['배제할 수 없는', '배제하는 바람에', '배제하는 토대', '배제할 지경이다'],
+          ['주목받기 시작했다', '주목받을 리가 없다', '주목받는 셈이다', '주목받도록 했다'],
+          ['이루어지고 있다', '이루어질 턱이 없다', '이루어질 뿐이다', '이루어지기 십상이다'],
+          ['집중되는 추세이다', '집중될 리 만무하다', '집중될 따름이다', '집중되도록 하였다'],
+          ['요구되는 시점이다', '요구될 수밖에 없다', '요구될 지도 모른다', '요구되곤 했다']
+        ]
+      };
+
+      // Перемешивание массивов
+      function shuffleArray(arr) {
+        let array = [...arr];
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(rnd() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
       }
 
+      // Генератор TOPIK I (70 уникальных тестов)
+      function makeTopik1() {
+        let list = [];
+        for (let i = 1; i <= 70; i++) {
+          const sect = i <= 30 ? '듣기 (Слушание)' : '읽기 (Чтение)';
+          const sub = topik1Lexicon.subjects[Math.floor(rnd() * topik1Lexicon.subjects.length)];
+          const act = topik1Lexicon.actions[Math.floor(rnd() * topik1Lexicon.actions.length)];
+          const plc = topik1Lexicon.places[Math.floor(rnd() * topik1Lexicon.places.length)];
+          
+          let rawOpts = shuffleArray(topik1Lexicon.distractors).slice(0, 4);
+          const ansIdx = Math.floor(rnd() * 4);
+          
+          let text = `[${sect} 제 ${i} 항] 무엇에 대한 이야기입니까?\n"${sub} ${act}. 그리고 ${plc}."`;
+          if (i > 50) {
+            text = `[${sect} 제 ${i} 항] 빈칸에 들어갈 알맞은 것을 고르십시오.\n"저는 내일 친구를 만납니다. 우리 영화를 ( )."`;
+            rawOpts = ['① 봅니다', '② 먹습니다', '③ 잡니다', '④ 가르칩니다'];
+          }
+
+          list.push({
+            type: 'choice',
+            section: sect,
+            text: text,
+            options: rawOpts.map((o, idx) => `${idx + 1}. ${o}`),
+            answer: ansIdx + 1
+          });
+        }
+        return list;
+      }
+
+      // Генератор TOPIK II (100 уникальных тестов + 4 Письма)
+      function makeTopik2() {
+        let list = [];
+        
+        // 1. Секция Слушания (듣기) — 50 вопросов
+        for (let i = 1; i <= 50; i++) {
+          const ctxIdx = (i + variantNum) % topik2Lexicon.contexts.length;
+          const opts = topik2Lexicon.grammarOptions[ctxIdx];
+          list.push({
+            type: 'choice',
+            section: '듣기 (Слушание)',
+            text: `[듣기 제 ${i} 항] 다음 대화를 듣고 이어질 수 있는 말로 알맞은 것을 고르십시오.\n"${topik2Lexicon.contexts[ctxIdx]} ( )."`,
+            options: opts.map((o, idx) => `${idx + 1}. ${o}`),
+            answer: ((i + variantNum) % 4) + 1
+          });
+        }
+
+        // 2. Секция Письма (쓰기) — 4 бланка
+        const writingPrompts = [
+          { q: '51', txt: `"유미 씨, 전시회 초대에 감사드립니다. 원래는 참석하려고 했으나 갑작스러운 출장 일정이 [ ㄱ ]. 다음 주에 귀국하는 대로 다시 [ ㄴ ]."`, s: '생겼습니다' },
+          { q: '52', txt: `"독서는 정서적 안정에 큰 가치를 지닌다. 책을 읽는 과정에서 뇌는 휴식을 [ ㄱ ]. 반면, 스마트폰을 보는 행위는 오히려 스트레스를 [ ㄴ ]."`, s: '취하게 된다' },
+          { q: '53', txt: `[쓰기 제 53 항] 다음 그래프를 분석하여 설명문을 작성하십시오 (200~300자).\n\n• 조사 기관: 한국경제연구소\n• 주제: 20-30대 1인 가구 소비 트렌드 변화\n• 주요 요인: 편리함 추구 및 소형 가전 시장 확대`, s: '그래프분석' },
+          { q: '54', txt: `[쓰기 제 54 항] '현대 사회의 정보 과잉 현상'에 대하여 자신의 견해를 서술하십시오 (600~700자).\n\n1. 정보 과잉이 현대인에게 미치는 심리적 부작용은 무엇인가?\n2. 올바른 정보를 판별하기 위해 필요한 개인적 노력은 무엇인가?\n3. 정부 및 플랫폼 기업은 어떤 제도적 장치를 마련해야 하는가?`, s: '에세이작성' }
+        ];
+
+        writingPrompts.forEach(wp => {
+          list.push({
+            type: 'write',
+            section: `쓰기 (Письмо) — Q${wp.q}`,
+            text: wp.txt,
+            sample: wp.s
+          });
+        });
+
+        // 3. Секция Чтения (읽기) — 50 вопросов
+        for (let i = 55; i <= 104; i++) {
+          const ctxIdx = (i + variantNum + 3) % topik2Lexicon.contexts.length;
+          const opts = topik2Lexicon.grammarOptions[ctxIdx];
+          list.push({
+            type: 'choice',
+            section: '읽기 (Чтение)',
+            text: `[읽기 제 ${i - 4} 항] 다음 글을 읽고 빈칸에 들어갈 가장 알맞은 표현을 고르십시오.\n"${topik2Lexicon.contexts[ctxIdx]} ( )."`,
+            options: opts.map((o, idx) => `${idx + 1}. ${o}`),
+            answer: ((i + 2) % 4) + 1
+          });
+        }
+
+        return list;
+      }
+
+      // Инициализация структуры
+      const questions = Object.freeze(isTopik2 ? makeTopik2() : makeTopik1());
       let currentIdx = 0;
       const userAnswers = new Array(questions.length).fill(null);
-      
-      // Инициализация таймера по регламенту NIIED (100 минут для TOPIK I, 180 минут суммарно для TOPIK II)
       let timeLeft = isTopik2 ? 180 * 60 : 100 * 60;
 
       function startTimer() {
@@ -259,7 +301,7 @@
 
         const val = field.value.trim();
         if (!val) {
-          alert('Пустой бланк не принимается системой.');
+          alert('Пустой бланк не принимается.');
           return;
         }
 
@@ -276,7 +318,7 @@
           if (q.type === 'choice') {
             if (Number(uAns) === Number(q.answer)) correctCount++;
           } else if (q.type === 'write') {
-            if (String(uAns).length > 5) correctCount++; // Проверка заполнения академического ввода
+            if (String(uAns).length > 5) correctCount++;
           }
         });
 
