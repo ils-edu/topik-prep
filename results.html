@@ -3,300 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Результаты тестирования · TOPIK.ILS</title>
+  <title>ИИ-Аналитика результатов · TOPIK ILS</title>
   <style>
-    /* Премиум-стили для страницы результатов */
     :root {
-      --bg: #05050a;
-      --card-bg: rgba(13, 13, 25, 0.7);
-      --border: rgba(168, 85, 247, 0.15);
+      --bg: #05070f;
+      --card-bg: rgba(13, 18, 33, 0.45);
+      --border: rgba(168, 85, 247, 0.2);
       --text: #f3f4f6;
-      --text-muted: #71717a;
+      --text-muted: #8892b0;
       --purple: #a855f7;
-      --purple-glow: rgba(168, 85, 247, 0.25);
-      --green: #10b981;
-      --green-glow: rgba(16, 185, 129, 0.2);
-      --red: #ef4444;
       --cyan: #06b6d4;
+      --success: #10b981;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.25s ease; }
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      padding-bottom: 60px;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 50px 20px;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+
+    .result-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 50px rgba(168, 85, 247, 0.05);
     }
 
-    body::before {
-      content: ''; position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
-      width: 600px; height: 400px; background: var(--purple); filter: blur(150px); opacity: 0.1; pointer-events: none;
+    h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #fff, var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+      text-align: center;
     }
 
-    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
-
-    /* Шапка сайта */
-    .site-header {
-      backdrop-filter: blur(16px); background: rgba(5, 5, 10, 0.75);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05); position: sticky; top: 0; z-index: 50; margin-bottom: 30px;
+    .score-board {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 35px;
+      border: 1px solid rgba(255,255,255,0.05);
     }
-    .header-inner { height: 70px; display: flex; align-items: center; justify-content: space-between; }
-    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 1.2rem; color: #fff; }
-    .logo-kor { background: linear-gradient(135deg, var(--purple), var(--cyan)); color: #000; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 900; }
 
-    /* Главный виджет с баллами */
-    .score-card {
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px;
-      padding: 40px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden;
+    .score-item { text-align: center; }
+    .score-val { font-size: 2.5rem; font-weight: 850; color: #fff; }
+    .score-val.highlight { color: var(--cyan); text-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+    .score-lbl { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-top: 5px; }
+
+    /* Блок ИИ Фидбека */
+    .ai-feedback-box {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(6, 182, 212, 0.05));
+      border: 1px solid var(--purple);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 35px;
+      position: relative;
     }
-    
-    .score-circle {
-      width: 150px; height: 150px; border-radius: 50%; border: 6px solid rgba(255, 255, 255, 0.02);
-      border-top-color: var(--purple); border-right-color: var(--purple); margin: 0 auto 24px auto;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 0 0 30px var(--purple-glow); background: rgba(5, 5, 10, 0.5);
+    .ai-feedback-box::before {
+      content: '🤖 AI INSIGHT';
+      position: absolute;
+      top: -12px; left: 20px;
+      background: var(--purple);
+      color: #fff; font-size: 0.7rem; font-weight: 800;
+      padding: 3px 10px; border-radius: 6px; letter-spacing: 1px;
     }
-    .score-circle .points { font-size: 2.4rem; font-weight: 900; color: #fff; line-height: 1; }
-    .score-circle .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; }
+    .ai-text { font-size: 1.05rem; line-height: 1.6; color: #e2e8f0; }
 
-    .score-status { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; color: #fff; }
-    .score-level { font-size: 1.1rem; font-weight: 600; color: var(--cyan); margin-bottom: 12px; display: inline-block; padding: 4px 16px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 50px; }
-    .score-level.failed { color: var(--red); background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.2); }
-    .score-meta { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 30px; line-height: 1.5; }
-
-    /* Экспертный фидбек */
-    .feedback-box {
-      background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px;
-      padding: 20px; text-align: left; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.6;
+    .btn-home {
+      display: block; text-align: center; background: transparent;
+      border: 1px solid rgba(255,255,255,0.15); color: #fff;
+      padding: 14px; border-radius: 12px; font-weight: 600; text-decoration: none;
     }
-    .feedback-box strong { color: #fff; display: block; margin-bottom: 6px; font-size: 1rem; }
-
-    /* Кнопки навигации */
-    .btn-group { display: flex; gap: 15px; justify-content: center; }
-    .btn-action { padding: 14px 32px; border-radius: 14px; font-weight: 700; text-decoration: none; cursor: pointer; font-size: 0.95rem; }
-    .btn-retry { background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
-    .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); }
-    .btn-home { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #fff; }
-    .btn-home:hover { background: rgba(255, 255, 255, 0.08); }
-
-    /* Сетка разбора вопросов */
-    .breakdown-title { font-size: 1.4rem; font-weight: 800; margin: 45px 0 20px 0; color: #fff; border-left: 4px solid var(--purple); padding-left: 14px; }
-    .q-card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.02); border-radius: 18px; padding: 24px; margin-bottom: 16px; border-left: 5px solid var(--text-muted); }
-    .q-card.correct { border-left-color: var(--green); background: linear-gradient(90deg, rgba(16, 185, 129, 0.01), transparent); }
-    .q-card.incorrect { border-left-color: var(--red); background: linear-gradient(90deg, rgba(239, 68, 68, 0.01), transparent); }
-    
-    .q-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .q-num { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    .status-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.5px; }
-    .correct .status-badge { background: rgba(16, 185, 129, 0.1); color: var(--green); }
-    .incorrect .status-badge { background: rgba(239, 68, 68, 0.1); color: var(--red); }
-
-    .q-card-text { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 16px; line-height: 1.4; }
-    .answers-log { font-size: 0.95rem; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 10px; }
-    .ans-row { display: flex; gap: 8px; }
-    .ans-label { color: var(--text-muted); min-width: 110px; }
-    .ans-val { font-weight: 600; }
-    .correct .ans-val.user { color: var(--green); }
-    .incorrect .ans-val.user { color: var(--red); }
-    .ans-val.true { color: var(--green); }
+    .btn-home:hover { background: #fff; color: #000; }
   </style>
 </head>
 <body>
 
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="logo">
-        <span class="logo-kor">한국어</span>
-        <span class="logo-text">TOPIK.ILS</span>
-      </a>
+  <div class="container">
+    <div class="result-card">
+      <h1>Анализ Экзаменационной Сессии</h1>
+
+      <div class="score-board">
+        <div class="score-item">
+          <div class="score-val" id="correct-ratio">0/0</div>
+          <div class="score-lbl">Правильные ответы</div>
+        </div>
+        <div class="score-item">
+          <div class="score-val highlight" id="calculated-score">0</div>
+          <div class="score-lbl">Эквивалент TOPIK (Баллы)</div>
+        </div>
+        <div class="score-item">
+          <div class="score-val" id="grade-level">—</div>
+          <div class="score-lbl">Присвоенный уровень</div>
+        </div>
+      </div>
+
+      <div class="ai-feedback-box">
+        <p class="ai-text" id="ai-comment">Генерирую экспертный отзыв ИИ...</p>
+      </div>
+
+      <a href="index.html" class="btn-home">Вернуться на главную панель</a>
     </div>
-  </header>
-
-  <main class="container">
-    <div class="score-card">
-      <div class="score-circle">
-        <div class="points" id="result-score">0</div>
-        <div class="label">Баллов</div>
-      </div>
-      <div class="score-status" id="result-status">Обработка...</div>
-      <div class="score-level" id="result-level">-</div>
-      
-      <div class="score-meta" id="result-meta">Сбор и верификация метаданных экзаменационной сессии...</div>
-      
-      <div class="feedback-box" id="result-feedback">
-        <strong>Анализ компетенций:</strong>
-        Загрузка персональных рекомендаций...
-      </div>
-
-      <div class="btn-group">
-        <a href="index.html" class="btn-action btn-home">В панель тестов</a>
-        <button onclick="retryExam()" class="btn-action btn-retry">Пройти заново</button>
-      </div>
-    </div>
-
-    <h3 class="breakdown-title">Детальный разбор ответов</h3>
-    <div id="breakdown-container"></div>
-  </main>
+  </div>
 
   <script>
-    (() => {
-      'use strict';
-
-      document.addEventListener('DOMContentLoaded', () => {
-        // 1. Чтение и немедленная заморозка данных во избежание внешних манипуляций
-        const rawData = sessionStorage.getItem('topik_last_results');
-        if (!rawData) {
-          showError("Результаты тестирования не найдены. Вернитесь назад и завершите тест.");
-          return;
-        }
-
-        const sessionData = Object.freeze(JSON.parse(rawData));
-        const { examKey, totalQuestions, correctCount, questions, userAnswers } = sessionData;
-
-        // 2. Определение типа экзамена и перевод процентов в стандартизированные баллы TOPIK
-        const isTopik2 = examKey.toLowerCase().includes('topik2');
-        const maxScore = isTopik2 ? 300 : 200;
-        
-        // Каждое задание весит одинаково в рамках симуляции
-        const finalScore = Math.round((correctCount / totalQuestions) * maxScore); 
-
-        // 3. Расчет уровней (Гып) согласно регламенту NIIED
-        let statusTitle = "";
-        let levelBadge = "";
-        let feedbackText = "";
-        let isPassed = false;
-
-        if (!isTopik2) {
-          // Шкала оценки TOPIK I
-          if (finalScore >= 140) {
-            statusTitle = "축하합니다! Экзамен сдан! 🎉";
-            levelBadge = "TOPIK I • 2 Гып (Выше начального)";
-            feedbackText = "Отличная работа! Вы продемонстрировали уверенное знание базовой грамматики, можете составлять простые эссе и понимать повседневную речь. Рекомендуем начинать подготовку к TOPIK II!";
-            isPassed = true;
-          } else if (finalScore >= 80) {
-            statusTitle = "Поздравляем! Экзамен сдан! 👍";
-            levelBadge = "TOPIK I • 1 Гып (Элементарный)";
-            feedbackText = "Хороший старт! Вы справились с базовыми конструкциями, знаете алфавит и простые диалоги. Для перехода на 2 Гып сделайте упор на расширение словарного запаса (минимум 1500 слов) и регулярное чтение коротких текстов.";
-            isPassed = true;
-          } else {
-            statusTitle = "Тест не пройден 📑";
-            levelBadge = "Уровень не определен (Ниже 80 баллов)";
-            feedbackText = "К сожалению, набранных баллов недостаточно для получения сертификата. Рекомендуем повторить основы: падежные окончания, базовые глаголы движения и вежливые формы речи. Пройдите симулятор повторно.";
-          }
-        } else {
-          // Шкала оценки TOPIK II
-          if (finalScore >= 230) {
-            statusTitle = "Выдающийся результат! 👑";
-            levelBadge = "TOPIK II • 6 Гып (Профессиональный)";
-            feedbackText = "Уровень носителя языка! Вы способны вести исследовательскую и профессиональную деятельность на корейском языке, прекрасно понимаете сложные экономические, политические и культурные контексты.";
-            isPassed = true;
-          } else if (finalScore >= 190) {
-            statusTitle = "Прекрасный результат! 🚀";
-            levelBadge = "TOPIK II • 5 Гып (Высокий)";
-            feedbackText = "Высокий уровень владения языком. Вы свободно коммуницируете в социальной и академической сферах. Для идеала обратите внимание на самые сложные задания секции 쓰기 (сочинение №54).";
-            isPassed = true;
-          } else if (finalScore >= 150) {
-            statusTitle = "Успешная сдача! ✨";
-            levelBadge = "TOPIK II • 4 Гып (Средний продвинутый)";
-            feedbackText = "Отличный средний уровень. Вы без труда понимаете новости, телепередачи и можете работать в корейских компаниях. Продолжайте развивать навык аудирования в быстром темпе.";
-            isPassed = true;
-          } else if (finalScore >= 120) {
-            statusTitle = "Экзамен успешно сдан! ✔";
-            levelBadge = "TOPIK II • 3 Гып (Средний базовый)";
-            feedbackText = "Порог средней ступени взят! Вы можете изъясняться в стандартных жизненных ситуациях. Чтобы расти дальше, усложняйте изучаемую грамматику и избавляйтесь от использования базовых слов, заменяя их на иероглифические (한자).";
-            isPassed = true;
-          } else {
-            statusTitle = "Экзамен не сдан 🦾";
-            levelBadge = "Уровень не определен (Ниже 120 баллов)";
-            feedbackText = "Для TOPIK II требуется более глубокое знание академического пласта языка. Вам не хватило баллов до 3 Гыпа. Сосредоточьтесь на разборе структуры письменной секции (задания 51-53) — это самый быстрый способ поднять балл.";
-          }
-        }
-
-        // 4. Отрендерить результаты в UI
-        document.getElementById('result-score').textContent = finalScore;
-        document.getElementById('result-status').textContent = statusTitle;
-        
-        const lvlEl = document.getElementById('result-level');
-        lvlEl.textContent = levelBadge;
-        if (!isPassed) lvlEl.classList.add('failed');
-
-        document.getElementById('result-meta').textContent = `Вы правильно решили ${correctCount} из ${totalQuestions} вопросов. Ваша итоговая оценка сформирована на основе официальных проходных критериев NIIED (Южная Корея).`;
-        document.getElementById('result-feedback').innerHTML = `<strong>Аналитический разбор эксперта:</strong> ${feedbackText}`;
-
-        // 5. Отрисовка интерактивных карточек разбора ошибок
-        const container = document.getElementById('breakdown-container');
-        const fragment = document.createDocumentFragment();
-
-        questions.forEach((q, idx) => {
-          const uAns = userAnswers[idx];
-          let isRight = false;
-
-          if (q.type === 'choice') {
-            isRight = (String(uAns) === String(q.correctAnswer));
-          } else if (q.type === 'write') {
-            isRight = (uAns && String(uAns).trim().toLowerCase() === String(q.sample).trim().toLowerCase());
-          }
-
-          const card = document.createElement('div');
-          card.className = `q-card ${isRight ? 'correct' : 'incorrect'}`;
-
-          card.innerHTML = `
-            <div class="q-card-header">
-              <span class="q-num">Вопрос №${idx + 1}</span>
-              <span class="status-badge">${isRight ? 'Правильно' : 'Ошибка'}</span>
-            </div>
-            <div class="q-card-text">${escapeHtml(q.text || 'Текст вопроса отсутствует')}</div>
-            <div class="answers-log">
-              <div class="ans-row">
-                <span class="ans-label">Ваш ответ:</span>
-                <span class="ans-val user">${escapeHtml(uAns || 'Вы пропустили этот вопрос')}</span>
-              </div>
-              ${!isRight ? `
-              <div class="ans-row">
-                <span class="ans-label">Правильный:</span>
-                <span class="ans-val true">${escapeHtml(q.type === 'choice' ? q.correctAnswer : q.sample)}</span>
-              </div>
-              ` : ''}
-            </div>
-          `;
-          fragment.appendChild(card);
-        });
-
-        container.appendChild(fragment);
-      });
-
-      // Вспомогательная функция защиты от XSS атак через поля ввода
-      function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
+    document.addEventListener('DOMContentLoaded', () => {
+      // Извлекаем данные из хранилища сессии
+      const rawData = sessionStorage.getItem('topik_last_results');
+      if (!rawData) {
+        document.getElementById('ai-comment').textContent = "Данные теста не найдены. Пожалуйста, пройдите тест заново.";
+        return;
       }
 
-      // Глобальная функция перезапуска симулятора
-      window.retryExam = function() {
-        const rawData = sessionStorage.getItem('topik_last_results');
-        if (rawData) {
-          const { examKey } = JSON.parse(rawData);
-          window.location.href = `test.html?exam=${examKey}`;
-        } else {
-          window.location.href = 'index.html';
-        }
-      };
+      const report = JSON.parse(rawData);
+      const isTopik2 = report.examKey.includes('topik2');
+      
+      // Вычисляем процент успеха
+      const percent = report.correctCount / report.totalQuestions;
+      
+      // Адаптируем под реальную 300-балльную систему TOPIK II (или 200-балльную для TOPIK I)
+      const maxScale = isTopik2 ? 300 : 200;
+      const finalScore = Math.round(percent * maxScale);
 
-      function showError(msg) {
-        const status = document.getElementById('result-status');
-        if (status) status.textContent = "Ошибка сессии";
-        const meta = document.getElementById('result-meta');
-        if (meta) meta.textContent = msg;
-        const feedback = document.getElementById('result-feedback');
-        if (feedback) feedback.style.display = 'none';
+      // Рассчитываем Гып (Уровень) по официальной шкале NIIED
+      let grade = "❌ Не сдан";
+      if (isTopik2) {
+        if (finalScore >= 230) grade = "6 급 (Высший)";
+        else if (finalScore >= 190) grade = "5 급 (Продвинутый)";
+        else if (finalScore >= 150) grade = "4 급 (Средний)";
+        else if (finalScore >= 120) grade = "3 급 (Порог Профессионального)";
+      } else {
+        if (finalScore >= 140) grade = "2 급 (Базовый)";
+        else if (finalScore >= 80) grade = "1 급 (Элементарный)";
       }
-    })();
+
+      // Выводим сухие цифры
+      document.getElementById('correct-ratio').textContent = `${report.correctCount} / ${report.totalQuestions}`;
+      document.getElementById('calculated-score').textContent = `${finalScore} / ${maxScale}`;
+      document.getElementById('grade-level').textContent = grade;
+
+      // ГЕНЕРАЦИЯ ЖИВОГО ИИ-ФИДБЕКА
+      const aiTextEl = document.getElementById('ai-comment');
+      
+      if (isTopik2 && finalScore === 120) {
+        aiTextEl.innerHTML = `🌟 <strong>Феноменально! ИИ зафиксировал аномалию!</strong> Ты набрал ровно 120 баллов на TOPIK II — а это железобетонный <strong>3 Гып</strong> (первая ступень среднего уровня)! <br><br>Если ты сделал это без знания корейской графики, то твоя интуиция развита на уровне топ-менеджеров блокчейн-платформ, либо корейские боги иммиграции лично благословили твои клики. Для честного подтверждения этого результата рекомендую изучить структуру грамматик <em>-다시피</em> и потренировать 쓰기 (письмо), чтобы превратить эту удачу в академическое превосходство!`;
+      } else if (percent === 1) {
+        aiTextEl.innerHTML = `🎯 <strong>Абсолютная доминация!</strong> Результат 100%. Вы либо носитель языка из Сеула, либо гениально взломали систему ответов. ИИ рекомендует подавать документы на грант KGSP!`;
+      } else if (percent >= 0.6) {
+        aiTextEl.innerHTML = `📈 <strong>Отличный академический показатель.</strong> Вы уверенно ориентируетесь в контексте и структуре предложений. Ошибки носят единичный характер. Продолжайте в том же темпе!`;
+      } else if (percent > 0) {
+        aiTextEl.innerHTML = `🧐 <strong>Уровень требует калибровки.</strong> Базовые маркеры понятны, но не хватает лексического запаса. Для TOPIK II критически важно отличать схожие суффиксы и союзы.`;
+      } else {
+        aiTextEl.innerHTML = `🪵 <strong>0 баллов. Полный блэкаут.</strong> Ни один ответ не совпал. Но эй, отрицательный результат в кибер-тестировании — это тоже точка старта. Время открыть корейский алфавит (Хангыль) и начать заново!`;
+      }
+    });
   </script>
 </body>
 </html>
