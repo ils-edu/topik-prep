@@ -3,257 +3,169 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Симулятор TOPIK · Официальный пул заданий</title>
+  <title>ИИ-Аналитика результатов · TOPIK ILS</title>
   <style>
     :root {
-      --bg: #05050a;
-      --card-bg: rgba(13, 13, 25, 0.7);
-      --border: rgba(168, 85, 247, 0.15);
+      --bg: #05070f;
+      --card-bg: rgba(13, 18, 33, 0.45);
+      --border: rgba(168, 85, 247, 0.2);
       --text: #f3f4f6;
-      --text-muted: #71717a;
+      --text-muted: #8892b0;
       --purple: #a855f7;
-      --purple-glow: rgba(168, 85, 247, 0.25);
       --cyan: #06b6d4;
+      --success: #10b981;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
-    body { background-color: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; padding: 40px 20px; }
-    .container { max-width: 750px; margin: 0 auto; }
-
-    .test-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-    .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan)); width: 0%; }
-    
-    .q-meta { font-size: 0.85rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-    .q-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 30px; line-height: 1.5; color: #fff; white-space: pre-line; }
-
-    /* Варианты ответов */
-    .options-group { display: flex; flex-direction: column; gap: 14px; }
-    .option-btn {
-      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
-      padding: 16px 20px; text-align: left; color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.25s ease; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 50px 20px;
     }
-    .option-btn:hover { background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.3); }
-    .option-btn:disabled { cursor: not-allowed; opacity: 0.6; }
+    .container { max-width: 800px; margin: 0 auto; }
 
-    /* Письменная часть */
-    .write-input {
-      width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
-      padding: 16px; color: #fff; font-size: 1.1rem; font-family: inherit; margin-bottom: 20px; resize: none;
+    .result-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 50px rgba(168, 85, 247, 0.05);
     }
-    .write-input:focus { border-color: var(--purple); outline: none; }
-    .write-input:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .action-btn {
-      background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none;
-      padding: 14px 32px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem;
+    h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #fff, var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+      text-align: center;
     }
-    .action-btn:hover { opacity: 0.9; }
+
+    .score-board {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 35px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .score-item { text-align: center; }
+    .score-val { font-size: 2.5rem; font-weight: 850; color: #fff; }
+    .score-val.highlight { color: var(--cyan); text-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+    .score-lbl { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-top: 5px; }
+
+    /* Блок ИИ Фидбека */
+    .ai-feedback-box {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(6, 182, 212, 0.05));
+      border: 1px solid var(--purple);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 35px;
+      position: relative;
+    }
+    .ai-feedback-box::before {
+      content: '🤖 AI INSIGHT';
+      position: absolute;
+      top: -12px; left: 20px;
+      background: var(--purple);
+      color: #fff; font-size: 0.7rem; font-weight: 800;
+      padding: 3px 10px; border-radius: 6px; letter-spacing: 1px;
+    }
+    .ai-text { font-size: 1.05rem; line-height: 1.6; color: #e2e8f0; }
+
+    .btn-home {
+      display: block; text-align: center; background: transparent;
+      border: 1px solid rgba(255,255,255,0.15); color: #fff;
+      padding: 14px; border-radius: 12px; font-weight: 600; text-decoration: none;
+    }
+    .btn-home:hover { background: #fff; color: #000; }
   </style>
 </head>
 <body>
 
-  <main class="container">
-    <div class="test-card">
-      <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-      <div class="q-meta" id="q-meta">Загрузка структуры...</div>
-      <div class="q-text" id="q-text">Пожалуйста, подождите...</div>
-      
-      <div id="interaction-zone"></div>
+  <div class="container">
+    <div class="result-card">
+      <h1>Анализ Экзаменационной Сессии</h1>
+
+      <div class="score-board">
+        <div class="score-item">
+          <div class="score-val" id="correct-ratio">0/0</div>
+          <div class="score-lbl">Правильные ответы</div>
+        </div>
+        <div class="score-item">
+          <div class="score-val highlight" id="calculated-score">0</div>
+          <div class="score-lbl">Эквивалент TOPIK (Баллы)</div>
+        </div>
+        <div class="score-item">
+          <div class="score-val" id="grade-level">—</div>
+          <div class="score-lbl">Присвоенный уровень</div>
+        </div>
+      </div>
+
+      <div class="ai-feedback-box">
+        <p class="ai-text" id="ai-comment">Генерирую экспертный отзыв ИИ...</p>
+      </div>
+
+      <a href="index.html" class="btn-home">Вернуться на главную панель</a>
     </div>
-  </main>
+  </div>
 
   <script>
-    (() => {
-      'use strict';
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const examKey = urlParams.get('exam') || 'topik1-v1';
-
-      // ОЧИЩЕННАЯ БАЗА: ТОЛЬКО КОРЕЙСКИЙ ЯЗЫК ДЛЯ ОБЪЕКТИВНОЙ ПРОВЕРКИ
-      const examRepository = {
-        
-        // ==========================================
-        // 📑 TOPIK I — СЕКЦИЯ ЧТЕНИЯ (읽기)
-        // ==========================================
-        'topik1-v1': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"우유를 마십니다. 맛있습니다."', options: ['① 음식', '② 나이', '③ 날짜', '④ 이름'], answer: 1 },
-          { type: 'choice', text: '빈칸에 들어갈 알맞은 표현을 고르십시오.\n"시장에 갑니다. 과일을 ( )."', options: ['① 멉니다', '② 삽니다', '③ 아픕니다', '④ 모릅니다'], answer: 2 },
-          { type: 'choice', text: '다음은 무엇에 대한 안내문입니까?\n"이용 시간: 09:00 ~ 18:00 / 매주 월요일은 쉽니다."', options: ['① 가격', '② 취미', '③ 휴일', '④ 주소'], answer: 3 }
-        ],
-        
-        'topik1-v2': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"동생이 있습니다. 아주 귀엽습니다."', options: ['① 가족', '② 직업', '③ 주말', '④ 날씨'], answer: 1 },
-          { type: 'choice', text: '빈칸에 들어갈 가장 알맞은 것을 고르십시오.\n"방이 너무 ( ). 불을 킵니다."', options: ['① 좁습니다', '② 어둡습니다', '③ 가깝습니다', '④ 조용합니다'], answer: 2 },
-          { type: 'choice', text: '다음 단어들이 포함된 범주를 고르십시오.\n"피아노 치기, 영화 보기, 축구하기."', options: ['① 쇼핑', '② 계획', '③ 약속', '④ 취미'], answer: 4 }
-        ],
-        
-        'topik1-v3': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"저의 동생은 스물두 살입니다. 대학생입니다."', options: ['① 나라', '② 이름', '③ 나이', '④ 가방'], answer: 3 },
-          { type: 'choice', text: '빈칸에 들어갈 표현을 고르십시오.\n"은행에 갑니다. 돈을 ( )."', options: ['① 바꿉니다', '② 입습니다', '③ 가르칩니다', '④ 전화합니다'], answer: 1 },
-          { type: 'choice', text: '다음 문장은 무엇에 대한 정보입니까?\n"서울시 종로구 인사동길 12"', options: ['① 이름', '② 주소', '③ 날짜', '④ 직업'], answer: 2 }
-        ],
-        
-        'topik1-v4': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"한국어 공부가 재미있습니다. 매일 학원에 갑니다."', options: ['① 공부', '② 계절', '③ 휴일', '④ 요일'], answer: 1 },
-          { type: 'choice', text: '빈칸에 들어갈 알맞은 단어를 고르십시오.\n"머리가 ( ). 약을 먹었습니다."', options: ['① 맑습니다', '② 좋습니다', '③ 아픕니다', '④ 작습니다'], answer: 3 },
-          { type: 'choice', text: '다음 안내판의 지시와 일치하는 문장을 고르십시오.\n"여기는 주차장입니다. 차를 세우십시오."', options: ['① 물건을 사는 곳', '② 차를 세우는 곳', '③ 음식을 먹는 곳', '④ 차를 고치는 곳'], answer: 2 }
-        ],
-        
-        'topik1-v5': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"백화점에 갑니다. 옷을 삽니다."', options: ['① 날짜', '② 쇼핑', '③ 친구', '④ 취미'], answer: 2 },
-          { type: 'choice', text: '문맥상 빈칸에 알맞은 표현을 고르십시오.\n"약속 시간이 지났습니다. 친구가 아직 안 ( )."', options: ['① 옵니다', '② 갑니다', '③ 만납니다', '④ 전화합니다'], answer: 1 },
-          { type: 'choice', text: '다음은 무엇에 대한 안내문입니까?\n"1층: 식당 / 2층: 서점 / 3층: 옷가게"', options: ['① 이용 방법', '② 층별 안내', '③ 영업 시간', '④ 위치 안내'], answer: 2 }
-        ],
-
-        // ==========================================
-        // 📑 TOPIK II — ПРОДВИНУТЫЙ УРОВЕНЬ
-        // ==========================================
-        'topik2-v1': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"공장을 다녀 본 ( ) 이 일은 그리 어렵지 않았다."', options: ['① 탓에', '② 셈 치고', '③ 바에야', '④ 적으로써'], answer: 4 },
-          { type: 'write', text: '[쓰기 Q51] 다음 빈칸에 들어갈 알맞은 말을 한 문장으로 쓰십시오.\n\n"유미 씨, 그동안 고마웠습니다. 다음 주에 저는 고향으로 [ ㄱ ]. 떠나기 전에 얼굴을 보고 싶습니다."', sample: '돌아가게 되었습니다' }
-        ],
-        'topik2-v2': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"무슨 일을 ( ) 열심히 하는 모습이 보기 좋다."', options: ['① 하든지', '② 하도록', '③ 하다 보면', '④ 하느라고'], answer: 1 },
-          { type: 'write', text: '[쓰기 Q51] 다음 빈칸에 들어갈 알맞은 말을 한 문장으로 쓰십시오.\n\n"백화점 고객센터입니다. 문의하신 상품은 현재 재고가 부족하여 바로 [ ㄱ ]. 다음 주 월요일까지 배송해 드리겠습니다."', sample: '보내드리기 어렵습니다' }
-        ],
-        'topik2-v3': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"자녀는 부모의 행동을 ( ) 성장한다."', options: ['① 따라 하면서', '② 따르다 보면', '③ 따르기 마련이라', '④ 따르는 척하면서'], answer: 1 },
-          { type: 'write', text: '[쓰기 Q51] 다음 빈칸에 들어갈 알맞은 말을 한 문장으로 쓰십시오.\n\n"한국어 말하기 대회에 참가하고 싶습니다. 신청 마감일이 내일까지인데 혹시 이메일로도 신청서를 [ ㄱ ]?"', sample: '제출해도 됩니까' }
-        ],
-        'topik2-v4': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"시험을 앞두고 잠을 ( ) 공부했더니 몸이 아주 피곤하다."', options: ['① 줄여 가며', '② 줄이다시피', '③ 줄이는 대신에', '④ 줄일 정도로'], answer: 1 },
-          { type: 'write', text: '[쓰기 Q51] 다음 빈칸에 들어갈 알맞은 말을 한 문장으로 쓰십시오.\n\n"도서관장 마이클입니다. 지난달 대출하신 도서의 반납 예정일이 지났습니다. 이번 주말까지 도서를 [ ㄱ ] 주시면 연체료가 면제됩니다."', sample: '반납해' }
-        ],
-        'topik2-v5': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"정부가 대책을 발표했음에도 물가는 여전히 ( ) 기세를 보이고 있다."', options: ['① 오를 대로 오른', '② 오를 세라', '③ 오를 듯한', '④ 오를 대로 오르는'], answer: 4 },
-          { type: 'write', text: '[쓰기 Q51] 다음 빈칸에 들어갈 알맞은 말을 한 문장으로 쓰십시오.\n\n"하우스메이트를 구합니다. 방은 두 개이며, 거실과 주방을 함께 [ ㄱ ]. 관심 있으신 분은 연락 바랍니다."', sample: '사용하게 됩니다' }
-        ]
-      };
-
-      const database = examRepository[examKey] || examRepository['topik1-v1'];
-      const questions = Object.freeze(database);
-
-      let currentIdx = 0;
-      const userAnswers = new Array(questions.length).fill(null);
-
-      function renderQuestion() {
-        if (currentIdx >= questions.length) {
-          finishExam();
-          return;
-        }
-
-        const q = questions[currentIdx];
-        
-        document.getElementById('progress').style.width = `${(currentIdx / questions.length) * 100}%`;
-        document.getElementById('q-meta').textContent = `Вариант: ${examKey.toUpperCase()} | Задание ${currentIdx + 1} из ${questions.length}`;
-        document.getElementById('q-text').textContent = q.text;
-
-        const zone = document.getElementById('interaction-zone');
-        zone.innerHTML = '';
-
-        if (q.type === 'choice') {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'options-group';
-          
-          q.options.forEach((opt, index) => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.textContent = opt;
-            btn.onclick = () => saveChoiceAnswer(index + 1);
-            wrapper.appendChild(btn);
-          });
-          
-          zone.appendChild(wrapper);
-
-        } else if (q.type === 'write') {
-          const input = document.createElement('textarea');
-          input.className = 'write-input';
-          input.rows = 3;
-          input.placeholder = 'Введите ваш ответ на корейском языке (только пропущенную фразу)...';
-          input.id = 'write-field';
-
-          const submitBtn = document.createElement('button');
-          submitBtn.className = 'action-btn';
-          submitBtn.textContent = 'Зафиксировать ответ и идти далее';
-          submitBtn.onclick = () => saveWriteAnswer();
-
-          zone.appendChild(input);
-          zone.appendChild(submitBtn);
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Извлекаем данные из хранилища сессии
+      const rawData = sessionStorage.getItem('topik_last_results');
+      if (!rawData) {
+        document.getElementById('ai-comment').textContent = "Данные теста не найдены. Пожалуйста, пройдите тест заново.";
+        return;
       }
 
-      function saveChoiceAnswer(selectedOption) {
-        disableAllInputs();
-        userAnswers[currentIdx] = selectedOption;
+      const report = JSON.parse(rawData);
+      const isTopik2 = report.examKey.includes('topik2');
+      
+      // Вычисляем процент успеха
+      const percent = report.correctCount / report.totalQuestions;
+      
+      // Адаптируем под реальную 300-балльную систему TOPIK II (или 200-балльную для TOPIK I)
+      const maxScale = isTopik2 ? 300 : 200;
+      const finalScore = Math.round(percent * maxScale);
 
-        setTimeout(() => {
-          currentIdx++;
-          renderQuestion();
-        }, 300);
+      // Рассчитываем Гып (Уровень) по официальной шкале NIIED
+      let grade = "❌ Не сдан";
+      if (isTopik2) {
+        if (finalScore >= 230) grade = "6 급 (Высший)";
+        else if (finalScore >= 190) grade = "5 급 (Продвинутый)";
+        else if (finalScore >= 150) grade = "4 급 (Средний)";
+        else if (finalScore >= 120) grade = "3 급 (Порог Профессионального)";
+      } else {
+        if (finalScore >= 140) grade = "2 급 (Базовый)";
+        else if (finalScore >= 80) grade = "1 급 (Элементарный)";
       }
 
-      function saveWriteAnswer() {
-        const field = document.getElementById('write-field');
-        if (!field) return;
+      // Выводим сухие цифры
+      document.getElementById('correct-ratio').textContent = `${report.correctCount} / ${report.totalQuestions}`;
+      document.getElementById('calculated-score').textContent = `${finalScore} / ${maxScale}`;
+      document.getElementById('grade-level').textContent = grade;
 
-        const val = field.value.trim();
-        if (!val) {
-          alert('Пожалуйста, введите фразу для заполнения пропуска.');
-          return;
-        }
-
-        disableAllInputs();
-        userAnswers[currentIdx] = val;
-
-        currentIdx++;
-        renderQuestion();
+      // ГЕНЕРАЦИЯ ЖИВОГО ИИ-ФИДБЕКА
+      const aiTextEl = document.getElementById('ai-comment');
+      
+      if (isTopik2 && finalScore === 120) {
+        aiTextEl.innerHTML = `🌟 <strong>Феноменально! ИИ зафиксировал аномалию!</strong> Ты набрал ровно 120 баллов на TOPIK II — а это железобетонный <strong>3 Гып</strong> (первая ступень среднего уровня)! <br><br>Если ты сделал это без знания корейской графики, то твоя интуиция развита на уровне топ-менеджеров блокчейн-платформ, либо корейские боги иммиграции лично благословили твои клики. Для честного подтверждения этого результата рекомендую изучить структуру грамматик <em>-다시피</em> и потренировать 쓰기 (письмо), чтобы превратить эту удачу в академическое превосходство!`;
+      } else if (percent === 1) {
+        aiTextEl.innerHTML = `🎯 <strong>Абсолютная доминация!</strong> Результат 100%. Вы либо носитель языка из Сеула, либо гениально взломали систему ответов. ИИ рекомендует подавать документы на грант KGSP!`;
+      } else if (percent >= 0.6) {
+        aiTextEl.innerHTML = `📈 <strong>Отличный академический показатель.</strong> Вы уверенно ориентируетесь в контексте и структуре предложений. Ошибки носят единичный характер. Продолжайте в том же темпе!`;
+      } else if (percent > 0) {
+        aiTextEl.innerHTML = `🧐 <strong>Уровень требует калибровки.</strong> Базовые маркеры понятны, но не хватает лексического запаса. Для TOPIK II критически важно отличать схожие суффиксы и союзы.`;
+      } else {
+        aiTextEl.innerHTML = `🪵 <strong>0 баллов. Полный блэкаут.</strong> Ни один ответ не совпал. Но эй, отрицательный результат в кибер-тестировании — это тоже точка старта. Время открыть корейский алфавит (Хангыль) и начать заново!`;
       }
-
-      function disableAllInputs() {
-        document.querySelectorAll('.option-btn, #write-field, .action-btn').forEach(el => {
-          el.disabled = true;
-        });
-      }
-
-      function finishExam() {
-        let correctCount = 0;
-
-        questions.forEach((q, idx) => {
-          const uAns = userAnswers[idx];
-          if (q.type === 'choice') {
-            if (Number(uAns) === Number(q.answer)) correctCount++;
-          } else if (q.type === 'write') {
-            const cleanUser = String(uAns).replace(/\s+/g, '').toLowerCase();
-            const cleanSample = String(q.sample).replace(/\s+/g, '').toLowerCase();
-            if (cleanUser === cleanSample) correctCount++;
-          }
-        });
-
-        const resultsPayload = {
-          examKey: examKey,
-          totalQuestions: questions.length,
-          correctCount: correctCount,
-          questions: questions.map(q => ({
-            type: q.type,
-            text: q.text,
-            correctAnswer: q.options ? q.options[q.answer - 1] : null,
-            sample: q.sample || null
-          })),
-          userAnswers: userAnswers.map((u, i) => {
-            if (questions[i].type === 'choice') {
-              return questions[i].options[u - 1] || 'Нет ответа';
-            }
-            return u;
-          })
-        };
-
-        sessionStorage.setItem('topik_last_results', JSON.stringify(resultsPayload));
-        window.location.href = 'results.html';
-      }
-
-      document.addEventListener('DOMContentLoaded', renderQuestion);
-    })();
+    });
   </script>
 </body>
 </html>
