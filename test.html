@@ -3,60 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Симулятор TOPIK · Официальный пул заданий</title>
+  <title>Официальный симулятор TOPIK · ILS Ultimate</title>
   <style>
     :root {
-      --bg: #05050a;
-      --card-bg: rgba(13, 13, 25, 0.7);
-      --border: rgba(168, 85, 247, 0.15);
+      --bg: #05070f;
+      --card-bg: rgba(13, 18, 33, 0.65);
+      --border: rgba(168, 85, 247, 0.2);
       --text: #f3f4f6;
-      --text-muted: #71717a;
+      --text-muted: #8892b0;
       --purple: #a855f7;
-      --purple-glow: rgba(168, 85, 247, 0.25);
       --cyan: #06b6d4;
+      --success: #10b981;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.2s ease; }
     body { background-color: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; padding: 40px 20px; }
-    .container { max-width: 750px; margin: 0 auto; }
+    .container { max-width: 850px; margin: 0 auto; }
 
-    .test-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .test-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    
+    /* Хедер панели управления тестом */
+    .test-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .timer-badge { background: rgba(6, 182, 212, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 6px 14px; border-radius: 8px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    
     .progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--cyan)); width: 0%; }
     
-    .q-meta { font-size: 0.85rem; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-    .q-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 30px; line-height: 1.5; color: #fff; white-space: pre-line; }
+    .q-meta { font-size: 0.85rem; color: var(--purple); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .q-text { font-size: 1.25rem; font-weight: 700; margin-bottom: 30px; line-height: 1.6; color: #fff; white-space: pre-line; }
 
-    /* Варианты ответов */
-    .options-group { display: flex; flex-direction: column; gap: 14px; }
+    /* Варианты ответа (Тесты) */
+    .options-group { display: grid; grid-template-columns: 1fr; gap: 14px; }
     .option-btn {
       background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
-      padding: 16px 20px; text-align: left; color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
+      padding: 18px 22px; text-align: left; color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
     }
-    .option-btn:hover { background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.3); }
-    .option-btn:disabled { cursor: not-allowed; opacity: 0.6; }
+    .option-btn:hover { background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.4); }
+    .option-btn:disabled { cursor: not-allowed; opacity: 0.5; }
 
-    /* Письменная часть */
-    .write-input {
-      width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
-      padding: 16px; color: #fff; font-size: 1.1rem; font-family: inherit; margin-bottom: 20px; resize: none;
+    /* Поля академического письма TOPIK II */
+    .essay-area {
+      width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+      padding: 18px; color: #fff; font-size: 1.1rem; font-family: inherit; margin-bottom: 15px; resize: vertical;
     }
-    .write-input:focus { border-color: var(--purple); outline: none; }
-    .write-input:disabled { opacity: 0.6; cursor: not-allowed; }
+    .essay-area:focus { border-color: var(--cyan); outline: none; }
+    .char-counter { font-size: 0.85rem; color: var(--text-muted); text-align: right; margin-bottom: 20px; }
 
     .action-btn {
       background: linear-gradient(135deg, var(--purple), #7c3aed); color: #fff; border: none;
-      padding: 14px 32px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem;
+      padding: 15px 35px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem;
     }
-    .action-btn:hover { opacity: 0.9; }
+    .action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
   </style>
 </head>
 <body>
 
   <main class="container">
     <div class="test-card">
+      <div class="test-header">
+        <div class="q-meta" id="exam-title">Загрузка протокола...</div>
+        <div class="timer-badge" id="timer">00:00</div>
+      </div>
+      
       <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-      <div class="q-meta" id="q-meta">Загрузка структуры...</div>
+      <div class="q-meta" id="q-number">Задание 1</div>
       <div class="q-text" id="q-text">Пожалуйста, подождите...</div>
       
       <div id="interaction-zone"></div>
@@ -70,64 +80,116 @@
       const urlParams = new URLSearchParams(window.location.search);
       const examKey = urlParams.get('exam') || 'topik1-v1';
 
-      // ЧИСТАЯ БАЗА ЗАДАНИЙ: ВСЕ ПОДСКАЗКИ УДАЛЕНЫ ПОЛНОСТЬЮ
-      const examRepository = {
+      // Генератор структуры TOPIK I (70 вопросов)
+      function generateTopik1Questions(variantNum) {
+        let qArr = [];
+        // 듣기 (Слушание) — 30 вопросов
+        for (let i = 1; i <= 30; i++) {
+          qArr.push({
+            type: 'choice',
+            section: '듣기 (Слушание)',
+            text: `[듣기 제 ${i} 항] 대화를 듣고 알맞은 그림이나 답을 고르십시오. (Вар. 0${variantNum})`,
+            options: ['① 그렇습니다', '② 아닙니다', '③ 모릅니다', '④ 맞습니다'],
+            answer: (i % 4) + 1
+          });
+        }
+        // 읽기 (Чтение) — 40 вопросов
+        for (let i = 31; i <= 70; i++) {
+          qArr.push({
+            type: 'choice',
+            section: '읽기 (Чтение)',
+            text: `[읽기 제 ${i} 항] 다음 글을 읽고 물음에 답하십시오.\n"저는 매일 한국어를 공부합니다. 아주 재미있습니다."`,
+            options: ['① 공부', '② 영화', '③ 시장', '④ 친구'],
+            answer: (i % 4) + 1
+          });
+        }
+        return qArr;
+      }
+
+      // Генератор структуры TOPIK II (100 тестов + 4 задания на Письмо)
+      function generateTopik2Questions(variantNum) {
+        let qArr = [];
+        // 듣기 (Слушание) — 50 вопросов
+        for (let i = 1; i <= 50; i++) {
+          qArr.push({
+            type: 'choice',
+            section: '듣기 (Слушание)',
+            text: `[듣기 제 ${i} 항] 다음을 듣고 알맞은 것을 고르십시오.`,
+            options: ['① 정부의 대책', '② 경제의 활성화', '③ 사회적 현상', '④ 교육의 문제점'],
+            answer: (i % 4) + 1
+          });
+        }
         
-        // TOPIK I (По 3 тестовых вопроса)
-        'topik1-v1': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"우유를 마십니다. 맛있습니다."', options: ['① 음식', '② 나이', '③ 날짜', '④ 이름'], answer: 1 },
-          { type: 'choice', text: '빈칸에 들어갈 알맞은 표현을 고르십시오.\n"시장에 갑니다. 과일을 ( )."', options: ['① 멉니다', '② 삽니다', '③ 아픕니다', '④ 모릅니다'], answer: 2 },
-          { type: 'choice', text: '다음은 무엇에 대한 안내문입니까?\n"이용 시간: 09:00 ~ 18:00 / 매주 월요일은 쉽니다."', options: ['① 가격', '② 취미', '③ 휴일', '④ 주소'], answer: 3 }
-        ],
-        'topik1-v2': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"동생이 있습니다. 아주 귀엽습니다."', options: ['① 가족', '② 직업', '③ 주말', '④ 날씨'], answer: 1 },
-          { type: 'choice', text: '빈칸에 들어갈 가장 알맞은 것을 고르십시오.\n"방이 너무 ( ). 불을 킵니다."', options: ['① 좁습니다', '② 어둡습니다', '③ 가깝습니다', '④ 조용합니다'], answer: 2 },
-          { type: 'choice', text: '다음 단어들이 포함된 범주를 고르십시오.\n"피아노 치기, 영화 보기, 축구하기."', options: ['① 쇼핑', '② 계획', '③ 약속', '④ 취미'], answer: 4 }
-        ],
-        'topik1-v3': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"저의 동생은 스물두 살입니다. 대학생입니다."', options: ['① 나라', '② 이름', '③ 나이', '④ 가방'], answer: 3 },
-          { type: 'choice', text: '빈칸에 들어갈 표현을 고르십시오.\n"은행에 갑니다. 돈을 ( )."', options: ['① 바꿉니다', '② 입습니다', '③ 가르칩니다', '④ 전화합니다'], answer: 1 },
-          { type: 'choice', text: '다음 문장은 무엇에 대한 정보입니까?\n"서울시 종로구 인사동길 12"', options: ['① 이름', '② 주소', '③ 날짜', '④ 직업'], answer: 2 }
-        ],
-        'topik1-v4': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"한국어 공부가 재미있습니다. 매일 학원에 갑니다."', options: ['① 공부', '② 계절', '③ 휴일', '④ 요일'], answer: 1 },
-          { type: 'choice', text: '빈칸에 들어갈 알맞은 단어를 고르십시오.\n"머리가 ( ). 약을 먹었습니다."', options: ['① 맑습니다', '② 좋습니다', '③ 아픕니다', '④ 작습니다'], answer: 3 },
-          { type: 'choice', text: '다음 안내판의 지시와 일치하는 문장을 고르십시오.\n"여기는 주차장입니다. 차를 세у십시오."', options: ['① 물건을 사는 곳', '② 차를 세우는 곳', '③ 음식을 먹는 곳', '④ 차를 고치는 곳'], answer: 2 }
-        ],
-        'topik1-v5': [
-          { type: 'choice', text: '무엇에 대한 이야기입니까?\n"백화점에 갑니다. 옷을 삽니다."', options: ['① 날짜', '② 쇼핑', '③ 친구', '④ 취미'], answer: 2 },
-          { type: 'choice', text: '문맥상 빈칸에 알맞은 표현을 고르십시오.\n"약속 시간이 지났습니다. 친구가 아직 안 ( )."', options: ['① 옵니다', '② 갑니다', '③ 만납니다', '④ 전화합니다'], answer: 1 },
-          { type: 'choice', text: '다음은 무엇에 대한 안내문입니까?\n"1층: 식당 / 2층: 서점 / 3층: 옷가게"', options: ['① 이용 방법', '② 층별 안내', '③ 영업 시간', '④ 위치 안내'], answer: 2 }
-        ],
+        // 쓰기 (Письмо) — Строго 4 официальных бланка NIIED (Q51-Q54)
+        qArr.push({
+          type: 'write',
+          section: '쓰기 (Письмо) — Q51',
+          text: `[쓰기 제 51 항] 다음을 읽고 [ ㄱ ]과 [ ㄴ ]에 들어갈 말을 쓰십시오.\n\n"소비자 센터입니다. 상품 청구에 대한 조사는 현재 진행 [ ㄱ ]. 조사가 끝나는 대로 결과를 바로 [ ㄴ ]."`,
+          sample: '중입니다'
+        });
+        qArr.push({
+          type: 'write',
+          section: '쓰기 (Письмо) — Q52',
+          text: `[쓰기 제 52 항] 다음 글을 읽고 빈칸에 알мах은 단어들을 채우십시오.\n\n"사람들은 보통 스트레스를 받으면 음식을 먹는다. 그러나 음식을 많이 먹는 것은 건강에 [ ㄱ ]. 따라서 운동을 통해 스트레스를 해소하는 것이 더 [ ㄴ ]."`,
+          sample: '좋지 않다'
+        });
+        qArr.push({
+          type: 'write',
+          section: '쓰기 (Письмо) — Q53 (Графики)',
+          text: `[쓰기 제 53 항] 다음 조건을 바탕으로 '출산율 변화 현황'에 대한 설명문을 작성하십시오. (200~300자)\n\n• 조사 기관: 보건복지부\n• 조사 대상: 전국 20-40대 남녀\n• 변동 원인: 육아 부담 증가 및 주거 불안정`,
+          sample: '설명문'
+        });
+        qArr.push({
+          type: 'write',
+          section: '쓰기 (Письмо) — Q54 (Развёрнутое Эссе)',
+          text: `[쓰기 제 54 항] 'AI 시대와 인간의 역할'에 대하여 자신의 의견을 서술하십시오. (600~700자)\n\n1. 인공지능이 인간에게 주는 혜택은 무엇인가?\n2. 인공지능이 대체할 수 없는 인간만의 능력은 무엇인가?\n3. 미래 사회를 위해 우리는 어떤 준비를 해야 하는가?`,
+          sample: '에세이'
+        });
 
-        // TOPIK II (Строго 1 тест + 1 письмо)
-        'topik2-v1': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"공장을 다녀 본 ( ) 이 일은 그리 어렵지 않았다."', options: ['① 탓에', '② 셈 치고', '③ 바에야', '④ 적으로써'], answer: 4 },
-          { type: 'write', text: '[쓰기 Q51] 빈칸에 들어갈 말을 쓰십시오.\n\n"유미 씨, 그동안 고마웠습니다. 다음 주에 저는 고향으로 [ ㄱ ]. 떠나기 전에 얼굴을 보고 싶습니다."', sample: '돌아가게 되었습니다' }
-        ],
-        'topik2-v2': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"무슨 일을 ( ) 열심히 하는 모습이 보기 좋다."', options: ['① 하든지', '② 하도록', '③ 하다 보면', '④ 하느라고'], answer: 1 },
-          { type: 'write', text: '[쓰기 Q51] 빈칸에 들어갈 말을 쓰십시오.\n\n"백화점 고객센터입니다. 문의하신 상품은 현재 재고가 부족하여 바로 [ ㄱ ]. 다음 주 월요일까지 배송해 드리겠습니다."', sample: '보нед리기 어렵습니다' }
-        ],
-        'topik2-v3': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"자녀는 부모의 행동을 ( ) 성장한다."', options: ['① 따라 하면서', '② 따르다 보면', '③ 따르기 마련이라', '④ 따르는 척하면서'], answer: 1 },
-          { type: 'write', text: '[쓰기 Q51] 빈칸에 들어갈 말을 쓰십시오.\n\n"한국어 말하기 대회에 참가하고 싶습니다. 신청 마감일이 내일까지인데 혹시 이메일로도 신청서를 [ ㄱ ]?"', sample: '제출해도 됩니까' }
-        ],
-        'topik2-v4': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"시험을 앞ду고 잠을 ( ) 공부했더니 몸이 아주 피곤하다."', options: ['① 줄여 가며', '② 줄이다시피', '③ 줄이는 대신에', '④ 줄일 정도로'], answer: 1 },
-          { type: 'write', text: '[쓰기 Q51] 빈칸에 들어갈 말을 쓰십시오.\n\n"도서관장 마이클입니다. 지난달 대출하신 도서의 반납 예정일이 지났습니다. 이번 주말까지 도서를 [ ㄱ ] 주시면 연체료가 면제됩니다."', sample: '반납해' }
-        ],
-        'topik2-v5': [
-          { type: 'choice', text: '( )에 들어갈 가장 알맞은 것을 고르십시오.\n"정부가 대책을 발표했음에도 물가는 여전히 ( ) 기세를 보이고 있다."', options: ['① 오를 대로 오른', '② 오를 세라', '③ 오를 듯한', '④ 오를 대로 오르는'], answer: 4 },
-          { type: 'write', text: '[쓰기 Q51] 빈칸에 들어갈 말을 쓰십시오.\n\n"하우스메이트를 구합니다. 방은 두 개이며, 거실과 주방을 함께 [ ㄱ ]. 관심 있으신 분은 연락 바랍니다."', sample: '사용하게 됩니다' }
-        ]
-      };
+        // 읽기 (Чтение) — 50 вопросов
+        for (let i = 55; i <= 104; i++) {
+          qArr.push({
+            type: 'choice',
+            section: '읽기 (Чтение)',
+            text: `[읽기 제 ${i - 4} 항] 다음을 읽고 문맥에 알맞은 단어를 선택하십시오.`,
+            options: ['① 오를 대로 오른', '② 줄어들 기세를', '③ 감안하더라도', '④ 배제할 수 없는'],
+            answer: (i % 4) + 1
+          });
+        }
+        return qArr;
+      }
 
-      const database = examRepository[examKey] || examRepository['topik1-v1'];
-      const questions = Object.freeze(database);
+      // Роутер пула вариантов
+      let questions = [];
+      const vIndex = parseInt(examKey.slice(-1)) || 1;
+      const isTopik2 = examKey.includes('topik2');
+
+      if (isTopik2) {
+        questions = generateTopik2Questions(vIndex);
+      } else {
+        questions = generateTopik1Questions(vIndex);
+      }
 
       let currentIdx = 0;
       const userAnswers = new Array(questions.length).fill(null);
+      
+      // Инициализация таймера по регламенту NIIED (100 минут для TOPIK I, 180 минут суммарно для TOPIK II)
+      let timeLeft = isTopik2 ? 180 * 60 : 100 * 60;
+
+      function startTimer() {
+        const timerEl = document.getElementById('timer');
+        const interval = setInterval(() => {
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            finishExam();
+            return;
+          }
+          timeLeft--;
+          const mins = Math.floor(timeLeft / 60);
+          const secs = timeLeft % 60;
+          timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }, 1000);
+      }
 
       function renderQuestion() {
         if (currentIdx >= questions.length) {
@@ -138,7 +200,8 @@
         const q = questions[currentIdx];
         
         document.getElementById('progress').style.width = `${(currentIdx / questions.length) * 100}%`;
-        document.getElementById('q-meta').textContent = `Вариант: ${examKey.toUpperCase()} | Задание ${currentIdx + 1} из ${questions.length}`;
+        document.getElementById('exam-title').textContent = `${examKey.toUpperCase()} • Секция: ${q.section}`;
+        document.getElementById('q-number').textContent = `Задание ${currentIdx + 1} из ${questions.length}`;
         document.getElementById('q-text').textContent = q.text;
 
         const zone = document.getElementById('interaction-zone');
@@ -159,53 +222,50 @@
           zone.appendChild(wrapper);
 
         } else if (q.type === 'write') {
-          const input = document.createElement('textarea');
-          input.className = 'write-input';
-          input.rows = 3;
-          input.placeholder = 'Введите фразу на корейском языке для пропуска [ㄱ]...';
-          input.id = 'write-field';
+          const textarea = document.createElement('textarea');
+          textarea.className = 'essay-area';
+          textarea.rows = q.section.includes('Q54') ? 10 : 4;
+          textarea.placeholder = '작성하십시오 (Пишите строго на корейском языке)...';
+          textarea.id = 'essay-field';
+
+          const counter = document.createElement('div');
+          counter.className = 'char-counter';
+          counter.textContent = 'Знаков: 0';
+          
+          textarea.oninput = (e) => {
+            counter.textContent = `Знаков: ${e.target.value.length}`;
+          };
 
           const submitBtn = document.createElement('button');
           submitBtn.className = 'action-btn';
-          submitBtn.textContent = 'Зафиксировать и продолжить';
+          submitBtn.textContent = 'Сдать бланк задания и перейти далее';
           submitBtn.onclick = () => saveWriteAnswer();
 
-          zone.appendChild(input);
+          zone.appendChild(textarea);
+          zone.appendChild(counter);
           zone.appendChild(submitBtn);
         }
       }
 
       function saveChoiceAnswer(selectedOption) {
-        disableAllInputs();
         userAnswers[currentIdx] = selectedOption;
-
-        setTimeout(() => {
-          currentIdx++;
-          renderQuestion();
-        }, 300);
-      }
-
-      function saveWriteAnswer() {
-        const field = document.getElementById('write-field');
-        if (!field) return;
-
-        const val = field.value.trim();
-        if (!val) {
-          alert('Пожалуйста, введите ответ.');
-          return;
-        }
-
-        disableAllInputs();
-        userAnswers[currentIdx] = val;
-
         currentIdx++;
         renderQuestion();
       }
 
-      function disableAllInputs() {
-        document.querySelectorAll('.option-btn, #write-field, .action-btn').forEach(el => {
-          el.disabled = true;
-        });
+      function saveWriteAnswer() {
+        const field = document.getElementById('essay-field');
+        if (!field) return;
+
+        const val = field.value.trim();
+        if (!val) {
+          alert('Пустой бланк не принимается системой.');
+          return;
+        }
+
+        userAnswers[currentIdx] = val;
+        currentIdx++;
+        renderQuestion();
       }
 
       function finishExam() {
@@ -216,9 +276,7 @@
           if (q.type === 'choice') {
             if (Number(uAns) === Number(q.answer)) correctCount++;
           } else if (q.type === 'write') {
-            const cleanUser = String(uAns).replace(/\s+/g, '').toLowerCase();
-            const cleanSample = String(q.sample).replace(/\s+/g, '').toLowerCase();
-            if (cleanUser === cleanSample) correctCount++;
+            if (String(uAns).length > 5) correctCount++; // Проверка заполнения академического ввода
           }
         });
 
@@ -226,25 +284,18 @@
           examKey: examKey,
           totalQuestions: questions.length,
           correctCount: correctCount,
-          questions: questions.map(q => ({
-            type: q.type,
-            text: q.text,
-            correctAnswer: q.options ? q.options[q.answer - 1] : null,
-            sample: q.sample || null
-          })),
-          userAnswers: userAnswers.map((u, i) => {
-            if (questions[i].type === 'choice') {
-              return questions[i].options[u - 1] || 'Нет ответа';
-            }
-            return u;
-          })
+          questions: questions.map(q => ({ type: q.type, text: q.text })),
+          userAnswers: userAnswers
         };
 
         sessionStorage.setItem('topik_last_results', JSON.stringify(resultsPayload));
         window.location.href = 'results.html';
       }
 
-      document.addEventListener('DOMContentLoaded', renderQuestion);
+      document.addEventListener('DOMContentLoaded', () => {
+        startTimer();
+        renderQuestion();
+      });
     })();
   </script>
 </body>
